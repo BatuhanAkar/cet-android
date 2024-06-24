@@ -1,0 +1,280 @@
+package com.batuscode.hosbes.utility
+
+import android.content.Context
+import android.content.SharedPreferences
+import android.graphics.Bitmap
+import android.net.Uri
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.lifecycle.ViewModel
+import com.batuscode.hosbes.models.PrivateRoom
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+
+class MainActivityVM:ViewModel() {
+
+
+    companion object {
+        val self = MainActivityVM()
+    }
+
+    private val _loadingChat = MutableStateFlow<Boolean>(false)
+    val loadingChat: StateFlow<Boolean?> get() = _loadingChat
+
+    fun updateChatLoading(status: Boolean){
+        _loadingChat.value = status
+    }
+
+    fun sharedPreference(context:Context , key:String):SharedPreferences{
+        return context.getSharedPreferences(key , Context.MODE_PRIVATE)
+    }
+
+    fun saveSessionOnPreference(context: Context , key: String , value: Boolean){
+        val editor = sharedPreference(context , "session").edit()
+        editor.putBoolean(key , value)
+        editor.apply()
+    }
+
+
+    fun getSession(context: Context , key: String): Boolean? {
+        return sharedPreference(context , key).getBoolean(key , false)
+    }
+
+    private val _firstSession = MutableStateFlow<Boolean>(false)
+    val firstSession: StateFlow<Boolean?> get() = _firstSession
+
+    fun updatefirstSession(status:Boolean){
+        _firstSession.value = status
+    }
+    private val _photoUrl = MutableStateFlow<String?>(null)
+    val photoUrl: StateFlow<String?> get() = _photoUrl
+
+    fun updatePhotoUrl(photoUrl:String){
+
+        _photoUrl.value = photoUrl
+    }
+
+    private val _uploadComplated = MutableStateFlow<Boolean?>(false)
+    val uploadComplated: StateFlow<Boolean?> get() = _uploadComplated
+
+    fun uploadComlated(Status:Boolean){
+        _uploadComplated.value = Status
+    }
+    private val _signUpC = MutableStateFlow<Boolean>(false)
+    val signUpC: StateFlow<Boolean?> get() = _signUpC
+
+    fun updateSessionC(status:Boolean){
+        _signUpC.value = status
+    }
+
+    private val _signUp = MutableStateFlow<Boolean>(false)
+    val signUp: StateFlow<Boolean?> get() = _signUp
+
+    fun updateSession(status:Boolean){
+        _signUp.value = status
+    }
+
+    private val _channelId = MutableStateFlow<String?>(null)
+    val channelId: StateFlow<String?> get() = _channelId
+
+    fun connectChannel(channelId:String){
+        _channelId.value = channelId
+    }
+
+    private val _showMore = MutableStateFlow<Boolean>(false)
+    val showMore: StateFlow<Boolean?> get() = _showMore
+
+    fun updateShowMore(state:Boolean){
+        _showMore.value = state
+    }
+
+
+    private val _showEditProfileCard = MutableStateFlow<Boolean>(false)
+    val showEditProfileCard: StateFlow<Boolean?> get() = _showEditProfileCard
+
+    fun updateShowEditProfileCard(state:Boolean){
+        _showEditProfileCard.value = state
+    }
+
+    private val _username = MutableStateFlow<String?>(null)
+    val username: StateFlow<String?> get() = _username
+
+    fun updateUsername(username:String){
+        _username.value = username
+    }
+
+
+    private val _verificationCode = MutableStateFlow<String?>(null)
+    val verificationCode: StateFlow<String?> get() = _verificationCode
+
+    fun updateVerificationCode(verificationCode:String){
+        _verificationCode.value = verificationCode
+    }
+
+    // user profile photo
+
+    private val _Photo = MutableStateFlow<ImageBitmap?>(null)
+    val photo: StateFlow<ImageBitmap?> get() = _Photo
+
+    fun updatePhoto(imageBitmap:ImageBitmap){
+        _Photo.value = imageBitmap
+    }
+
+
+    private val _newPhoto = MutableStateFlow<Bitmap?>(null)
+    val newPhoto: StateFlow<Bitmap?> get() = _newPhoto
+
+    fun updatenewPhoto(bitmap: Bitmap){
+        _newPhoto.value = bitmap
+    }
+
+    private val _startUpdate = MutableStateFlow<Boolean>(false)
+    val startUpdate: StateFlow<Boolean> get() = _startUpdate
+
+    fun updateStartUpdate(status : Boolean){
+        _startUpdate.value = status
+    }
+
+    private val _displayName = MutableStateFlow<String?>(null)
+    val displayName: StateFlow<String?>  get() = _displayName
+
+    fun updateDisplayName(displayName:String){
+        _displayName.value = displayName
+    }
+
+
+    private val _showCreatePrivateRoom = MutableStateFlow<Boolean?>(false)
+    val showCreatePrivateRoom: StateFlow<Boolean?>  get() = _showCreatePrivateRoom
+
+    fun updateShowCreatePrivateRoom(status:Boolean){
+        _showCreatePrivateRoom.value = status
+    }
+
+    private val _newPrivateRoomImage = MutableStateFlow<ImageBitmap?>(null)
+    val newPrivateRoomImage: StateFlow<ImageBitmap?> get() = _newPrivateRoomImage
+
+    fun updateNewPrivateRoomImage(image:ImageBitmap){
+        _newPrivateRoomImage.value = image
+    }
+
+    private val _creatingPrivateRoom = MutableStateFlow<Boolean>(false)
+    val creatingPrivateRoom: StateFlow<Boolean> get() = _creatingPrivateRoom
+
+    fun updateCreatingPrivateRoom(status : Boolean){
+        _creatingPrivateRoom.value = status
+    }
+
+    private val _createPrivateRoom = MutableStateFlow<Boolean>(false)
+    val createPrivateRoom: StateFlow<Boolean> get() = _createPrivateRoom
+
+    fun updateCreateRoom(status : Boolean){
+        _createPrivateRoom.value = status
+    }
+
+    private val _PrivateRoom = MutableStateFlow<PrivateRoom?>(null)
+    val privateRoom: StateFlow<PrivateRoom?> get() = _PrivateRoom
+
+    fun updatePrivateRoom(room: PrivateRoom){
+        _PrivateRoom.value = room
+    }
+
+
+    private val _chatFlowState = MutableStateFlow<String?>(null)
+    val chatFlowState: StateFlow<String?> get() = _chatFlowState
+
+    fun updateChatFlowState(state:String){
+        _chatFlowState.value = state
+    }
+
+    private val _selectedChannel = MutableStateFlow<String?>(null)
+    val selectedChannel: StateFlow<String?> get() = _selectedChannel
+
+    fun updateSelectedChannel(state:String){
+        _selectedChannel.value = state
+    }
+
+    private val _showPermissionDialog = MutableStateFlow<Boolean?> (false)
+    val showPermissionDialog: StateFlow<Boolean?> get() = _showPermissionDialog
+
+    fun updateShowPermissionDialog(state:Boolean){
+        _showPermissionDialog.value = state
+    }
+
+    private val _privateChatPlaceHolderImage = MutableStateFlow<ImageBitmap?>(null)
+    val privateChatPlaceHolderImage: StateFlow<ImageBitmap?> get() = _privateChatPlaceHolderImage
+
+    fun updatePrivateChatPlaceHolderImage(bitmap:ImageBitmap){
+        _privateChatPlaceHolderImage.value = bitmap
+    }
+
+    private val _messageId = MutableStateFlow<String?> (null)
+    val messageId: StateFlow<String?> get() = _messageId
+
+    fun updateMessageId(id:String){
+        _messageId.value = id
+    }
+
+    private val _prMessageWrited = MutableStateFlow<Boolean?>(false)
+    val prMessageWrited: StateFlow<Boolean?> get() = _prMessageWrited
+
+    fun updatePrMessageWrited(state: Boolean){
+        _prMessageWrited.value = state
+    }
+
+    private val _mediaUri = MutableStateFlow<Uri?>(null)
+    val mediaUri: StateFlow<Uri?> get() = _mediaUri
+
+    fun updateMediaUri(uri: Uri){
+        _mediaUri.value = uri
+    }
+
+    private val _mediaUploaded = MutableStateFlow<Boolean?>(false)
+    val mediauploaded:StateFlow<Boolean?> get() = _mediaUploaded
+
+    fun updateMediaUploaded(state: Boolean){
+        _mediaUploaded.value = state
+    }
+
+    private val _newMediaSended = MutableStateFlow<Boolean?>(false)
+    val newMediaSended:StateFlow<Boolean?> get() = _newMediaSended
+
+    fun updateNewMediaSended(state:Boolean){
+
+        _newMediaSended.value = state
+
+    }
+
+    private val _outForSelectImage = MutableStateFlow<Boolean?>(false)
+    val outForSelectImage:StateFlow<Boolean?> get() = _outForSelectImage
+
+    fun updateOutForSelectImage(state:Boolean){
+
+        _outForSelectImage.value = state
+
+    }
+
+    private val _mediaMessageProgress = MutableStateFlow<Double?>(null)
+    val mediaMessageProgress:StateFlow<Double?> get() = _mediaMessageProgress
+
+    fun updateMediaMessageProgress(value:Double){
+
+        _mediaMessageProgress.value = value
+
+    }
+
+    private val _messageSended = MutableStateFlow<Boolean?>(false)
+    val messageSended:StateFlow<Boolean?> get() = _messageSended
+
+    fun updateMessageSended(state:Boolean){
+        _messageSended.value = state
+    }
+
+    private val _showMessageOption = MutableStateFlow<Boolean?>(false)
+    val showMessageOption:StateFlow<Boolean?> get() = _showMessageOption
+
+    fun updateShowMessageOption(state:Boolean){
+        _showMessageOption.value = state
+    }
+}

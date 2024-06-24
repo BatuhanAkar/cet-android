@@ -1,0 +1,35 @@
+<resources>
+    <string name="app_name">Hoşbeş</string>
+    <string name="devamet">Devam et</string>
+    <string name="telefonnumarası">Telefon numarası</string>
+    <string name="gonder">Gonder</string>
+    <string name="message">Mesaj</string>
+    <string name="kullaniciadi">Kullanıcı adı</string>
+    <string name="selectuniqueusername">Seni yansıtan kullanıcı adını seç</string>
+    <string name="createAccount">Hesabı Oluştur</string>
+    <string name="fornewfriends">Yeni arkadaşlıklara</string>
+    <string name="verificationCode">6 haneli doğrulama kodu</string>
+    <string name="onelaststep">Son bir adım kaldı</string>
+    <string name="signin">Giriş</string>
+    <string name="sendverificationcode">Kodu gönder</string>
+    <string name="profile">Profilim</string>
+    <string name="privaterooms">Özel odalar</string>
+    <string name="notifications">Bildirimler</string>
+    <string name="hosbeslerim">Hoşbeşlerim</string>
+    <string name="signout">Hesapdan çık</string>
+    <string name="deleteaccount">Hesabı sil</string>
+    <string name="blackbox">Kara kutum</string>
+    <string name="youareconnectingChat">Sohbet kanalına bağlanıyorsun...</string>
+    <string name="update">Güncelle</string>
+    <string name="permissiontext">" Hoşbeş cihazınızdaki fotoğraflara ,
+        medyaya ve dosyalara erişmek istiyor
+        izin verilsin mi?"</string>
+    <string name="allow">İzin ver</string>
+    <string name="deny">Hayır</string>
+    <string name="createprivateroom">Özel oda oluştur</string>
+    <string name="privateroomname">Özel oda adı</string>
+    <string name="setprivateroomimage">Resim seç</string>
+    <string name="people">kişi</string>
+    <string name="full">Dolu</string>
+    <string name="edit">Düzenle</string>
+</resources>
