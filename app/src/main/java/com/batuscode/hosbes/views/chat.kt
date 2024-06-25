@@ -258,23 +258,6 @@ fun Chat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
                                     mainActivityVM.updateShowMore(true)
                                 }
                         )
-                    } else {
-                        Image(
-                            imageVector = Icons.Filled.AccountCircle,
-                            contentDescription = "" ,
-                            contentScale = ContentScale.Fit,
-                            modifier = Modifier
-                                .clip(CircleShape)
-                                .width(30.dp)
-                                .height(30.dp)
-                                .clickable {
-                                    Log.d("chatProfilePicture", "clicked...")
-                                    mainActivityVM.updateShowMore(true)
-                                }
-                        )
-
-
-
                     }
 
 

@@ -147,130 +147,166 @@ fun MessageItemView(message:Message , type:String){
     }
 
 
-    Column(
+    // gönderen resmi ile mesaj görünümünü yan yana koy...
+
+    Row (
+        verticalAlignment = Alignment.Top ,
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(2.5.dp)
             .background(
                 color = getColor()
             )
-    ){
+    ) {
 
-        Row (
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically ,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(0.dp)
-                .background(Color.Gray.copy(0.1f))
-        ) {
-/*
+        GlideApp.with(context)
+            .asBitmap()
+            .load(message.senderImage)
+            .into(object : CustomTarget<Bitmap>(){
+                override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+                    image = resource.asImageBitmap()
+                }
+
+                override fun onLoadCleared(placeholder: Drawable?) {
+                    TODO("Not yet implemented")
+                }
+
+
+            })
+
+        if (image != null){
             Image(
-                imageVector = Icons.Filled.AccountCircle,
+                bitmap = image!!,
                 contentDescription = "",
                 modifier = Modifier
-                    .padding(end = 3.dp)
-                    .width(40.dp)
-                    .height(40.dp),
+                    .width(60.dp)
+                    .height(60.dp),
                 contentScale = ContentScale.Fit
-            )*/
-
-
-            Text(
-                text = message.senderName!! ,
-                modifier = Modifier
-                    .padding(top = 2.5.dp , start = 2.5.dp),
-                style = TextStyle(
-                    fontWeight = FontWeight.SemiBold
-                )
             )
-
-            OutlinedIconButton(
-                onClick = { /*TODO*/ } ,
-                border = null ,
-                modifier = Modifier
-                    .padding(0.dp)
-                    .size(24.dp)
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.more_horiz_24px) ,
-                    contentDescription = "" ,
-                    modifier = Modifier
-                        .align(Alignment.Top)
-                    )
-            }
         }
 
-        Row (
+
+
+
+        Column(
             modifier = Modifier
-                .padding(bottom = 20.dp)
-        ) {
-
-            Surface (
-                shape = RoundedCornerShape(10.dp) ,
-                color = Color.Transparent ,
-                tonalElevation = 1.dp) {
+                .fillMaxWidth()
+                .padding(2.5.dp)
+        )
+        {
 
 
-                when
+            // gönderen adı ile seçenek butonunu aralarında boşlukla yanyana koy...
+
+            Row (
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically ,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(0.dp)
+            )
+            {
+
+
+
+                Text(
+                    text = message.senderName!! ,
+                    modifier = Modifier
+                        .padding(top = 2.5.dp),
+                    style = TextStyle(
+                        fontWeight = FontWeight.SemiBold ,
+                        fontSize = 15.sp
+                    )
+                )
+
+                OutlinedIconButton(
+                    onClick = { /*TODO*/ } ,
+                    border = null ,
+                    modifier = Modifier
+                        .padding(0.dp)
+                        .size(24.dp)
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.more_horiz_24px) ,
+                        contentDescription = "" ,
+                        modifier = Modifier
+                            .align(Alignment.Top)
+                    )
+                }
+            }
+
+            Row (
+            ) {
+
+                Surface (
+                    shape = RoundedCornerShape(10.dp) ,
+                    color = Color.Transparent ,
+                    tonalElevation = 1.dp
+                )
                 {
-/*
-
-                    type.equals("media")->{
 
 
-                        GlideApp.with(context)
-                            .asBitmap()
-                            .load(message.message)
-                            .into(object: CustomTarget<Bitmap>(){
-                                override fun onResourceReady(
-                                    resource: Bitmap,
-                                    transition: Transition<in Bitmap>?
-                                ) {
-                                    image = resource.asImageBitmap()
-                                }
+                    when
+                    {
+                        /*
 
-                                override fun onLoadCleared(placeholder: Drawable?) {
-
-                                }
+                                            type.equals("media")->{
 
 
-                            })
+                                                GlideApp.with(context)
+                                                    .asBitmap()
+                                                    .load(message.message)
+                                                    .into(object: CustomTarget<Bitmap>(){
+                                                        override fun onResourceReady(
+                                                            resource: Bitmap,
+                                                            transition: Transition<in Bitmap>?
+                                                        ) {
+                                                            image = resource.asImageBitmap()
+                                                        }
+
+                                                        override fun onLoadCleared(placeholder: Drawable?) {
+
+                                                        }
 
 
-                        if (image != null){
+                                                    })
 
 
-                            Image(
-                                bitmap = image!! ,
-                                contentDescription = "" ,
-                                contentScale = ContentScale.FillBounds,
+                                                if (image != null){
+
+
+                                                    Image(
+                                                        bitmap = image!! ,
+                                                        contentDescription = "" ,
+                                                        contentScale = ContentScale.FillBounds,
+                                                        modifier = Modifier
+                                                            .padding(8.dp)
+                                                            .width(180.dp)
+                                                            .height(220.dp)
+                                                    )
+
+                                                }
+
+                                            }
+                        */
+
+                        type.equals("text")->{
+                            Text(
+                                text = message.message!! ,
+                                style = TextStyle(
+                                    fontWeight = FontWeight.Bold
+                                ),
                                 modifier = Modifier
-                                    .padding(8.dp)
-                                    .width(180.dp)
-                                    .height(220.dp)
+
                             )
+
 
                         }
 
                     }
-*/
-
-                    type.equals("text")->{
-                        Text(
-                            text = message.message!! ,
-                            style = TextStyle(
-                                fontWeight = FontWeight.Bold
-                            ),
-                            modifier = Modifier.padding(8.dp)
-                        )
 
 
-                    }
+
 
                 }
-
-
 
 
             }
@@ -278,8 +314,8 @@ fun MessageItemView(message:Message , type:String){
 
         }
 
-
     }
+
 
 }
 
@@ -446,7 +482,7 @@ fun MyMessagePreview(){
         MyMessage( mainActivityVM ,"media" , message = message)
     }
 }*/
-/*
+
 
 @Preview(showBackground = true , showSystemUi = true)
 @Composable
@@ -458,4 +494,4 @@ fun MessageItemViewPreview(){
         MessageItemView(message = message,"text")
     }
 }
-*/
+

@@ -137,6 +137,9 @@ fun Authentication(navController: NavController , mainActivityVM: MainActivityVM
             Log.d("verifyphonenumber" , "onCodeSent :: " + "verfyId :: " + verificationId
                     + " fores :: " + forceResendingToken)
 
+
+            codeFieldEnabled = true
+            codeSended = true
             vId = verificationId
 
 
@@ -279,9 +282,6 @@ fun Authentication(navController: NavController , mainActivityVM: MainActivityVM
                             if (options != null) {
                                 PhoneAuthProvider.verifyPhoneNumber(options)
                             }
-
-                            codeFieldEnabled = true
-                            codeSended = true
                         } ,
                             modifier = Modifier
                                 .padding(top = 15.dp)
@@ -361,23 +361,6 @@ fun Authentication(navController: NavController , mainActivityVM: MainActivityVM
 
 }
 
-
-
-fun VerifyAuthPhoneNumber(phoneNumber:String, mainActivityVM: MainActivityVM){
-
-    Log.d("verifyphonenumber" , "verify fun is run...")
-
-
-
-}
-
-
-fun validatePhoneNumber(x:String) : Boolean{
-    // x -> phoneNumber !!!
-    Log.d("validatingPhoneNumber" , "isGlobal? :: " + PhoneNumberUtils.isGlobalPhoneNumber(x).toString())
-    Log.d("validatingPhoneNumber" , "formatNumber :: " + PhoneNumberUtils.formatNumber(x , "TR"))
-   return PhoneNumberUtils.isGlobalPhoneNumber(x)
-}
 
 @Preview(showBackground = true , showSystemUi = true)
 @Composable
