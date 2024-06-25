@@ -28,6 +28,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
@@ -254,6 +255,23 @@ fun Chat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
                                     mainActivityVM.updateShowMore(true)
                                 }
                         )
+                    } else {
+                        Image(
+                            imageVector = Icons.Filled.AccountCircle ,
+                            contentDescription = "" ,
+                            contentScale = ContentScale.Fit,
+                            modifier = Modifier
+                                .clip(CircleShape)
+                                .width(30.dp)
+                                .height(30.dp)
+                                .clickable {
+                                    Log.d("chatProfilePicture", "clicked...")
+                                    mainActivityVM.updateShowMore(true)
+                                }
+                        )
+
+
+
                     }
 
 
