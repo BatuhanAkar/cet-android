@@ -118,6 +118,8 @@ fun Chat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
     val lifecycle = LocalLifecycleOwner.current
 
     val selectedChannel by mainActivityVM.selectedChannel.collectAsState()
+    val showMessageOption by mainActivityVM.showMessageOption.collectAsState()
+
 
     DisposableEffect(lifecycle) {
         val observe = LifecycleEventObserver { _, event ->
@@ -270,6 +272,11 @@ fun Chat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
             .fillMaxSize()
             .padding(innerPadding)
         ) {
+
+
+            if (showMessageOption == true){
+                MessageOption(mainActivityVM = mainActivityVM)
+            }
 
             if (showMore == true){
                 More(mainActivityVM)

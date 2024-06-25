@@ -673,6 +673,29 @@ class FirebaseManager {
             }
     }
 
+    fun editMessage(type: String , value:String , message: Message , channel: DatabaseReference){
+
+        val tStamp = System.currentTimeMillis()
+        val value: String? = value
+        val edited:Boolean = true
+
+        val messageId = message.messageId
+        val senderId: String? = currentUser?.uid
+        val senderImage: String? = currentUser?.photoUrl.toString()
+        val senderName: String? = currentUser?.displayName
+
+        val message = Message(senderId , senderImage , senderName , value , messageId , type , tStamp , edited)
+
+        val editValue = message.toMap()
+
+        val messageUpdates = hashMapOf<String,Any>(
+            messageId!! to editValue
+        )
+
+        channel.updateChildren(messageUpdates)
+
+    }
+
     fun writeMessage( type: String , messageValue:String? , channel:DatabaseReference){
         Log.d("writeMessage" , "initialized...")
         var messageId = channel.push().key.toString()

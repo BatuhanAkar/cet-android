@@ -1,6 +1,7 @@
 package com.batuscode.hosbes.models
 
 import androidx.annotation.Nullable
+import com.google.firebase.database.Exclude
 import com.google.firebase.database.IgnoreExtraProperties
 import java.util.Objects
 
@@ -12,7 +13,8 @@ data class Message(
     val message:String? = null ,
     val messageId:String? = null ,
     val type:String? = null ,
-    val time:Long? = null
+    val time:Long? = null ,
+    val edited:Boolean? = null
     ){
 
 
@@ -28,5 +30,17 @@ data class Message(
 
         return messageId == message.messageId
     }
-
+    @Exclude
+    fun toMap(): Map<String, Any?> {
+        return mapOf(
+            "senderId" to senderId,
+            "senderImage" to senderImage,
+            "senderName" to senderName,
+            "message" to message,
+            "messageId" to messageId,
+            "type" to type,
+            "time" to time,
+            "edited" to edited
+        )
+    }
 }

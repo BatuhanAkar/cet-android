@@ -5,7 +5,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
@@ -34,7 +36,7 @@ import kotlinx.coroutines.CoroutineScope
 fun MessageOption(mainActivityVM: MainActivityVM){
     val context = LocalContext.current
 
-    val sheetState = rememberModalBottomSheetState()
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
     val scope = rememberCoroutineScope()
 
     ModalBottomSheet(
@@ -51,7 +53,7 @@ fun MessageOption(mainActivityVM: MainActivityVM){
 
         ) {
 
-        OptionContent()
+        OptionContent(mainActivityVM = mainActivityVM)
 
     }
 
@@ -60,14 +62,32 @@ fun MessageOption(mainActivityVM: MainActivityVM){
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun OptionContent(){
+fun OptionContent(mainActivityVM: MainActivityVM){
 
     Column {
 
         OutlinedButton(
-            onClick = { /*TODO*/ }
+            onClick = {
+
+                /*TODO: mesajı düzenle butonu */
+
+                // mesajı düzenle bayrağını true ayarla ...
+
+                mainActivityVM.updateEditMessageFlag(true)
+                mainActivityVM.updateShowMessageOption(false)
+            } ,
+            border = null,
+            modifier = Modifier
+                .fillMaxWidth()
         ) {
-            Icon(imageVector = Icons.Filled.Edit, contentDescription = "")
+            Icon(
+                imageVector = Icons.Filled.Edit ,
+                contentDescription = "" ,
+                modifier = Modifier
+                    .size(16.dp)
+            )
+
+
             Text(text = stringResource(id = R.string.edit))
         }
 

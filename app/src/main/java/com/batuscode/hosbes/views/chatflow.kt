@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -54,6 +55,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -90,10 +92,6 @@ fun ChatFlow( mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel , mo
     val chats = chatViewModel.chat.observeAsState(mutableListOf())
 
 
-    val showMessageOption by mainActivityVM.showMessageOption.collectAsState()
-    if (showMessageOption == true){
-        MessageOption(mainActivityVM = mainActivityVM)
-    }
     Log.d("chatFlow" , "chats value :: " + chats.value.size)
 
     LazyColumn(
@@ -111,7 +109,7 @@ fun ChatFlow( mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel , mo
             }
 */
 
-            MessageItemView(message = it , it.type!!)
+            MessageItemView(message = it , type =  it.type!! , mainActivityVM = mainActivityVM)
 
         }
 
@@ -143,7 +141,7 @@ fun getColor():Color{
 }
 
 @Composable
-fun MessageItemView(message:Message , type:String){
+fun MessageItemView(message:Message , type:String , mainActivityVM: MainActivityVM){
 
 
     val context: Context = LocalContext.current
@@ -151,6 +149,8 @@ fun MessageItemView(message:Message , type:String){
     var image by remember{
         mutableStateOf<ImageBitmap?>(null)
     }
+
+    val timeStamp by remember { mutableStateOf(  dateformatHour(message.time!!) ) }
 
 
     // gönderen resmi ile mesaj görünümünü yan yana koy...
@@ -185,7 +185,7 @@ fun MessageItemView(message:Message , type:String){
                 bitmap = image!!,
                 contentDescription = "",
                 modifier = Modifier
-                    .padding(top = 5.dp , bottom = 5.dp)
+                    .padding(top = 5.dp, bottom = 5.dp)
                     .clip(RoundedCornerShape(10.dp))
                     .width(60.dp)
                     .height(60.dp),
@@ -216,17 +216,48 @@ fun MessageItemView(message:Message , type:String){
             {
 
 
-
-                Text(
-                    text = message.senderName!! ,
-                    style = TextStyle(
-                        fontWeight = FontWeight.SemiBold ,
-                        fontSize = 15.sp
-                    )
+                Row (
+                    verticalAlignment = Alignment.CenterVertically
                 )
+                {
+
+                    Text(
+                        text = message.senderName!!,
+                        style = TextStyle(
+                            fontWeight = FontWeight.SemiBold ,
+                            fontSize = 17.sp
+                        )
+                    )
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    if (message.edited == true){
+
+                        Text(
+                            text = stringResource(id = R.string.edited) ,
+                            style = TextStyle(
+                                fontSize = 12.sp
+                            )
+                        )
+
+                    }
+
+                    Text(
+                        text = timeStamp ,
+                        style = TextStyle(
+                            fontSize = 12.sp
+                        )
+                    )
+
+
+                }
+
 
                 OutlinedIconButton(
-                    onClick = { /*TODO*/ } ,
+                    onClick = {
+                        mainActivityVM.updateMessageItem(message)
+                        mainActivityVM.updateShowMessageOption(true)
+                    } ,
                     border = null ,
                     modifier = Modifier
                         .padding(0.dp)
@@ -300,7 +331,8 @@ fun MessageItemView(message:Message , type:String){
                             Text(
                                 text = message.message!! ,
                                 style = TextStyle(
-                                    fontWeight = FontWeight.Bold
+                                    fontWeight = FontWeight.Bold ,
+                                    fontSize = 20.sp
                                 ),
                                 modifier = Modifier
 
@@ -499,7 +531,7 @@ fun MessageItemViewPreview(){
 
     val mainActivityVM:MainActivityVM = viewModel()
     HoşbeşTheme {
-        MessageItemView(message = message,"text")
+        MessageItemView(message = message, type = "text" , mainActivityVM = mainActivityVM)
     }
 }
 

@@ -27,19 +27,20 @@ class ChatViewModel: ViewModel() {
 
         Log.d("privateroomsflow" , "position :: $position")
 
-        val iterator = _chat.value
+        val iterator = _chat.value?.toMutableList()
 
 
 
         if (iterator != null && position in iterator.indices){
             Log.d("privateroomsflow" , "modified success...")
 
+            iterator[position!!] = message
+//
+//            val newlist = iterator.toMutableList()
+//
+//            newlist.set(position!! , message)
 
-            val newlist = iterator.toMutableList()
-
-            newlist.set(position!! , message)
-
-            _chat.value = newlist
+            _chat.value = iterator!!
 
         }
     }

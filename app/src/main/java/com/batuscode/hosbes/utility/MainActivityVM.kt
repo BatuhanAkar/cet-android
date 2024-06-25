@@ -6,6 +6,7 @@ import android.graphics.Bitmap
 import android.net.Uri
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.lifecycle.ViewModel
+import com.batuscode.hosbes.models.Message
 import com.batuscode.hosbes.models.PrivateRoom
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -276,5 +277,26 @@ class MainActivityVM:ViewModel() {
 
     fun updateShowMessageOption(state:Boolean){
         _showMessageOption.value = state
+    }
+
+    private val _editMessageFlag = MutableStateFlow<Boolean?>(false)
+    val editMessageFlag:StateFlow<Boolean?> get() = _editMessageFlag
+
+    fun updateEditMessageFlag(state: Boolean){
+        _editMessageFlag.value = state
+    }
+
+    private val _messageItem = MutableStateFlow<Message?>(null)
+    val messageItem: StateFlow<Message?> get() = _messageItem
+
+    fun updateMessageItem(message: Message){
+        _messageItem.value = message
+    }
+
+    private val _editMessageFieldMode = MutableStateFlow<Boolean?>(false)
+    val editMessageFieldMode:StateFlow<Boolean?> get() = _editMessageFieldMode
+
+    fun updateEditMessageFieldMode(state: Boolean){
+        _editMessageFieldMode.value = state
     }
 }

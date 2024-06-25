@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -39,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat.requestPermissions
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.batuscode.hosbes.MainActivity
 import com.batuscode.hosbes.R
 import com.batuscode.hosbes.ui.theme.HoşbeşTheme
@@ -62,6 +64,15 @@ internal fun MessageTextField( mainActivityVM: MainActivityVM , modifier: Modifi
     val isEmpty: Boolean by derivedStateOf{ message.text.isEmpty() }
 
     val messageSended by mainActivityVM.messageSended.collectAsState()
+    val editMessageFlag by mainActivityVM.editMessageFlag.collectAsState()
+
+    val messageItem by mainActivityVM.messageItem.collectAsState()
+
+    if (editMessageFlag == true){
+        message = TextFieldValue(messageItem?.message!!)
+        mainActivityVM.updateEditMessageFlag(false)
+        mainActivityVM.updateEditMessageFieldMode(true)
+    }
 
 
     if (messageSended == true){
@@ -90,6 +101,10 @@ private fun CustomTextField( mainActivityVM: MainActivityVM , modifier: Modifier
     val prMessageWrited by mainActivityVM.prMessageWrited.collectAsState()
 
     val mediaUri by mainActivityVM.mediaUri.collectAsState()
+
+    val editMessageFieldMode by mainActivityVM.editMessageFieldMode.collectAsState()
+
+    val messageItem by mainActivityVM.messageItem.collectAsState()
 
     var mediaSelected by remember {
         mutableStateOf(false)
@@ -249,7 +264,7 @@ private fun CustomTextField( mainActivityVM: MainActivityVM , modifier: Modifier
                 BasicTextField(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding( horizontal = 24.dp, vertical = 10.dp) ,
+                        .padding(horizontal = 24.dp, vertical = 10.dp) ,
                     textStyle = TextStyle(
                         fontSize = 18.sp
                     ),
@@ -306,36 +321,108 @@ private fun CustomTextField( mainActivityVM: MainActivityVM , modifier: Modifier
             }
 */
 
-            OutlinedIconButton(
-                onClick = {
-                    if (!message.text.isEmpty()){
-                        Log.d("sendbutton :: " , message.text)
+            if (editMessageFieldMode == false) {
+
+                // standart mesaj kutusu
 
 
-                        if (channelId == "C1"){
-                            mainActivityVM.updateMessageSended(true)
-                            MainActivity.fm.writeMessage( "text" , message.text , FirebaseManager.C1)
+                OutlinedIconButton(
+                    onClick = {
+                        if (!message.text.isEmpty()){
+                            Log.d("sendbutton :: " , message.text)
 
-                        } else if (channelId == "C2") {
-                            mainActivityVM.updateMessageSended(true)
-                            MainActivity.fm.writeMessage( "text" , message.text , FirebaseManager.C2)
 
-                        } else if (channelId == "P1"){
-                            mainActivityVM.updateMessageSended(true)
-                            MainActivity.fm.writePRMessage( mainActivityVM , "text" , message.text , FirebaseManager.P1 , room = room!!)
+                            if (channelId == "C1"){
+                                mainActivityVM.updateMessageSended(true)
+                                MainActivity.fm.writeMessage( "text" , message.text , FirebaseManager.C1)
+
+                            } else if (channelId == "C2") {
+                                mainActivityVM.updateMessageSended(true)
+                                MainActivity.fm.writeMessage( "text" , message.text , FirebaseManager.C2)
+
+                            } else if (channelId == "P1"){
+                                mainActivityVM.updateMessageSended(true)
+                                MainActivity.fm.writePRMessage( mainActivityVM , "text" , message.text , FirebaseManager.P1 , room = room!!)
+                            }
+
+                        } else {
+                            Log.d("sendbutton :: " , "12")
+
                         }
+                    } ,
+                    modifier = Modifier
+                        .padding(0.dp) ,
+                    border = null
+                ) {
+                    Icon(imageVector = Icons.Filled.Send, contentDescription = "send")
+                }
 
-                    } else {
-                        Log.d("sendbutton :: " , "12")
+            } else {
 
+                // mesajı düzenle mesaj kutusu
+
+                Column (
+                    horizontalAlignment = Alignment.CenterHorizontally
+                )
+                {
+
+
+                    TextButton(
+                        onClick = {
+                            if (!message.text.isEmpty()){
+                                Log.d("sendbutton :: " , message.text)
+
+
+                                if (channelId == "C1"){
+                                    mainActivityVM.updateMessageSended(true)
+                                    mainActivityVM.updateEditMessageFieldMode(false)
+
+                                    MainActivity.fm.editMessage( "text", message.text , messageItem!! , FirebaseManager.C1)
+
+                                } else if (channelId == "C2") {
+                                    mainActivityVM.updateMessageSended(true)
+                                    mainActivityVM.updateEditMessageFieldMode(false)
+
+                                    MainActivity.fm.editMessage( "text" , message.text , messageItem!! , FirebaseManager.C2)
+
+                                } else if (channelId == "P1"){
+                                    mainActivityVM.updateMessageSended(true)
+                                    mainActivityVM.updateEditMessageFieldMode(false)
+
+                                    MainActivity.fm.writePRMessage( mainActivityVM , "text" , message.text , FirebaseManager.P1 , room = room!!)
+                                }
+
+                            } else {
+                                Log.d("sendbutton :: " , "12")
+
+                            }
+                        } ,
+                        modifier = Modifier
+                            .padding(0.dp) ,
+                        border = null
+                    ) {
+                        Text(text = stringResource(id = R.string.editSend))
                     }
-                } ,
-                modifier = Modifier
-                    .padding(0.dp) ,
-                border = null
-            ) {
-                Icon(imageVector = Icons.Filled.Send, contentDescription = "send")
+
+
+
+                    OutlinedIconButton(
+                        onClick = {
+                            mainActivityVM.updateEditMessageFlag(false)
+                        } ,
+                        modifier = Modifier
+                            .padding(0.dp) ,
+                        border = null
+                    ) {
+                        Icon(imageVector = Icons.Filled.Close, contentDescription = "send")
+                    }
+
+
+                }
+
+
             }
+
         }
     }
 }
@@ -396,9 +483,10 @@ private fun showEmoji(context:Context){
 @Preview
 @Composable
 fun MessageTextFieldPreview(){
-    HoşbeşTheme {/*
-        MessageTextField {
+    HoşbeşTheme {
+        val mainActivityVM:MainActivityVM = viewModel()
+        MessageTextField(mainActivityVM) {
 
-        }*/
+        }
     }
 }

@@ -31,5 +31,7 @@
     <string name="setprivateroomimage">Resim seç</string>
     <string name="people">kişi</string>
     <string name="full">Dolu</string>
-    <string name="edit">Düzenle</string>
+    <string name="edit">Mesajı düzenle</string>
+    <string name="editSend">Düzenle</string>
+    <string name="edited">"Düzenlendi "</string>
 </resources>
