@@ -20,12 +20,16 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedIconButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -40,6 +44,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.BlurredEdgeTreatment
 import androidx.compose.ui.draw.blur
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
@@ -149,13 +155,13 @@ fun MessageItemView(message:Message , type:String){
 
     // gönderen resmi ile mesaj görünümünü yan yana koy...
 
+
     Row (
         verticalAlignment = Alignment.Top ,
         modifier = Modifier
-            .background(
-                color = getColor()
-            )
-    ) {
+            .padding(5.5.dp)
+    )
+    {
 
         GlideApp.with(context)
             .asBitmap()
@@ -173,23 +179,27 @@ fun MessageItemView(message:Message , type:String){
             })
 
         if (image != null){
+
+
             Image(
                 bitmap = image!!,
                 contentDescription = "",
                 modifier = Modifier
+                    .padding(top = 5.dp , bottom = 5.dp)
+                    .clip(RoundedCornerShape(10.dp))
                     .width(60.dp)
                     .height(60.dp),
-                contentScale = ContentScale.Fit
+                contentScale = ContentScale.FillBounds
             )
-        }
 
+        }
 
 
 
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(2.5.dp)
+                .padding(start = 9.dp)
         )
         {
 
@@ -209,8 +219,6 @@ fun MessageItemView(message:Message , type:String){
 
                 Text(
                     text = message.senderName!! ,
-                    modifier = Modifier
-                        .padding(top = 2.5.dp),
                     style = TextStyle(
                         fontWeight = FontWeight.SemiBold ,
                         fontSize = 15.sp

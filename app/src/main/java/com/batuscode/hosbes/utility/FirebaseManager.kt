@@ -794,19 +794,25 @@ class FirebaseManager {
      *
      * */
 
-    @Composable
     fun writeUserData(photoUrl:String? , mainActivityVM: MainActivityVM){
 
         Log.d("firestorell" , "write user data is run...")
 
 
         var uid:String = ""
+
+        // geçerli kullanıcı boş değil ise uid i al ...
+
         currentUser?.let {
             uid = it.uid
         }
+
+        // user nesnesini oluştur ...
+
+
         val user = User(
             displayName = currentUser?.displayName ,
-            photoUrl = photoUrl ,
+            photoUrl = currentUser?.photoUrl.toString() ,
             uid = currentUser?.uid ,
             isOnline = true
         )
@@ -876,16 +882,9 @@ class FirebaseManager {
 
     // upload profile image on storage
 
-    @Composable
     fun uploadImage(bitmap: Bitmap? , mainActivityVM: MainActivityVM){
 
-        var url by remember {
-            mutableStateOf("")
-        }
-
-        Log.d("firestorell" , "uploadImage run...")
-
-
+        Log.d("firstSignUp" , "oturum açma başarılı profil resmi db ye yükleniyor ....")
 
         val UID = currentUser?.uid
 
@@ -912,7 +911,7 @@ class FirebaseManager {
             if (it.isSuccessful){
                 it.toString()
                 updateProfilePhoto(it.result , mainActivityVM)
-                url = it.result.toString()
+                val url = it.result.toString()
                 Log.d("firestorell" , "uploadImage complated :: " + url)
 
                 Log.d("firestorell" , "path :: " + url)

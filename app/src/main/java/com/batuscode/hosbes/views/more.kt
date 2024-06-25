@@ -167,7 +167,7 @@ fun MoreContent(scope: CoroutineScope , sheetState: SheetState , mainActivityVM:
 
 
                     Image(
-                        imageVector = Icons.Filled.AccountCircle,
+                        bitmap = imageBitmap!!,
                         contentDescription = "",
                         modifier = Modifier
                             .clip(CircleShape)

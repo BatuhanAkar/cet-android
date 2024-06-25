@@ -52,6 +52,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -125,9 +126,9 @@ fun Authentication(navController: NavController , mainActivityVM: MainActivityVM
     }
 
 
-    val signUp by mainActivityVM.signUp.collectAsState()
-    val signUpC by mainActivityVM.signUpC.collectAsState()
     val uploadComplated by mainActivityVM.uploadComplated.collectAsState()
+    val signUpComplated by mainActivityVM.signUpC.collectAsState()
+
     val photoUrl by mainActivityVM.photoUrl.collectAsState()
 
     val verifyCallback =  object : PhoneAuthProvider.OnVerificationStateChangedCallbacks(){
@@ -159,6 +160,30 @@ fun Authentication(navController: NavController , mainActivityVM: MainActivityVM
     }
 
 
+    // profil resmi yüklendiyse kullanıcı verilerini yaz ...
+
+
+    if (uploadComplated == true){
+        mainActivityVM.uploadComlated(false)
+
+        val profileChangeReguest = userProfileChangeRequest{
+            displayName = username
+            photoUri = photoUrl?.toUri()
+        }
+
+        FirebaseManager.currentUser?.updateProfile(profileChangeReguest)?.addOnCompleteListener{
+
+            if (it.isSuccessful) {
+                MainActivity.fm.writeUserData(photoUrl , mainActivityVM)
+            }
+
+
+        }
+    }
+
+    if (signUpComplated == true){
+        navController.navigate("chat")
+    }
 
 
     Scaffold (
@@ -167,26 +192,8 @@ fun Authentication(navController: NavController , mainActivityVM: MainActivityVM
             .padding(8.dp)
             .imePadding()
     ) { innerPadding ->
-        if (signUp == true){
-            mainActivityVM.updateSession(false)
-            Log.d("verifyphonenumber" , "verifcation is Successful...")
-            MainActivity.fm.uploadImage(
 
-                MainActivity.fm.getDefaultProfileImage(
-                    context , "352002_account_circle_icon.png") ,
-                mainActivityVM
 
-            )
-        }
-        if (uploadComplated == true){
-            mainActivityVM.uploadComlated(false)
-            MainActivity.fm.writeUserData(photoUrl , mainActivityVM)
-        }
-
-        if (signUpC == true){
-            mainActivityVM.updateSessionC(false)
-            navController.navigate("chat")
-        }
         AnimatedVisibility(visible = true ,
             enter = slideInVertically(initialOffsetY = {-40} ) + fadeIn(initialAlpha = 0.3f) ,
             exit = slideOutVertically(targetOffsetY = {-40}) + fadeOut()
@@ -292,6 +299,8 @@ fun Authentication(navController: NavController , mainActivityVM: MainActivityVM
                         }
 
                     } else {
+
+                        // kullanici telefonu girdi doğrulama kodunu girdi ... buton aktifleşti önce profil resmini yükle ... sonra tam bilgileri yaz ...
                         // go button
                         OutlinedButton(onClick = { /*TODO: go button authentication*/
 
@@ -300,39 +309,30 @@ fun Authentication(navController: NavController , mainActivityVM: MainActivityVM
                             FirebaseManager.auth.signInWithCredential(credential)
                                 .addOnCompleteListener { task ->
                                     if (task.isSuccessful){
-
-                                        // firstly update fm.current user && update profile for display name
-
-                                        val profileChangeReguest = userProfileChangeRequest{
-                                            displayName = username
-                                        }
-
-                                        task.result.user?.updateProfile(profileChangeReguest)
+                                        Log.d("verifyphonenumber" , "verifcation Successful...")
 
                                         FirebaseManager.currentUser = task.result.user
-
-
-                                        //save uid on sharedpreference
-
-                                        Log.d("verifyphonenumber" , "uid :: " + FirebaseManager.currentUser?.uid.toString())
 
                                         val uid = FirebaseManager.currentUser?.uid.toString()
 
                                         MainActivity.PreferenceManager?.saveuid(key = "uid" , value = uid)
 
-                                         /**
-                                          * after upload profile image on storage.. everything needed in FM
-                                          * &&&
-                                          * write user information on firestore...
-                                          * */
-
                                         MainActivity.PreferenceManager?.saveSession(key = "session" , true)
-                                        mainActivityVM.updateSession(true)
+
+                                        // profil resmini yükle ...
+
+                                        MainActivity.fm.uploadImage(
+
+                                            MainActivity.fm.getDefaultProfileImage(
+                                                context , "352002_account_circle_icon.png") ,
+                                            mainActivityVM
+
+                                        )
+
 
 
 
                                     } else {
-
                                         Log.d("verifyphonenumber" , "verifcation not Successful...")
                                     }
                                 }
