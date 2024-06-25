@@ -2,8 +2,10 @@ package com.batuscode.hosbes.views
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.os.Build
 import android.util.Log
 import androidx.activity.viewModels
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.indication
@@ -86,6 +88,7 @@ import com.batuscode.hosbes.utility.MainActivityVM
 import com.batuscode.hosbes.views.ui.ChannelMenu
 import com.batuscode.hosbes.views.ui.MessageTextField
 
+@RequiresApi(Build.VERSION_CODES.R)
 @SuppressLint("UnrememberedMutableInteractionSource")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable

@@ -261,6 +261,9 @@ fun Authentication(navController: NavController , mainActivityVM: MainActivityVM
 
                         OutlinedButton(onClick = { /*TODO: send verification code button*/
 
+                            Log.d("authtrying" , phoneNumber.text)
+
+                            Log.d("authtrying" , verificationCode.text)
 
                             // run function for verification code sending
 
