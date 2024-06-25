@@ -55,8 +55,8 @@ android {
 dependencies {
 
 
-    implementation("androidx.compose.runtime:runtime-livedata:1.6.7")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.1")
+    implementation("androidx.compose.runtime:runtime-livedata:1.6.8")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.2")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -78,12 +78,12 @@ dependencies {
 
     implementation("com.google.accompanist:accompanist-permissions:0.35.1-alpha")
 
-    implementation(platform("com.google.firebase:firebase-bom:33.0.0"))
+    implementation(platform("com.google.firebase:firebase-bom:33.1.1"))
     implementation("com.google.firebase:firebase-auth")
     implementation(libs.firebase.database)
     implementation("com.google.firebase:firebase-storage-ktx:21.0.0")
     implementation(libs.firebase.firestore)
-    implementation("com.firebaseui:firebase-ui-storage:7.2.0")
+    implementation("com.firebaseui:firebase-ui-storage:8.0.2")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

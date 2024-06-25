@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.KeyboardArrowRight
@@ -166,7 +167,7 @@ fun MoreContent(scope: CoroutineScope , sheetState: SheetState , mainActivityVM:
 
 
                     Image(
-                        bitmap = imageBitmap!!,
+                        imageVector = Icons.Filled.AccountCircle,
                         contentDescription = "",
                         modifier = Modifier
                             .clip(CircleShape)
