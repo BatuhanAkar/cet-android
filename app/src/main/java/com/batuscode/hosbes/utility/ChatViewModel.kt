@@ -1,52 +1,63 @@
 package com.batuscode.hosbes.utility
 
 import android.util.Log
+import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.batuscode.hosbes.models.Message
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 class ChatViewModel: ViewModel() {
 
-    private val _chat = MutableLiveData<List<Message>>(mutableListOf())
-    val chat: LiveData<List<Message>> get()  = _chat
+    private val _chats = MutableStateFlow<List<Message>>(emptyList())
+    val chat:StateFlow<List<Message>> get() = _chats
 
 
     fun pushChat(message: Message){
 
-        val chatIterator = _chat.value ?: mutableListOf()
-        val updatedList = chatIterator + message
+        val chatIterator = _chats.value ?: emptyList()
+        val updatedChat = chatIterator + message
 
-        _chat.value = updatedList
+        _chats.value = updatedChat
 
+//        val current = _chats.value
+//
+//        val lastIndex = current + message
+//
+//        _chats.value = lastIndex
     }
 
     fun messageChanged(message: Message){
-        var position = _chat.value?.indexOf(message)
+        val position = _chats.value?.indexOf(message)
+
+        val iterator = _chats.value
 
 
-        Log.d("privateroomsflow" , "position :: $position")
+        if (position in iterator.indices){
 
-        val iterator = _chat.value?.toMutableList()
+            val newList = iterator.toMutableList()
 
 
+            newList.set(position!! , message)
 
-        if (iterator != null && position in iterator.indices){
-            Log.d("privateroomsflow" , "modified success...")
+            val changedmessage = newList.get(position)
 
-            iterator[position!!] = message
-//
-//            val newlist = iterator.toMutableList()
-//
-//            newlist.set(position!! , message)
+            Log.d("jokermessage" , changedmessage.message!!)
 
-            _chat.value = iterator!!
+
+            _chats.value = newList
+
+
 
         }
     }
 
     fun refreshChat(){
-        _chat.value = mutableListOf()
+
+        _chats.value = emptyList()
+
     }
 
 }

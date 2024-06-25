@@ -19,7 +19,7 @@ data class Message(
 
 
     override fun hashCode(): Int {
-        return Objects.hash(messageId)
+        return Objects.hash(messageId , edited)
     }
 
     override fun equals(@Nullable obj: Any?): Boolean {
@@ -28,7 +28,7 @@ data class Message(
 
         val message: Message = obj as Message
 
-        return messageId == message.messageId
+        return messageId == message.messageId && edited == message.edited
     }
     @Exclude
     fun toMap(): Map<String, Any?> {

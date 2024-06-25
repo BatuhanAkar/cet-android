@@ -57,19 +57,18 @@ import java.security.AccessController.getContext
 @Composable
 internal fun MessageTextField( mainActivityVM: MainActivityVM , modifier: Modifier = Modifier , newText: (String) -> Unit ){
 
-    var message by remember {
-        mutableStateOf(TextFieldValue())
-    }
+    val message by mainActivityVM.message.collectAsState()
 
-    val isEmpty: Boolean by derivedStateOf{ message.text.isEmpty() }
+    val isEmpty: Boolean by derivedStateOf{ message?.text?.isEmpty() ?: true  }
 
     val messageSended by mainActivityVM.messageSended.collectAsState()
     val editMessageFlag by mainActivityVM.editMessageFlag.collectAsState()
+    val editMessageMode by mainActivityVM.editMessageFieldMode.collectAsState()
 
     val messageItem by mainActivityVM.messageItem.collectAsState()
 
     if (editMessageFlag == true){
-        message = TextFieldValue(messageItem?.message!!)
+        mainActivityVM.updateMessage(TextFieldValue(messageItem?.message!!))
         mainActivityVM.updateEditMessageFlag(false)
         mainActivityVM.updateEditMessageFieldMode(true)
     }
@@ -77,12 +76,12 @@ internal fun MessageTextField( mainActivityVM: MainActivityVM , modifier: Modifi
 
     if (messageSended == true){
 
-        message = TextFieldValue("")
+        mainActivityVM.updateMessage(TextFieldValue(""))
         mainActivityVM.updateMessageSended(false)
 
     }
-    CustomTextField( mainActivityVM , modifier ,message = message, isEmpty = isEmpty) {
-        message = it
+    CustomTextField( mainActivityVM , modifier ,message = message!!, isEmpty = isEmpty) {
+        mainActivityVM.updateMessage(it)
     }
 
 }
@@ -105,6 +104,7 @@ private fun CustomTextField( mainActivityVM: MainActivityVM , modifier: Modifier
     val editMessageFieldMode by mainActivityVM.editMessageFieldMode.collectAsState()
 
     val messageItem by mainActivityVM.messageItem.collectAsState()
+
 
     var mediaSelected by remember {
         mutableStateOf(false)
@@ -365,8 +365,6 @@ private fun CustomTextField( mainActivityVM: MainActivityVM , modifier: Modifier
                     horizontalAlignment = Alignment.CenterHorizontally
                 )
                 {
-
-
                     TextButton(
                         onClick = {
                             if (!message.text.isEmpty()){
@@ -404,11 +402,11 @@ private fun CustomTextField( mainActivityVM: MainActivityVM , modifier: Modifier
                         Text(text = stringResource(id = R.string.editSend))
                     }
 
-
-
                     OutlinedIconButton(
                         onClick = {
                             mainActivityVM.updateEditMessageFlag(false)
+                            mainActivityVM.updateEditMessageFieldMode(false)
+                            mainActivityVM.updateMessage(TextFieldValue(""))
                         } ,
                         modifier = Modifier
                             .padding(0.dp) ,
@@ -416,13 +414,8 @@ private fun CustomTextField( mainActivityVM: MainActivityVM , modifier: Modifier
                     ) {
                         Icon(imageVector = Icons.Filled.Close, contentDescription = "send")
                     }
-
-
                 }
-
-
             }
-
         }
     }
 }

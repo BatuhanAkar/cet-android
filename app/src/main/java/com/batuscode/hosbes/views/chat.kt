@@ -191,7 +191,10 @@ fun Chat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
                     }
 
                 }
-                Lifecycle.Event.ON_STOP -> {}
+                Lifecycle.Event.ON_STOP -> {
+                    Log.d("mainchat" , "on pause....")
+
+                }
                 Lifecycle.Event.ON_DESTROY -> {
                     Log.d("mainchat" , "on destory....")
 
@@ -288,48 +291,23 @@ fun Chat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
 
                 Log.d("chatFlow" , "created again...")
 
-                if (channelId == "C1" ){
+                ChatFlow( mainActivityVM ,
+                    chatViewModel = chatViewModel ,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .imePadding()
+                        .constrainAs(
+                            messageRecyclerView
+                        ) {
+                            start.linkTo(parent.start)
+                            end.linkTo(parent.end)
+                            top.linkTo(parent.top)
+                            bottom.linkTo(messageTextField.top)
+                            height = Dimension.fillToConstraints
 
+                        }
+                )
 
-                    ChatFlow( mainActivityVM ,
-                        chatViewModel = chatViewModel ,
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .imePadding()
-                            .constrainAs(
-                                messageRecyclerView
-                            ) {
-                                start.linkTo(parent.start)
-                                end.linkTo(parent.end)
-                                top.linkTo(parent.top)
-                                bottom.linkTo(messageTextField.top)
-                                height = Dimension.fillToConstraints
-
-                            }
-                    )
-
-
-                } else if(channelId == "C2"){
-
-                    ChatFlow( mainActivityVM ,
-                        chatViewModel = chatViewModel ,
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .imePadding()
-                            .constrainAs(
-                                messageRecyclerView
-                            ) {
-                                start.linkTo(parent.start)
-                                end.linkTo(parent.end)
-                                top.linkTo(parent.top)
-                                bottom.linkTo(messageTextField.top)
-                                height = Dimension.fillToConstraints
-
-                            }
-                    )
-
-
-                }
             } else {
 
                 Column (

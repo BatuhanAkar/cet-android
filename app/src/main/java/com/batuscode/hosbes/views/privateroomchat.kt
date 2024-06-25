@@ -35,6 +35,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -80,6 +81,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 @Composable
 fun PrivateRoomChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
 
+    val chats = chatViewModel.chat.collectAsState()
 
     val context: Context = LocalContext.current
     val room by mainActivityVM.privateRoom.collectAsState()
@@ -219,7 +221,7 @@ fun PrivateRoomChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewMode
 
             val (messageRecyclerView , messageTextField) = createRefs()
 
-            ChatFlow( mainActivityVM ,
+            ChatFlow(mainActivityVM ,
                 chatViewModel = chatViewModel ,
                 modifier = Modifier
                     .fillMaxSize()

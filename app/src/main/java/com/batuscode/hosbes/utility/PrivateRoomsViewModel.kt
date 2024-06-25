@@ -5,11 +5,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.batuscode.hosbes.models.PrivateRoom
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 class PrivateRoomsViewModel: ViewModel() {
 
-    private val _rooms = MutableLiveData<List<PrivateRoom>>(emptyList())
-    val rooms: LiveData<List<PrivateRoom>> get()  = _rooms
+    private val _rooms = MutableStateFlow<List<PrivateRoom>>(emptyList())
+    val rooms: StateFlow<List<PrivateRoom>> get()  = _rooms
 
 
     fun pushRoom(room: PrivateRoom){

@@ -110,13 +110,6 @@ class FirebaseManager {
 
             when{
 
-                message.type.equals("media") && message.senderId.equals(currentUser?.uid) -> {
-
-
-                    chatViewModel.pushChat(message)
-
-
-                }
 
                 message.type.equals("text") -> {
                     chatViewModel.pushChat(message)
@@ -130,7 +123,7 @@ class FirebaseManager {
         override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
 
             val message:Message = snapshot.getValue<Message>()!!
-            Log.d("wireted message" , "modified chat :: " + message.message)
+            Log.d("channelDocumentChangeType" , "modified chat :: " + message.message)
 
             chatViewModel.messageChanged(message)
         }
@@ -197,35 +190,33 @@ class FirebaseManager {
 
             for (dc in snapshots!!.documentChanges){
 
+                when
+                {
 
-                if (dc.type == DocumentChange.Type.ADDED){
-
-                    Log.d("firedb" , "added... " + dc.document.get("roomName"))
-
-                    val room = dc.document.toObject(PrivateRoom::class.java)
-
-                    privateRoomsViewModel.pushRoom(room)
+                    dc.type == DocumentChange.Type.ADDED -> {
 
 
-                } else if (dc.type == DocumentChange.Type.MODIFIED){
-                    Log.d("firedb" , "MODIFIED... " + dc.document.get("roomName"))
+                        Log.d("documentType" , "added... " + dc.document.get("roomName"))
 
-                    val room = dc.document.toObject(PrivateRoom::class.java)
-                    Log.d("firedb" , "MODIFIED... activePar " + dc.document.get("activePar"))
+                        val room = dc.document.toObject(PrivateRoom::class.java)
 
-                    privateRoomsViewModel.modifiedRoom(room)
+                        privateRoomsViewModel.pushRoom(room)
 
 
+
+                    }
+
+                    dc.type == DocumentChange.Type.MODIFIED -> {
+
+                        Log.d("documentType" , "MODIFIED... " + dc.document.get("roomName"))
+
+                        val room = dc.document.toObject(PrivateRoom::class.java)
+                        Log.d("documentType" , "MODIFIED... activePar " + dc.document.get("activePar"))
+
+                        privateRoomsViewModel.modifiedRoom(room)
+                    }
                 }
-
-
-
             }
-
-
-
-
-
         }
     }
 

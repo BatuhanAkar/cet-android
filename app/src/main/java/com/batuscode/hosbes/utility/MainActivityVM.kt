@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.net.Uri
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import com.batuscode.hosbes.models.Message
 import com.batuscode.hosbes.models.PrivateRoom
@@ -298,5 +299,14 @@ class MainActivityVM:ViewModel() {
 
     fun updateEditMessageFieldMode(state: Boolean){
         _editMessageFieldMode.value = state
+    }
+
+    private val _message = MutableStateFlow<TextFieldValue?>(TextFieldValue(""))
+    val message:StateFlow<TextFieldValue?> get() = _message
+
+    fun updateMessage(value:TextFieldValue){
+
+        _message.value = value
+
     }
 }

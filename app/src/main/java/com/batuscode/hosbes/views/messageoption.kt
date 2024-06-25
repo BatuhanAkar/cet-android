@@ -74,6 +74,7 @@ fun OptionContent(mainActivityVM: MainActivityVM){
                 // mesajı düzenle bayrağını true ayarla ...
 
                 mainActivityVM.updateEditMessageFlag(true)
+                mainActivityVM.updateEditMessageFieldMode(true)
                 mainActivityVM.updateShowMessageOption(false)
             } ,
             border = null,

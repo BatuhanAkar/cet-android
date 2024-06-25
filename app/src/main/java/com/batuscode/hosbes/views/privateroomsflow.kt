@@ -25,6 +25,7 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -68,7 +69,7 @@ fun PrivateRoomsFlow( mainActivityVM: MainActivityVM , privateRoomsViewModel: Pr
 
     val context = LocalContext.current
 
-    val rooms = privateRoomsViewModel.rooms.observeAsState(listOf())
+    val rooms = privateRoomsViewModel.rooms.collectAsState(listOf())
 
     LazyColumn (
         modifier = Modifier

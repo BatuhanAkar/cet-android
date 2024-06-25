@@ -89,16 +89,15 @@ fun ChatFlow( mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel , mo
 
     val lifecycle = LocalLifecycleOwner.current
     val uid = FirebaseManager.currentUser?.uid.toString()
-    val chats = chatViewModel.chat.observeAsState(mutableListOf())
+    val chats = chatViewModel.chat.collectAsState(listOf())
 
-
-    Log.d("chatFlow" , "chats value :: " + chats.value.size)
+    Log.d("chatFlow" , "chats value :: " + (chats.value?.size ?: 0))
 
     LazyColumn(
         modifier = modifier
     ) {
 
-        items(chats.value){
+        items(chats.value!!){
 /*
 
             if (it.senderId.equals(uid)){
