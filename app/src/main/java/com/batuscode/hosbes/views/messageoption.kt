@@ -19,6 +19,8 @@ import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
@@ -28,12 +30,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.batuscode.hosbes.R
 import com.batuscode.hosbes.ui.theme.HoşbeşTheme
+import com.batuscode.hosbes.utility.ChatViewModel
+import com.batuscode.hosbes.utility.FirebaseManager
 import com.batuscode.hosbes.utility.MainActivityVM
 import kotlinx.coroutines.CoroutineScope
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MessageOption(mainActivityVM: MainActivityVM){
+fun MessageOption(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
     val context = LocalContext.current
 
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
@@ -53,7 +57,7 @@ fun MessageOption(mainActivityVM: MainActivityVM){
 
         ) {
 
-        OptionContent(mainActivityVM = mainActivityVM)
+        OptionContent(mainActivityVM = mainActivityVM , chatViewModel = chatViewModel)
 
     }
 
@@ -62,35 +66,44 @@ fun MessageOption(mainActivityVM: MainActivityVM){
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun OptionContent(mainActivityVM: MainActivityVM){
+fun OptionContent(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
+
+    val messageItem by chatViewModel.messageItem.collectAsState()
 
     Column {
 
-        OutlinedButton(
-            onClick = {
+        if (messageItem?.senderId == FirebaseManager.currentUser?.uid){
 
-                /*TODO: mesajı düzenle butonu */
 
-                // mesajı düzenle bayrağını true ayarla ...
+            OutlinedButton(
+                onClick = {
 
-                mainActivityVM.updateEditMessageFlag(true)
-                mainActivityVM.updateEditMessageFieldMode(true)
-                mainActivityVM.updateShowMessageOption(false)
-            } ,
-            border = null,
-            modifier = Modifier
-                .fillMaxWidth()
-        ) {
-            Icon(
-                imageVector = Icons.Filled.Edit ,
-                contentDescription = "" ,
+                    /*TODO: mesajı düzenle butonu */
+
+                    // mesajı düzenle bayrağını true ayarla ...
+
+                    mainActivityVM.updateEditMessageFlag(true)
+                    mainActivityVM.updateEditMessageFieldMode(true)
+                    mainActivityVM.updateShowMessageOption(false)
+                } ,
+                border = null,
                 modifier = Modifier
-                    .size(16.dp)
-            )
+                    .fillMaxWidth()
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Edit ,
+                    contentDescription = "" ,
+                    modifier = Modifier
+                        .size(16.dp)
+                )
 
 
-            Text(text = stringResource(id = R.string.edit))
+                Text(text = stringResource(id = R.string.edit))
+            }
+
         }
+
+
 
     }
 

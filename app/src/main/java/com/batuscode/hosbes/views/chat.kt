@@ -278,7 +278,7 @@ fun Chat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
 
 
             if (showMessageOption == true){
-                MessageOption(mainActivityVM = mainActivityVM)
+                MessageOption(mainActivityVM = mainActivityVM , chatViewModel = chatViewModel)
             }
 
             if (showMore == true){

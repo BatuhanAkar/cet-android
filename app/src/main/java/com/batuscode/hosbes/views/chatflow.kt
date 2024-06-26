@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -36,6 +37,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -88,16 +90,21 @@ import kotlin.random.Random
 @Composable
 fun ChatFlow( mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel , modifier: Modifier = Modifier){
 
+    val state = rememberLazyListState()
     val lifecycle = LocalLifecycleOwner.current
     val uid = FirebaseManager.currentUser?.uid.toString()
     val chats = chatViewModel.chat.collectAsState()
 
+    LaunchedEffect(chats.value.size) {
+        state.animateScrollToItem(chats.value.size - 1)
+    }
 
     LazyColumn(
+        state = state,
         modifier = modifier
     ) {
 
-        items(chats.value!!){
+        items(chats.value!! , key = {it.messageId!!}){ message ->
 /*
 
             if (it.senderId.equals(uid)){
@@ -108,7 +115,7 @@ fun ChatFlow( mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel , mo
             }
 */
 
-            MessageItemView(message = it , type =  it.type!! , mainActivityVM = mainActivityVM , chatViewModel)
+            MessageItemView(message = message , type =  message.type!! , mainActivityVM = mainActivityVM , chatViewModel)
 
         }
 
@@ -250,6 +257,7 @@ fun MessageItemView(message:Message , type:String , mainActivityVM: MainActivity
 
 
                 }
+
 
 
                 OutlinedIconButton(
