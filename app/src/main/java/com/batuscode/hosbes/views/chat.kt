@@ -96,7 +96,7 @@ fun Chat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
 
 
     val context:Context = LocalContext.current
-
+    lateinit var delete:String
     val showMore by mainActivityVM.showMore.collectAsState()
 
     var message by remember {
