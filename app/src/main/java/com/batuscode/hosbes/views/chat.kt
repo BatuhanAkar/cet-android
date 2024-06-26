@@ -337,7 +337,7 @@ fun Chat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
             }
 
 
-            MessageTextField ( mainActivityVM = mainActivityVM ,
+            MessageTextField ( chatViewModel , mainActivityVM = mainActivityVM ,
                 modifier = Modifier
                     .constrainAs(
                         messageTextField

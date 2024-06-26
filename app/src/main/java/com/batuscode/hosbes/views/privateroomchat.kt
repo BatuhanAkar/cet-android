@@ -81,7 +81,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 @Composable
 fun PrivateRoomChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
 
-    val chats = chatViewModel.chat.collectAsState()
 
     val context: Context = LocalContext.current
     val room by mainActivityVM.privateRoom.collectAsState()
@@ -239,7 +238,7 @@ fun PrivateRoomChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewMode
             )
 
 
-            MessageTextField ( mainActivityVM = mainActivityVM ,
+            MessageTextField ( chatViewModel , mainActivityVM = mainActivityVM ,
                 modifier = Modifier
                     .constrainAs(
                         messageTextField

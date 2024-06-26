@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -89,9 +90,8 @@ fun ChatFlow( mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel , mo
 
     val lifecycle = LocalLifecycleOwner.current
     val uid = FirebaseManager.currentUser?.uid.toString()
-    val chats = chatViewModel.chat.collectAsState(listOf())
+    val chats = chatViewModel.chat.collectAsState()
 
-    Log.d("chatFlow" , "chats value :: " + (chats.value?.size ?: 0))
 
     LazyColumn(
         modifier = modifier
@@ -108,7 +108,7 @@ fun ChatFlow( mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel , mo
             }
 */
 
-            MessageItemView(message = it , type =  it.type!! , mainActivityVM = mainActivityVM)
+            MessageItemView(message = it , type =  it.type!! , mainActivityVM = mainActivityVM , chatViewModel)
 
         }
 
@@ -140,7 +140,7 @@ fun getColor():Color{
 }
 
 @Composable
-fun MessageItemView(message:Message , type:String , mainActivityVM: MainActivityVM){
+fun MessageItemView(message:Message , type:String , mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
 
 
     val context: Context = LocalContext.current
@@ -254,7 +254,7 @@ fun MessageItemView(message:Message , type:String , mainActivityVM: MainActivity
 
                 OutlinedIconButton(
                     onClick = {
-                        mainActivityVM.updateMessageItem(message)
+                        chatViewModel.updateMessageItem(message)
                         mainActivityVM.updateShowMessageOption(true)
                     } ,
                     border = null ,
@@ -529,8 +529,9 @@ fun MessageItemViewPreview(){
     val message = Message()
 
     val mainActivityVM:MainActivityVM = viewModel()
+    val chatViewModel:ChatViewModel = viewModel()
     HoşbeşTheme {
-        MessageItemView(message = message, type = "text" , mainActivityVM = mainActivityVM)
+        MessageItemView(message = message, type = "text" , mainActivityVM = mainActivityVM , chatViewModel)
     }
 }
 

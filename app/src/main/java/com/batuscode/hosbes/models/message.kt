@@ -7,14 +7,14 @@ import java.util.Objects
 
 @IgnoreExtraProperties
 data class Message(
-    val senderId:String? = null ,
-    val senderImage:String? = null ,
-    val senderName:String? = null ,
-    val message:String? = null ,
-    val messageId:String? = null ,
-    val type:String? = null ,
-    val time:Long? = null ,
-    val edited:Boolean? = null
+    val senderId:String? = null,
+    val senderImage:String? = null,
+    val senderName:String? = null,
+    var message:String? = null,
+    val messageId:String? = null,
+    val type:String? = null,
+    var time:Long? = null,
+    var edited:Boolean? = null
     ){
 
 

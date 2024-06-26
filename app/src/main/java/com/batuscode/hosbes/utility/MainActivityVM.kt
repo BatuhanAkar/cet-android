@@ -287,12 +287,6 @@ class MainActivityVM:ViewModel() {
         _editMessageFlag.value = state
     }
 
-    private val _messageItem = MutableStateFlow<Message?>(null)
-    val messageItem: StateFlow<Message?> get() = _messageItem
-
-    fun updateMessageItem(message: Message){
-        _messageItem.value = message
-    }
 
     private val _editMessageFieldMode = MutableStateFlow<Boolean?>(false)
     val editMessageFieldMode:StateFlow<Boolean?> get() = _editMessageFieldMode

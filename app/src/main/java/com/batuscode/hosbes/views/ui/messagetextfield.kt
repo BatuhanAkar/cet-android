@@ -44,6 +44,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.batuscode.hosbes.MainActivity
 import com.batuscode.hosbes.R
 import com.batuscode.hosbes.ui.theme.HoşbeşTheme
+import com.batuscode.hosbes.utility.ChatViewModel
 import com.batuscode.hosbes.utility.FirebaseManager
 import com.batuscode.hosbes.utility.MainActivityVM
 import com.bumptech.glide.Glide
@@ -55,7 +56,7 @@ import java.security.AccessController.getContext
 @SuppressLint("UnrememberedMutableState")
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-internal fun MessageTextField( mainActivityVM: MainActivityVM , modifier: Modifier = Modifier , newText: (String) -> Unit ){
+internal fun MessageTextField( chatViewModel: ChatViewModel , mainActivityVM: MainActivityVM , modifier: Modifier = Modifier , newText: (String) -> Unit ){
 
     val message by mainActivityVM.message.collectAsState()
 
@@ -65,7 +66,7 @@ internal fun MessageTextField( mainActivityVM: MainActivityVM , modifier: Modifi
     val editMessageFlag by mainActivityVM.editMessageFlag.collectAsState()
     val editMessageMode by mainActivityVM.editMessageFieldMode.collectAsState()
 
-    val messageItem by mainActivityVM.messageItem.collectAsState()
+    val messageItem by chatViewModel.messageItem.collectAsState()
 
     if (editMessageFlag == true){
         mainActivityVM.updateMessage(TextFieldValue(messageItem?.message!!))
@@ -80,7 +81,7 @@ internal fun MessageTextField( mainActivityVM: MainActivityVM , modifier: Modifi
         mainActivityVM.updateMessageSended(false)
 
     }
-    CustomTextField( mainActivityVM , modifier ,message = message!!, isEmpty = isEmpty) {
+    CustomTextField( chatViewModel , mainActivityVM , modifier ,message = message!!, isEmpty = isEmpty) {
         mainActivityVM.updateMessage(it)
     }
 
@@ -88,7 +89,7 @@ internal fun MessageTextField( mainActivityVM: MainActivityVM , modifier: Modifi
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-private fun CustomTextField( mainActivityVM: MainActivityVM , modifier: Modifier = Modifier , message: TextFieldValue , isEmpty: Boolean , onValueChange: (TextFieldValue) -> Unit){
+private fun CustomTextField( chatViewModel: ChatViewModel , mainActivityVM: MainActivityVM , modifier: Modifier = Modifier , message: TextFieldValue , isEmpty: Boolean , onValueChange: (TextFieldValue) -> Unit){
     val context = LocalContext.current
 
     val channelId by mainActivityVM.channelId.collectAsState()
@@ -103,7 +104,7 @@ private fun CustomTextField( mainActivityVM: MainActivityVM , modifier: Modifier
 
     val editMessageFieldMode by mainActivityVM.editMessageFieldMode.collectAsState()
 
-    val messageItem by mainActivityVM.messageItem.collectAsState()
+    val messageItem by chatViewModel.messageItem.collectAsState()
 
 
     var mediaSelected by remember {
@@ -478,7 +479,8 @@ private fun showEmoji(context:Context){
 fun MessageTextFieldPreview(){
     HoşbeşTheme {
         val mainActivityVM:MainActivityVM = viewModel()
-        MessageTextField(mainActivityVM) {
+        val chatViewModel:ChatViewModel = viewModel()
+        MessageTextField( chatViewModel , mainActivityVM) {
 
         }
     }
