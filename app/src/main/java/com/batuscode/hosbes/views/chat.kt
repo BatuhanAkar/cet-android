@@ -162,13 +162,13 @@ fun Chat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
                             mainActivityVM.connectChannel("C1")
                             mainActivityVM.updateSelectedChannel("Hoşbeş")
                             chatViewModel.refreshChat()
-                            MainActivity.fm.detachWhisperChatListener(wid!!)
+                            MainActivity.fm.removeChatEventListener(FirebaseManager.P1)
                             MainActivity.fm.pullChat(mainActivityVM = mainActivityVM , FirebaseManager.C1)
                         } else if (selectedChannel == "Mavi Boncuk"){
                             mainActivityVM.connectChannel("C2")
                             chatViewModel.refreshChat()
                             mainActivityVM.updateSelectedChannel("Mavi Boncuk")
-                            MainActivity.fm.detachWhisperChatListener(wid!!)
+                            MainActivity.fm.removeChatEventListener(FirebaseManager.P1)
                             MainActivity.fm.pullChat(mainActivityVM = mainActivityVM , FirebaseManager.C2)
                         }
 
@@ -182,13 +182,14 @@ fun Chat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
                             mainActivityVM.connectChannel("C1")
                             mainActivityVM.updateSelectedChannel("Hoşbeş")
                             chatViewModel.refreshChat()
-                            MainActivity.fm.removeChatEventListener(FirebaseManager.P1)
+                            MainActivity.fm.detachWhisperChatListener(wid!!)
+
                             MainActivity.fm.pullChat(mainActivityVM = mainActivityVM , FirebaseManager.C1)
                         } else if (selectedChannel == "Mavi Boncuk"){
                             mainActivityVM.connectChannel("C2")
                             chatViewModel.refreshChat()
                             mainActivityVM.updateSelectedChannel("Mavi Boncuk")
-                            MainActivity.fm.removeChatEventListener(FirebaseManager.P1)
+                            MainActivity.fm.detachWhisperChatListener(wid!!)
                             MainActivity.fm.pullChat(mainActivityVM = mainActivityVM , FirebaseManager.C2)
                         }
 

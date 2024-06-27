@@ -42,6 +42,7 @@ fun _WhisperChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
     val wid by mainActivityVM.whisperId.collectAsState() // fısıltı oda id si ...
 
     val user by mainActivityVM.user.collectAsState()
+    val showMessageOption by mainActivityVM.showMessageOption.collectAsState()
 
 
     if (whisperfirst == true){
@@ -131,7 +132,9 @@ fun _WhisperChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
             .padding(innerPadding)
         ) {
             val (messageRecyclerView , messageTextField) = createRefs()
-
+            if (showMessageOption == true){
+                MessageOption(mainActivityVM = mainActivityVM , chatViewModel = chatViewModel)
+            }
             ChatFlow( mainActivityVM ,
                 chatViewModel = chatViewModel ,
                 modifier = Modifier

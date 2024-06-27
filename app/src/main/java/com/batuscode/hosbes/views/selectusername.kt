@@ -83,13 +83,14 @@ fun SelectUsername(navController: NavController , mainActivityVM: MainActivityVM
         innerPadding ->
 
         AnimatedVisibility(
-            visible = true ,
+            visible = isVisible ,
             enter = slideInVertically(initialOffsetY = {-40} ) + fadeIn(initialAlpha = 0.3f) ,
             exit = slideOutVertically(targetOffsetY = {-40}) + fadeOut()
             ) {
 
             Column ( modifier = Modifier
                 .padding(innerPadding)
+                .alpha(visibilityAlpha)
                 .fillMaxSize(), verticalArrangement = Arrangement.Center , horizontalAlignment = Alignment.CenterHorizontally) {
 
                 Text(text = stringResource(id = R.string.app_name) ,
