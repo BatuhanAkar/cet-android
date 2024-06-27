@@ -290,52 +290,8 @@ fun MessageItemView(message:Message , type:String , mainActivityVM: MainActivity
                     tonalElevation = 1.dp
                 )
                 {
-
-
                     when
                     {
-                        /*
-
-                                            type.equals("media")->{
-
-
-                                                GlideApp.with(context)
-                                                    .asBitmap()
-                                                    .load(message.message)
-                                                    .into(object: CustomTarget<Bitmap>(){
-                                                        override fun onResourceReady(
-                                                            resource: Bitmap,
-                                                            transition: Transition<in Bitmap>?
-                                                        ) {
-                                                            image = resource.asImageBitmap()
-                                                        }
-
-                                                        override fun onLoadCleared(placeholder: Drawable?) {
-
-                                                        }
-
-
-                                                    })
-
-
-                                                if (image != null){
-
-
-                                                    Image(
-                                                        bitmap = image!! ,
-                                                        contentDescription = "" ,
-                                                        contentScale = ContentScale.FillBounds,
-                                                        modifier = Modifier
-                                                            .padding(8.dp)
-                                                            .width(180.dp)
-                                                            .height(220.dp)
-                                                    )
-
-                                                }
-
-                                            }
-                        */
-
                         type.equals("text")->{
                             Text(
                                 text = message.message!! ,
@@ -346,26 +302,12 @@ fun MessageItemView(message:Message , type:String , mainActivityVM: MainActivity
                                 modifier = Modifier
 
                             )
-
-
                         }
-
                     }
-
-
-
-
                 }
-
-
             }
-
-
         }
-
     }
-
-
 }
 
 

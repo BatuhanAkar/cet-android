@@ -95,16 +95,21 @@ fun WhisperView(whisper: Whisper , mainActivityVM: MainActivityVM){
 
                 })
 
-            Image(
-                bitmap = image!!,
-                contentDescription = "" ,
-                modifier = Modifier
-                    .padding(top = 5.dp, bottom = 5.dp)
-                    .clip(RoundedCornerShape(10.dp))
-                    .width(60.dp)
-                    .height(60.dp),
-                contentScale = ContentScale.FillBounds
-            )
+            if (image != null){
+
+
+                Image(
+                    bitmap = image!!,
+                    contentDescription = "" ,
+                    modifier = Modifier
+                        .padding(top = 5.dp, bottom = 5.dp)
+                        .clip(RoundedCornerShape(10.dp))
+                        .width(60.dp)
+                        .height(60.dp),
+                    contentScale = ContentScale.FillBounds
+                )
+
+            }
 
             Column(
                 modifier = Modifier

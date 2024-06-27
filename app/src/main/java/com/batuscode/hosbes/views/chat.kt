@@ -182,14 +182,14 @@ fun Chat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
                             mainActivityVM.connectChannel("C1")
                             mainActivityVM.updateSelectedChannel("Hoşbeş")
                             chatViewModel.refreshChat()
-                            MainActivity.fm.detachWhisperChatListener(wid!!)
+                           // MainActivity.fm.detachWhisperChatListener(wid!!)
 
                             MainActivity.fm.pullChat(mainActivityVM = mainActivityVM , FirebaseManager.C1)
                         } else if (selectedChannel == "Mavi Boncuk"){
                             mainActivityVM.connectChannel("C2")
                             chatViewModel.refreshChat()
                             mainActivityVM.updateSelectedChannel("Mavi Boncuk")
-                            MainActivity.fm.detachWhisperChatListener(wid!!)
+                          //  MainActivity.fm.detachWhisperChatListener(wid!!)
                             MainActivity.fm.pullChat(mainActivityVM = mainActivityVM , FirebaseManager.C2)
                         }
 

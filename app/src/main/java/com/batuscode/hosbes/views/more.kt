@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Edit
@@ -48,6 +49,7 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -141,14 +143,36 @@ fun MoreContent(scope: CoroutineScope , sheetState: SheetState , mainActivityVM:
 
 
             ElevatedCard(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
             ) {
 
 
-                ConstraintLayout (modifier = Modifier.fillMaxWidth()) {
+                ConstraintLayout(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp)
+                )
+                {
 
                     val (editButton, profileImage, username) = createRefs()
 
+                    Image(
+                        bitmap = imageBitmap!!,
+                        contentDescription = "",
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(10.dp))
+                            .width(80.dp)
+                            .height(80.dp)
+                            .constrainAs(profileImage) {
+                                start.linkTo(parent.start)
+                                end.linkTo(username.start)
+                                top.linkTo(parent.top)
+                                bottom.linkTo(parent.bottom)
+
+                            },
+                        contentScale = ContentScale.FillBounds
+                    )
 
                     OutlinedIconButton(onClick = {
                                                  mainActivityVM.updateShowEditProfileCard(true)
@@ -157,7 +181,8 @@ fun MoreContent(scope: CoroutineScope , sheetState: SheetState , mainActivityVM:
                         ,
                         modifier = Modifier
                             .constrainAs(editButton) {
-                                top.linkTo(parent.top)
+                                top.linkTo(profileImage.top)
+                                bottom.linkTo(profileImage.bottom)
                                 end.linkTo(parent.end)
                             }
                             .padding(end = 8.5.dp)
@@ -166,23 +191,6 @@ fun MoreContent(scope: CoroutineScope , sheetState: SheetState , mainActivityVM:
                     }
 
 
-                    Image(
-                        bitmap = imageBitmap!!,
-                        contentDescription = "",
-                        modifier = Modifier
-                            .clip(CircleShape)
-                            .padding(end = 8.5.dp)
-                            .width(80.dp)
-                            .height(80.dp)
-                            .constrainAs(profileImage) {
-                                start.linkTo(parent.start)
-                                end.linkTo(username.start)
-                                top.linkTo(parent.top)
-                                bottom.linkTo(parent.bottom)
-                                height = Dimension.fillToConstraints
-                            },
-                        contentScale = ContentScale.Fit
-                    )
 
 
 
@@ -193,6 +201,7 @@ fun MoreContent(scope: CoroutineScope , sheetState: SheetState , mainActivityVM:
                         ),
                         textAlign = TextAlign.Start,
                         modifier = Modifier
+                            .padding(8.dp)
                             .constrainAs(username) {
                                 start.linkTo(profileImage.end)
                                 end.linkTo(editButton.start)
@@ -316,13 +325,18 @@ fun MoreContent(scope: CoroutineScope , sheetState: SheetState , mainActivityVM:
 }
 
 
+@RequiresApi(Build.VERSION_CODES.R)
+@OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true , showSystemUi = true)
 @Composable
 fun MoreContentPreview(){
+    val context = LocalContext.current
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val scope = rememberCoroutineScope()
     HoşbeşTheme {
 
-/*
-        MoreContent()
-*/
+
+        MoreContent(scope , sheetState , MainActivityVM() , context)
+
     }
 }
