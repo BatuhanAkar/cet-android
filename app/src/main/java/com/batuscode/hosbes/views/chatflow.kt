@@ -264,7 +264,7 @@ fun MessageItemView(message:Message , type:String , mainActivityVM: MainActivity
                 OutlinedIconButton(
                     onClick = {
                         mainActivityVM.updateWhisperUserUid(message.senderId!!)
-                        chatViewModel.updateMessageItem(message)
+                        mainActivityVM.updateMessageItem(message)
                         mainActivityVM.updateShowMessageOption(true)
                     } ,
                     border = null ,

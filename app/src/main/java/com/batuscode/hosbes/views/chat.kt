@@ -120,6 +120,8 @@ fun Chat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
     val selectedChannel by mainActivityVM.selectedChannel.collectAsState()
     val showMessageOption by mainActivityVM.showMessageOption.collectAsState()
 
+    val wid by mainActivityVM.whisperId.collectAsState()
+
 
     DisposableEffect(lifecycle) {
         val observe = LifecycleEventObserver { _, event ->
@@ -156,6 +158,26 @@ fun Chat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
 
 
                         Log.d("mainchat" , "channelId == P1....")
+                        if (selectedChannel == "Hoşbeş"){
+                            mainActivityVM.connectChannel("C1")
+                            mainActivityVM.updateSelectedChannel("Hoşbeş")
+                            chatViewModel.refreshChat()
+                            MainActivity.fm.detachWhisperChatListener(wid!!)
+                            MainActivity.fm.pullChat(mainActivityVM = mainActivityVM , FirebaseManager.C1)
+                        } else if (selectedChannel == "Mavi Boncuk"){
+                            mainActivityVM.connectChannel("C2")
+                            chatViewModel.refreshChat()
+                            mainActivityVM.updateSelectedChannel("Mavi Boncuk")
+                            MainActivity.fm.detachWhisperChatListener(wid!!)
+                            MainActivity.fm.pullChat(mainActivityVM = mainActivityVM , FirebaseManager.C2)
+                        }
+
+                    } else if (channelId == "W"){
+
+
+                        // sohbet dinleyicisini silmek için wid gerekir .... çekk ...
+
+                        Log.d("mainchat" , "channelId == W....")
                         if (selectedChannel == "Hoşbeş"){
                             mainActivityVM.connectChannel("C1")
                             mainActivityVM.updateSelectedChannel("Hoşbeş")

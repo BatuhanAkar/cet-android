@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat.requestPermissions
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.batuscode.hosbes.MainActivity
 import com.batuscode.hosbes.R
@@ -66,7 +67,7 @@ internal fun MessageTextField( chatViewModel: ChatViewModel , mainActivityVM: Ma
     val editMessageFlag by mainActivityVM.editMessageFlag.collectAsState()
     val editMessageMode by mainActivityVM.editMessageFieldMode.collectAsState()
 
-    val messageItem by chatViewModel.messageItem.collectAsState()
+    val messageItem by mainActivityVM.messageItem.collectAsState()
 
     if (editMessageFlag == true){
         mainActivityVM.updateMessage(TextFieldValue(messageItem?.message!!))
@@ -106,9 +107,9 @@ private fun CustomTextField( chatViewModel: ChatViewModel , mainActivityVM: Main
 
     val editMessageFieldMode by mainActivityVM.editMessageFieldMode.collectAsState()
 
-    val messageItem by chatViewModel.messageItem.collectAsState()
+    val messageItem by mainActivityVM.messageItem.collectAsState()
 
-    val firstWhisper by mainActivityVM.firstWhisper.collectAsState()
+    val _whisper by mainActivityVM.whisper.collectAsState()
 
     val whisperItem by mainActivityVM.whisperItem.collectAsState()
 
@@ -353,15 +354,16 @@ private fun CustomTextField( chatViewModel: ChatViewModel , mainActivityVM: Main
                             } else if (channelId == "W"){
                                 mainActivityVM.updateMessageSended(true)
 
-                                when {
-                                    firstWhisper == true -> {
-                                        mainActivityVM.updateFirstWhisper(false)
-                                        MainActivity.fm.writeWhisperMessage(user!! , "text" , message.text)
-                                    }
-                                    firstWhisper == false -> {
-                                        MainActivity.fm.writeWMessage(whisperItem!! , "text" , message.text)
-                                    }
+                                if (_whisper == true){
+                                    Log.d("whisperchat" , "message sended ...")
+                                    mainActivityVM.update_whisper(false)
+                                    // ilk defa mesaj yollandı bayrağını true ayarla .... mesajı yolla ...
+                                    MainActivity.fm.writeWhisperMessage(user = user!! , "text" , message.text , mainActivityVM)
+                                } else {
+                                    MainActivity.fm.writeWMessage( whisperItem?.wuid!! , whisperItem?.wid!! , "text" , message.text)
                                 }
+
+
                             }
 
                         } else {

@@ -659,20 +659,20 @@ class FirebaseManager {
         W.child(uid).removeEventListener(whisperEventListener)
     }
 
-    fun pullWhisperChat(whisperItem:Whisper){
+    fun pullWhisperChat(wid:String){
         W_C
-            .child(whisperItem.wid!!)
+            .child(wid)
             .addChildEventListener(chatEventListener)
     }
 
-    fun detachWhisperChatListener(whisperItem: Whisper){
+    fun detachWhisperChatListener(wid: String){
         W_C
-            .child(whisperItem.wid!!)
+            .child(wid)
             .removeEventListener(chatEventListener)
     }
 
     /*TODO: write whisper message*/
-    fun writeWhisperMessage(user: User , type: String , value: String){
+    fun writeWhisperMessage(user: User , type: String , value: String , mainActivityVM: MainActivityVM){
         // hem kendine hem karşıdakine fısıltı ayarla ...
         val time = System.currentTimeMillis()
 
@@ -683,6 +683,8 @@ class FirebaseManager {
         val photoUrl = currentUser?.photoUrl.toString()
 
         val wid = W.push().key.toString() // fısıltı oda id si ...
+
+        mainActivityVM.updateWhisperId(wid)
 
         // karşıyı ayarla ...
         val wuid = user.uid
@@ -702,8 +704,8 @@ class FirebaseManager {
 
                 val childUpdate = hashMapOf<String,Any>(
 
-                    uid to remote.toMap() ,
-                    user.uid to owner.toMap()
+                    uid + "/" + user.uid + "/" to remote.toMap() ,
+                    user.uid + "/" + uid + "/" to owner.toMap()
                 )
 
                 W.updateChildren(childUpdate)
@@ -718,12 +720,13 @@ class FirebaseManager {
                                 .addOnCompleteListener{
                                     if (it.isSuccessful){
 
+                                        mainActivityVM.updatewhisperfirst(true)
                                         val childUpdate = hashMapOf<String,Any>(
 
                                             uid + "/" + user.uid + "/" + "lm" to value ,
                                             uid + "/" + user.uid + "/" + "lt" to time ,
                                             user.uid + "/" + uid + "/" + "lm" to value ,
-                                            user.uid + "/" + uid + "/" + "lt" to value
+                                            user.uid + "/" + uid + "/" + "lt" to time
                                         )
                                         W.updateChildren(childUpdate)
                                     }
@@ -737,7 +740,7 @@ class FirebaseManager {
 
     }
 
-    fun writeWMessage(whisperItem: Whisper , type: String , value: String){
+    fun writeWMessage( wuid:String , wid:String , type: String , value: String){
 
         var messageId = W_C.push().key.toString()
 
@@ -751,9 +754,22 @@ class FirebaseManager {
         val message = Message(senderId , senderImage , senderName , value , messageId , type , tStamp)
 
         W_C
-            .child(whisperItem.wid!!)
+            .child(wid)
             .child(messageId)
             .setValue(message)
+            .addOnCompleteListener{
+                if (it.isSuccessful){
+
+                    val childUpdate = hashMapOf<String,Any>(
+
+                        senderId + "/" + wuid + "/" + "lm" to value!! ,
+                        senderId + "/" + wuid + "/" + "lt" to tStamp ,
+                        wuid + "/" + senderId + "/" + "lm" to value ,
+                        wuid + "/" + senderId + "/" + "lt" to tStamp
+                    )
+                    W.updateChildren(childUpdate)
+                }
+            }
 
 
 

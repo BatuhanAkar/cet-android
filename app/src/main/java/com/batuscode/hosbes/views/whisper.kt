@@ -94,7 +94,7 @@ fun Whisper(mainActivityVM: MainActivityVM , whisperViewModel: WhisperViewModel)
             TopAppBar(
                 title = {
 
-                    Text(text = "user?.displayName ?: fısılda")
+                    Text(text = stringResource(id = R.string.hosbeslerim))
 
                 } ,
                 navigationIcon = {

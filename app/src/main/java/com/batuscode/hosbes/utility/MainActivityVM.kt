@@ -327,10 +327,33 @@ class MainActivityVM:ViewModel() {
         _whisperItem.value = whisper
     }
 
-    private val _firstWhisper = MutableStateFlow<Boolean?>(false)
-    val firstWhisper: StateFlow<Boolean?> get() = _firstWhisper
+    private val _whisper = MutableStateFlow<Boolean?>(false)
+    val whisper: StateFlow<Boolean?> get() = _whisper
 
-    fun updateFirstWhisper(state:Boolean){
-        _firstWhisper.value = state
+    fun update_whisper(state:Boolean){
+        _whisper.value = state
     }
+
+
+    private val _whisperfirst = MutableStateFlow<Boolean?>(false)
+    val whisperfirst: StateFlow<Boolean?> get() = _whisperfirst
+
+    fun updatewhisperfirst(state:Boolean){
+        _whisperfirst.value = state
+    }
+
+    private val _messageItem = MutableStateFlow<Message?>(null)
+    val messageItem: StateFlow<Message?> get() = _messageItem
+
+    fun updateMessageItem(message: Message){
+        _messageItem.value = message
+    }
+
+    private val _whisperId = MutableStateFlow<String?>(null)
+    val whisperId:StateFlow<String?> get() = _whisperId
+
+    fun updateWhisperId(id:String){
+        _whisperId.value = id
+    }
+
 }

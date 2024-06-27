@@ -18,12 +18,6 @@ class ChatViewModel: ViewModel() {
     private val _chats = MutableStateFlow<List<Message>>(emptyList())
     val chat:StateFlow<List<Message>> get() = _chats
 
-    private val _messageItem = MutableStateFlow<Message?>(null)
-    val messageItem: StateFlow<Message?> get() = _messageItem
-
-    fun updateMessageItem(message: Message){
-        _messageItem.value = message
-    }
 
     fun pushChat(message: Message){
 

@@ -70,7 +70,7 @@ fun MessageOption(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel)
 @Composable
 fun OptionContent( sheetState: SheetState , scope: CoroutineScope , mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
 
-    val messageItem by chatViewModel.messageItem.collectAsState()
+    val messageItem by mainActivityVM.messageItem.collectAsState()
     val channelId by mainActivityVM.channelId.collectAsState()
     val room by mainActivityVM.privateRoom.collectAsState()
     val whisperUserUid by mainActivityVM.whisperUserUid.collectAsState()
@@ -161,9 +161,8 @@ fun OptionContent( sheetState: SheetState , scope: CoroutineScope , mainActivity
                     scope.launch {
                         sheetState.hide()
                     }
-                    mainActivityVM.updateFirstWhisper(true) // ilk fısıltı etkin
                     MainActivity.fm.handleWhisper(whisperUserUid!! , mainActivityVM = mainActivityVM) // ilk fısıltı olduğu için kullanıcıyı getir ...
-                    MainActivity.navigate?.navigate("whisperchat") // ilk fısıltı olduğu için sohbete it ...
+                    MainActivity.navigate?.navigate("_whisperchat") // ilk fısıltı olduğu için sohbete it ...
                 } ,
                 border = null,
                 modifier = Modifier

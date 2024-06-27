@@ -18,6 +18,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -25,17 +26,29 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import com.batuscode.hosbes.MainActivity
+import com.batuscode.hosbes.R
 import com.batuscode.hosbes.ui.theme.HoşbeşTheme
 import com.batuscode.hosbes.utility.ChatViewModel
 import com.batuscode.hosbes.utility.MainActivityVM
+import com.batuscode.hosbes.utility.WhisperViewModel
 import com.batuscode.hosbes.views.ui.MessageTextField
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun WhisperChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
-    val lifecycleOwner = LocalLifecycleOwner.current
+fun _WhisperChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
+
+    val lifecycleOwner = LocalLifecycleOwner.current // yaşam döngüsü kontrolcüsü ...
+    val whisperfirst by mainActivityVM.whisperfirst.collectAsState()
+    val wid by mainActivityVM.whisperId.collectAsState() // fısıltı oda id si ...
+
     val user by mainActivityVM.user.collectAsState()
-    val whisperItem by mainActivityVM.whisperItem.collectAsState()
+
+
+    if (whisperfirst == true){
+        mainActivityVM.updatewhisperfirst(false)
+        MainActivity.fm.detachWhisperChatListener(wid!!)
+        MainActivity.fm.pullWhisperChat(wid!!)
+    }
 
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver{_,event ->
@@ -43,14 +56,10 @@ fun WhisperChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
             when(event){
                 Lifecycle.Event.ON_CREATE -> {
                     Log.d("WhisperChat" , "ON_CREATE")
+                    mainActivityVM.update_whisper(true)
 
                     chatViewModel.refreshChat() // sohbeti sıfırla ...
                     mainActivityVM.connectChannel("W") // kanal id güncelle ...
-
-                    // burda ilk fısıltı mı bak ...
-
-                    MainActivity.fm.detachWhisperChatListener(whisperItem?.wid!!)
-                    MainActivity.fm.pullWhisperChat(whisperItem?.wid!!)
 
 
                 }
@@ -68,8 +77,8 @@ fun WhisperChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
                 }
                 Lifecycle.Event.ON_STOP -> {
                     Log.d("WhisperChat" , "ON_STOP")
-                    MainActivity.fm.detachWhisperChatListener(whisperItem?.wid!!)
-
+                    MainActivity.fm.detachWhisperChatListener(wid!!)
+                    mainActivityVM.update_whisper(false)
                 }
                 Lifecycle.Event.ON_DESTROY -> {
                     Log.d("WhisperChat" , "ON_DESTROY")
@@ -97,8 +106,9 @@ fun WhisperChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
         topBar = {
             TopAppBar(
                 title = {
-
-                    Text(text = whisperItem?.wdisplayName!!)
+                    Text(
+                        text = stringResource(id = R.string.whisper) + " " + user?.displayName
+                    )
 
                 } ,
                 navigationIcon = {
@@ -161,8 +171,8 @@ fun WhisperChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
 
 @Preview(showBackground = true , showSystemUi = true)
 @Composable
-fun WhisperChatPreview(){
+fun _WhisperChatPreview(){
     HoşbeşTheme {
-        WhisperChat(mainActivityVM = MainActivityVM() , chatViewModel = ChatViewModel())
+        _WhisperChat(mainActivityVM = MainActivityVM() , chatViewModel = ChatViewModel())
     }
 }
