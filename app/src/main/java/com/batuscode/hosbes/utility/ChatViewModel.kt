@@ -51,6 +51,25 @@ class ChatViewModel: ViewModel() {
 //        _chats.value = lastIndex
     }
 
+    fun messageRemmoved(message: Message){
+
+        val oldChats = _chats.value.toMutableList()
+
+        val position = oldChats.indexOf(message)
+
+        if (position in oldChats.indices){
+
+
+            oldChats.remove(message)
+
+            _chats.value = oldChats
+
+        }
+
+
+
+    }
+
     fun messageChanged(message: Message){
 
 
@@ -58,8 +77,7 @@ class ChatViewModel: ViewModel() {
         val oldChats = _chats.value.toMutableList()
 
 
-
-        val position = oldChats.indexOf(messageItem.value)
+        val position = oldChats.indexOf(message)
         Log.d("jokermessage" , "yeni mesajın pozisyonu :: " + position)
 
         if (oldChats != null && position in oldChats.indices){

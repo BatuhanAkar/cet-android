@@ -69,34 +69,26 @@ fun PrivateRoomsFlow( mainActivityVM: MainActivityVM , privateRoomsViewModel: Pr
 
     val context = LocalContext.current
 
-    val rooms = privateRoomsViewModel.rooms.collectAsState(listOf())
+    val rooms = privateRoomsViewModel.rooms.collectAsState()
+
+    val chunkedRooms = rooms.value.chunked(2)
 
     LazyColumn (
         modifier = Modifier
             .padding(paddingValues)
     ){
 
+        chunkedRooms.forEachIndexed { index, privateRooms ->
 
-        items(rooms.value.chunked(2)) {rowRooms ->
-            Row (
-                horizontalArrangement = Arrangement.spacedBy(8.dp) ,
-                modifier = Modifier
-                    .fillMaxWidth()
+            items(privateRooms , key = {it.roomId!!}) { room ->
 
-            ){
+                Room(room , mainActivityVM = mainActivityVM)
 
-                for (item in rowRooms){
 
-                    Room(item , mainActivityVM = mainActivityVM)
-
-                }
 
             }
-
         }
-
     }
-
 }
 
 
@@ -109,22 +101,14 @@ fun Room(room: PrivateRoom , mainActivityVM: MainActivityVM){
         mutableStateOf<ImageBitmap?>(null)
     }
 
-    var activePar by remember {
-        mutableStateOf(0L)
-    }
-
-    activePar = room.activePar
-
     ElevatedCard(
         onClick = {
 
 
-            if (activePar < room.parCount){
-
-                MainActivity.fm.handleJoinRoom( "joined" , room)
+            if (room.activePar < room.parCount){
+                MainActivity.fm.handleJoinRoom( mainActivityVM = mainActivityVM ,"joined" , room)
                 mainActivityVM.updatePrivateRoom(room)
                 MainActivity.navigate?.navigate("privateroomchat")
-
 
             }
 
@@ -223,9 +207,9 @@ fun Room(room: PrivateRoom , mainActivityVM: MainActivityVM){
 
 
                 Text(
-                    text = if (activePar == room.parCount) stringResource(id = R.string.full) + " $activePar/${room.parCount}" else "$activePar/${room.parCount}" ,
+                    text = if (room.activePar == room.parCount) stringResource(id = R.string.full) + " ${room.activePar}/${room.parCount}" else "${room.activePar}/${room.parCount}" ,
                     style = TextStyle(
-                        color = if (activePar == room.parCount) Color.Red else Color.Black ,
+                        color = if (room.activePar == room.parCount) Color.Red else Color.Black ,
                         fontSize = 16.sp
                     ) ,
                     modifier = Modifier

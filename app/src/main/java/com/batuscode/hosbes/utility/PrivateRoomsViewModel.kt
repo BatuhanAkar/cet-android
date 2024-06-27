@@ -16,42 +16,27 @@ class PrivateRoomsViewModel: ViewModel() {
 
     fun pushRoom(room: PrivateRoom){
 
-        Log.d("privateroomsflow" , "befor list size :: " + _rooms.value?.size)
-        val chatIterator = _rooms.value ?: emptyList()
-        val updatedList = chatIterator + room
+        Log.d("privateroomsflow" , "room added :: " + room.roomName)
 
-        Log.d("privateroomsflow" , "after list size :: " + _rooms.value?.size)
-
-        _rooms.value = updatedList
+        val roomIter = _rooms.value.toMutableList()
+        roomIter.add(room)
+        _rooms.value = roomIter
 
     }
 
     fun modifiedRoom(room:PrivateRoom){
 
-        var position = _rooms.value?.indexOf(room)
-        Log.d("privateroomsflow" , "room name :: " + room.roomName)
+        val oldRooms = _rooms.value.toMutableList()
 
-        Log.d("privateroomsflow" , "position :: " + position)
+        val position = oldRooms.indexOf(room)
 
-        val iterator = _rooms.value
+        if (position in oldRooms.indices){
 
+            oldRooms[position].activePar = room.activePar
 
-
-        if (iterator != null && position in iterator.indices){
-            Log.d("privateroomsflow" , "modified success...")
-
-
-            val newlist = iterator.toMutableList()
-
-            newlist.set(position!! , room)
-
-            _rooms.value = newlist
+            _rooms.value.get(position).activePar = oldRooms.get(position).activePar
 
         }
-
-
-
-
 
     }
 

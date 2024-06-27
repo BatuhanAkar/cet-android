@@ -131,12 +131,19 @@ fun Chat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
                     Log.d("mainchat" , "on create....")
 
                     if (channelId == "C1"){
+                        Log.d("mainchat" , "on create.... channelId == C1 ")
+
+                        mainActivityVM.connectChannel("C1")
+
                         mainActivityVM.updateSelectedChannel("Hoşbeş")
                         chatViewModel.refreshChat()
 
                         MainActivity.fm.removeChatEventListener(FirebaseManager.C1)
                         MainActivity.fm.pullChat(mainActivityVM = mainActivityVM , FirebaseManager.C1)
                     } else if (channelId == "C2"){
+                        Log.d("mainchat" , "on create.... channelId == C2 ")
+
+                        mainActivityVM.connectChannel("C2")
 
                         mainActivityVM.updateSelectedChannel("Mavi Boncuk")
                         chatViewModel.refreshChat()
@@ -153,13 +160,13 @@ fun Chat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
                             mainActivityVM.connectChannel("C1")
                             mainActivityVM.updateSelectedChannel("Hoşbeş")
                             chatViewModel.refreshChat()
-                            MainActivity.fm.removeChatEventListener(FirebaseManager.C1)
+                            MainActivity.fm.removeChatEventListener(FirebaseManager.P1)
                             MainActivity.fm.pullChat(mainActivityVM = mainActivityVM , FirebaseManager.C1)
-                        } else if (selectedChannel == "Maiv Boncuk"){
+                        } else if (selectedChannel == "Mavi Boncuk"){
                             mainActivityVM.connectChannel("C2")
                             chatViewModel.refreshChat()
                             mainActivityVM.updateSelectedChannel("Mavi Boncuk")
-                            MainActivity.fm.removeChatEventListener(FirebaseManager.C2)
+                            MainActivity.fm.removeChatEventListener(FirebaseManager.P1)
                             MainActivity.fm.pullChat(mainActivityVM = mainActivityVM , FirebaseManager.C2)
                         }
 

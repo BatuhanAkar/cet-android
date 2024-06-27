@@ -93,6 +93,7 @@ fun PrivateRoomChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewMode
     val lifecycle = LocalLifecycleOwner.current
     val channelId by mainActivityVM.channelId.collectAsState()
     val outForSelectImage by mainActivityVM.outForSelectImage.collectAsState()
+    val showMessageOption by mainActivityVM.showMessageOption.collectAsState()
 
 
     DisposableEffect(lifecycle) {
@@ -198,7 +199,7 @@ fun PrivateRoomChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewMode
                         contentDescription = "" ,
                         modifier = Modifier
                             .clickable {
-                                MainActivity.fm.handleJoinRoom("exit" , room!!)
+                                MainActivity.fm.handleJoinRoom( mainActivityVM ,"exit" , room!!)
                                 MainActivity.navigate?.popBackStack()
                             }
                     )
@@ -219,6 +220,10 @@ fun PrivateRoomChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewMode
 
 
             val (messageRecyclerView , messageTextField) = createRefs()
+
+            if (showMessageOption == true){
+                MessageOption(mainActivityVM = mainActivityVM , chatViewModel = chatViewModel)
+            }
 
             ChatFlow(mainActivityVM ,
                 chatViewModel = chatViewModel ,

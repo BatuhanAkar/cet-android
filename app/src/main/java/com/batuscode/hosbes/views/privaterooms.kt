@@ -43,9 +43,6 @@ fun PrivateRooms(mainActivityVM: MainActivityVM){
     val privateRoomsViewModel:PrivateRoomsViewModel = viewModel()
     val showCreatePrivateRoom by mainActivityVM.showCreatePrivateRoom.collectAsState()
 
-    privateRoomsViewModel.refreshRooms()
-    MainActivity.fm.detachPrivateRoomsListener()
-    MainActivity.fm.pullPrivateRooms(privateRoomsViewModel)
     Scaffold (
         topBar = {
                  TopAppBar(
@@ -92,8 +89,9 @@ fun PrivateRooms(mainActivityVM: MainActivityVM){
                         Log.d("privaterooms" , "ON_CREATE....")
 
 
-
-
+                        privateRoomsViewModel.refreshRooms()
+                        MainActivity.fm.detachPrivateRoomsListener()
+                        MainActivity.fm.pullPrivateRooms(privateRoomsViewModel)
                     }
                     Lifecycle.Event.ON_START -> {
                         Log.d("privaterooms" , "ON_START....")

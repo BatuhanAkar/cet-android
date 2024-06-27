@@ -388,7 +388,7 @@ private fun CustomTextField( chatViewModel: ChatViewModel , mainActivityVM: Main
                                     mainActivityVM.updateMessageSended(true)
                                     mainActivityVM.updateEditMessageFieldMode(false)
 
-                                    MainActivity.fm.writePRMessage( mainActivityVM , "text" , message.text , FirebaseManager.P1 , room = room!!)
+                                    MainActivity.fm.editPrMessage( "text" , messageItem!! , message.text , FirebaseManager.P1 , room = room!!)
                                 }
 
                             } else {

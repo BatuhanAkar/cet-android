@@ -14,7 +14,7 @@ data class Message(
     val messageId:String? = null,
     val type:String? = null,
     var time:Long? = null,
-    var edited:Boolean? = null
+    var edited:Boolean? = false
     ){
 
 
@@ -28,7 +28,7 @@ data class Message(
 
         val message: Message = obj as Message
 
-        return messageId == message.messageId && edited == message.edited
+        return messageId == message.messageId
     }
     @Exclude
     fun toMap(): Map<String, Any?> {

@@ -28,6 +28,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.batuscode.hosbes.MainActivity
 import com.batuscode.hosbes.R
 import com.batuscode.hosbes.ui.theme.HoşbeşTheme
 import com.batuscode.hosbes.utility.ChatViewModel
@@ -69,6 +70,8 @@ fun MessageOption(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel)
 fun OptionContent(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
 
     val messageItem by chatViewModel.messageItem.collectAsState()
+    val channelId by mainActivityVM.channelId.collectAsState()
+    val room by mainActivityVM.privateRoom.collectAsState()
 
     Column {
 
@@ -99,6 +102,46 @@ fun OptionContent(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel)
 
 
                 Text(text = stringResource(id = R.string.edit))
+            }
+
+
+            OutlinedButton(
+                onClick = {
+
+                    /*TODO: mesajı düzenle butonu */
+
+                    // mesajı düzenle bayrağını true ayarla ...
+
+                    when
+                    {
+                        channelId == "C1" -> {
+                            MainActivity.fm.deleteMessage(messageItem!! , FirebaseManager.C1)
+                        }
+
+                        channelId == "C2" -> {
+                            MainActivity.fm.deleteMessage(messageItem!! , FirebaseManager.C2)
+                        }
+
+                        channelId == "P1" -> {
+                            MainActivity.fm.deletePrMessage(messageItem!! , room!! , FirebaseManager.P1)
+
+                        }
+                    }
+
+                } ,
+                border = null,
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Edit ,
+                    contentDescription = "" ,
+                    modifier = Modifier
+                        .size(16.dp)
+                )
+
+
+                Text(text = stringResource(id = R.string.delete))
             }
 
         }

@@ -129,7 +129,11 @@ class FirebaseManager {
         }
 
         override fun onChildRemoved(snapshot: DataSnapshot) {
-            TODO("Not yet implemented")
+
+            val message:Message = snapshot.getValue<Message>()!!
+            Log.d("channelDocumentChangeType" , "removed chat :: " + message.message)
+
+            chatViewModel.messageRemmoved(message)
         }
 
         override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
@@ -143,40 +147,24 @@ class FirebaseManager {
 
     }
 
-    fun handleJoinRoom( type:String , room: PrivateRoom){
+    fun handleJoinRoom( mainActivityVM: MainActivityVM , type:String , room: PrivateRoom){
 
         val prvRoomDocRef:DocumentReference = firestore.collection("prvRoom").document(room.roomId!!)
 
         firestore.runTransaction { transaction ->
-
-
             val snapshot = transaction.get(prvRoomDocRef)
 
             if (type.equals("joined")){
 
                 val activePar = snapshot.getLong("activePar")!! + 1
-
-
                 transaction.update(prvRoomDocRef , "activePar" , activePar)
             } else {
-
-
-
                 val activePar = snapshot.getLong("activePar")!! - 1
-
-
                 transaction.update(prvRoomDocRef , "activePar" , activePar)
-
             }
-
-
-
-
-
         }.addOnSuccessListener {
             Log.d("updateactivepar" , "success...")
         }
-
     }
 
     var handler = android.os.Handler(Looper.getMainLooper())
@@ -334,7 +322,7 @@ class FirebaseManager {
 
 
 
-        } , 2000)    }
+        } , 1000)    }
 
     fun removeChatEventListener(channel:DatabaseReference){
         Log.d("chatEventlistener" , "removed listener :: ")
@@ -608,6 +596,38 @@ class FirebaseManager {
 
     }
 
+    fun deletePrMessage(message: Message , room: PrivateRoom , channel: DatabaseReference){
+        channel
+            .child(room.roomId!!)
+            .child(message.messageId!!)
+            .setValue(null)
+    }
+
+    fun editPrMessage( type: String? , message: Message , value: String? , p: DatabaseReference , room: PrivateRoom){
+
+
+        val tStamp = System.currentTimeMillis()
+        val value: String? = value
+        val edited:Boolean = true
+
+        val messageId = message.messageId
+        val senderId: String? = currentUser?.uid
+        val senderImage: String? = currentUser?.photoUrl.toString()
+        val senderName: String? = currentUser?.displayName
+
+        val message = Message(senderId , senderImage , senderName , value , messageId , type , tStamp , edited)
+
+        val editValue = message.toMap()
+
+        val messageUpdates = hashMapOf<String,Any>(
+            messageId!! to editValue
+        )
+
+        p.child(room.roomId!!).updateChildren(messageUpdates)
+
+
+    }
+
     fun writePRMessage(mainActivityVM: MainActivityVM , type:String? , messageValue: String? , p:DatabaseReference , room:PrivateRoom ){
         var messageId = p.push().key.toString()
 
@@ -662,6 +682,16 @@ class FirebaseManager {
 
                 }
             }
+    }
+
+    fun deleteMessage(message: Message , channel: DatabaseReference){
+
+
+        channel
+            .child(message.messageId!!)
+            .setValue(null)
+
+
     }
 
     fun editMessage(type: String , value:String , message: Message , channel: DatabaseReference){

@@ -96,7 +96,7 @@ fun ChatFlow( mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel , mo
     val chats = chatViewModel.chat.collectAsState()
 
     LaunchedEffect(chats.value.size) {
-        state.animateScrollToItem(chats.value.size - 1)
+//        state.animateScrollToItem(chats.value.size - 1)
     }
 
     LazyColumn(
@@ -105,6 +105,7 @@ fun ChatFlow( mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel , mo
     ) {
 
         items(chats.value!! , key = {it.messageId!!}){ message ->
+            Log.d("jokermessage" , "öğe eklendi... :: " + message.messageId)
 /*
 
             if (it.senderId.equals(uid)){
