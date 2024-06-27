@@ -96,6 +96,8 @@ private fun CustomTextField( chatViewModel: ChatViewModel , mainActivityVM: Main
 
     val room by mainActivityVM.privateRoom.collectAsState()
 
+    val user by mainActivityVM.user.collectAsState()
+
     val messageId by mainActivityVM.messageId.collectAsState()
 
     val prMessageWrited by mainActivityVM.prMessageWrited.collectAsState()
@@ -344,6 +346,9 @@ private fun CustomTextField( chatViewModel: ChatViewModel , mainActivityVM: Main
                             } else if (channelId == "P1"){
                                 mainActivityVM.updateMessageSended(true)
                                 MainActivity.fm.writePRMessage( mainActivityVM , "text" , message.text , FirebaseManager.P1 , room = room!!)
+                            } else if (channelId == "W"){
+                                mainActivityVM.updateMessageSended(true)
+                               // MainActivity.fm.writeWhisperMessage(user!!)
                             }
 
                         } else {

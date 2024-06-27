@@ -35,4 +35,5 @@
     <string name="editSend">Düzenle</string>
     <string name="edited">"Düzenlendi "</string>
     <string name="delete">Mesajı sil</string>
+    <string name="whisper">Fısılda</string>
 </resources>

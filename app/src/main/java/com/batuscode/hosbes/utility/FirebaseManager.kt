@@ -14,23 +14,16 @@ import android.os.Looper
 import android.provider.OpenableColumns
 import android.util.Log
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.work.CoroutineWorker
-import androidx.work.WorkerParameters
 import com.batuscode.hosbes.MainActivity
 import com.batuscode.hosbes.models.Message
 import com.batuscode.hosbes.models.PrivateRoom
 import com.batuscode.hosbes.models.User
-import com.batuscode.hosbes.utility.FirebaseManager.Companion.auth
+import com.batuscode.hosbes.models.Whisper
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
@@ -42,31 +35,17 @@ import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.MutableData
-import com.google.firebase.database.Transaction
-import com.google.firebase.database.Transaction.Handler
 import com.google.firebase.database.getValue
 import com.google.firebase.database.ktx.database
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.DocumentReference
-import com.google.firebase.firestore.EventListener
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.ListenerRegistration
-import com.google.firebase.firestore.QuerySnapshot
-import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.StorageMetadata
 import com.google.firebase.storage.storageMetadata
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.tasks.await
 import java.io.ByteArrayOutputStream
-import java.io.File
-import java.io.FileInputStream
 import java.io.InputStream
 
 
@@ -82,6 +61,7 @@ class FirebaseManager {
         @SuppressLint("StaticFieldLeak")
         val firestore:FirebaseFirestore = FirebaseFirestore.getInstance()
         val prvRoomRef:CollectionReference = firestore.collection("prvRoom")
+        val usersRef:CollectionReference = firestore.collection("users")
 
         var storage:FirebaseStorage = FirebaseStorage.getInstance()
 
@@ -92,6 +72,8 @@ class FirebaseManager {
 
         val P1:DatabaseReference = Firebase.database("https://privaterooms.europe-west1.firebasedatabase.app/").getReference()
 
+        val W:DatabaseReference = Firebase.database("https://whispers-552e7.europe-west1.firebasedatabase.app/").getReference()
+        val W_C:DatabaseReference = Firebase.database("https://whispers-chat.europe-west1.firebasedatabase.app/").getReference()
     }
 
 
@@ -99,6 +81,36 @@ class FirebaseManager {
 
 
     lateinit var chatViewModel: ChatViewModel
+
+    lateinit var whisperViewModel: WhisperViewModel
+
+    val whisperEventListener: ChildEventListener = object :ChildEventListener {
+        override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+            Log.d("whisperList" , "fısıltı geldi...")
+
+            val whisper = snapshot.getValue<Whisper>()
+            whisperViewModel.pushWhisper(whisper!!)
+
+        }
+
+        override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+            TODO("Not yet implemented")
+        }
+
+        override fun onChildRemoved(snapshot: DataSnapshot) {
+            TODO("Not yet implemented")
+        }
+
+        override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+            TODO("Not yet implemented")
+        }
+
+        override fun onCancelled(error: DatabaseError) {
+            TODO("Not yet implemented")
+        }
+
+
+    }
 
     val chatEventListener: ChildEventListener = object : ChildEventListener {
         override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
@@ -628,6 +640,66 @@ class FirebaseManager {
 
     }
 
+
+    fun pullWhisper(){
+        // kullanıcının fısıltılarını çekecek ...
+        val uid = currentUser?.uid.toString()
+//        W.child(uid)
+//            .addChildEventListener()
+    }
+
+    fun writeWhisperMessage(user: User , value: String){
+        // hem kendine hem karşıdakine fısıltı ayarla ...
+        val time = System.currentTimeMillis()
+
+        // kendinni ayarla ...
+
+        val uid = currentUser?.uid
+        val displayName = currentUser?.displayName
+        val photoUrl = currentUser?.photoUrl.toString()
+
+        val wid = W.push().key.toString() // fısıltı oda id si ...
+
+        // karşıyı ayarla ...
+        val wuid = user.uid
+        val wdisplayName = user.displayName
+        val wphotoUrl = user.photoUrl
+
+
+        // kullanıcı ile fısıltısı var mı bak ...
+
+        val owner = Whisper(displayName , photoUrl , uid , wid)
+        val remote = Whisper(wdisplayName,wphotoUrl,wuid,wid)
+
+        W.child(uid!!).child(user.uid!!).get().addOnCompleteListener {
+
+            // fısıltısı yoksa ekle ...
+            if (!it.result.exists()){
+
+                val childUpdate = hashMapOf<String,Any>(
+
+                    uid to remote.toMap() ,
+                    user.uid to owner.toMap()
+                )
+
+                W.updateChildren(childUpdate)
+                    .addOnCompleteListener {
+                        if (it.isSuccessful){
+                            val messageId = W_C.push().key.toString()
+                            val message = Message(uid,photoUrl,displayName,value,messageId,"text",time)
+
+                            W_C
+                                .child(wid)
+                                .child(messageId).setValue(message)
+                        }
+                    }
+            }
+        }
+
+
+
+    }
+
     fun writePRMessage(mainActivityVM: MainActivityVM , type:String? , messageValue: String? , p:DatabaseReference , room:PrivateRoom ){
         var messageId = p.push().key.toString()
 
@@ -1028,6 +1100,18 @@ class FirebaseManager {
                     Log.d("updatedbuserinfo" , "successfully")
                     mainActivityVM.uploadComlated(false)
                 }
+            }
+    }
+
+    /*TODO: handle whisper*/
+    fun handleWhisper(uid: String , mainActivityVM: MainActivityVM){
+
+        // kullanıcılar koleksiyonuna sorgu at ... kullanıcıyı getir & güncelle
+        usersRef.document(uid)
+            .get()
+            .addOnCompleteListener { document ->
+                val user = document.result.toObject(User::class.java)
+                mainActivityVM.updateUser(user = user!!)
             }
     }
 

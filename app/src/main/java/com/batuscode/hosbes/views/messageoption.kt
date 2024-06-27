@@ -35,6 +35,7 @@ import com.batuscode.hosbes.utility.ChatViewModel
 import com.batuscode.hosbes.utility.FirebaseManager
 import com.batuscode.hosbes.utility.MainActivityVM
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -58,7 +59,7 @@ fun MessageOption(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel)
 
         ) {
 
-        OptionContent(mainActivityVM = mainActivityVM , chatViewModel = chatViewModel)
+        OptionContent( sheetState , scope , mainActivityVM = mainActivityVM , chatViewModel = chatViewModel)
 
     }
 
@@ -67,17 +68,18 @@ fun MessageOption(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun OptionContent(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
+fun OptionContent( sheetState: SheetState , scope: CoroutineScope , mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
 
     val messageItem by chatViewModel.messageItem.collectAsState()
     val channelId by mainActivityVM.channelId.collectAsState()
     val room by mainActivityVM.privateRoom.collectAsState()
+    val whisperUserUid by mainActivityVM.whisperUserUid.collectAsState()
 
     Column {
 
         if (messageItem?.senderId == FirebaseManager.currentUser?.uid){
 
-
+            // mesajı düzenle...
             OutlinedButton(
                 onClick = {
 
@@ -104,13 +106,13 @@ fun OptionContent(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel)
                 Text(text = stringResource(id = R.string.edit))
             }
 
-
+            // mesajı sil...
             OutlinedButton(
                 onClick = {
 
                     /*TODO: mesajı düzenle butonu */
 
-                    // mesajı düzenle bayrağını true ayarla ...
+                    // mesajı sil...
 
                     when
                     {
@@ -143,6 +145,40 @@ fun OptionContent(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel)
 
                 Text(text = stringResource(id = R.string.delete))
             }
+
+        } else {
+
+
+            // fısılda...
+
+
+            OutlinedButton(
+                onClick = {
+
+                    /*TODO: fısılda */
+
+                    // ...
+                    scope.launch {
+                        sheetState.hide()
+                    }
+                    MainActivity.fm.handleWhisper(whisperUserUid!! , mainActivityVM = mainActivityVM)
+                    MainActivity.navigate?.navigate("whisper")
+                } ,
+                border = null,
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Edit ,
+                    contentDescription = "" ,
+                    modifier = Modifier
+                        .size(16.dp)
+                )
+
+
+                Text(text = stringResource(id = R.string.whisper))
+            }
+
 
         }
 

@@ -235,6 +235,7 @@ fun Chat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
             .imePadding(),
         topBar = {
 
+
             TopAppBar(title = { Row {
                 ConstraintLayout () {
                     val (title , channelMenu) = createRefs()

@@ -9,6 +9,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import com.batuscode.hosbes.models.Message
 import com.batuscode.hosbes.models.PrivateRoom
+import com.batuscode.hosbes.models.User
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import java.text.SimpleDateFormat
@@ -302,5 +303,19 @@ class MainActivityVM:ViewModel() {
 
         _message.value = value
 
+    }
+
+    private val _user = MutableStateFlow<User?>(null)
+    val user: StateFlow<User?> get() = _user
+
+    fun updateUser(user: User){
+        _user.value = user
+    }
+
+    private val _whisperUserUid = MutableStateFlow<String?>(null)
+    val whisperUserUid: StateFlow<String?> get() = _whisperUserUid
+
+    fun updateWhisperUserUid(uid:String){
+        _whisperUserUid.value = uid
     }
 }

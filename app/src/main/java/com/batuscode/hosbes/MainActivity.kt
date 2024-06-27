@@ -55,6 +55,7 @@ import com.batuscode.hosbes.views.PrivateRoomChat
 import com.batuscode.hosbes.views.PrivateRooms
 import com.batuscode.hosbes.views.SelectUsername
 import com.batuscode.hosbes.views.SplashScreen
+import com.batuscode.hosbes.views.Whisper
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.google.firebase.auth.FirebaseAuth
@@ -243,6 +244,10 @@ class MainActivity : ComponentActivity() {
                         
                         composable("privateroomchat"){
                             PrivateRoomChat(mainActivityVM = mainActivityVM , chatViewModel)
+                        }
+                        
+                        composable("whisper"){
+                            Whisper(mainActivityVM = mainActivityVM, chatViewModel = chatViewModel)
                         }
                     }
 
