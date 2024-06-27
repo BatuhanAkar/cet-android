@@ -108,6 +108,10 @@ private fun CustomTextField( chatViewModel: ChatViewModel , mainActivityVM: Main
 
     val messageItem by chatViewModel.messageItem.collectAsState()
 
+    val firstWhisper by mainActivityVM.firstWhisper.collectAsState()
+
+    val whisperItem by mainActivityVM.whisperItem.collectAsState()
+
 
     var mediaSelected by remember {
         mutableStateOf(false)
@@ -348,7 +352,16 @@ private fun CustomTextField( chatViewModel: ChatViewModel , mainActivityVM: Main
                                 MainActivity.fm.writePRMessage( mainActivityVM , "text" , message.text , FirebaseManager.P1 , room = room!!)
                             } else if (channelId == "W"){
                                 mainActivityVM.updateMessageSended(true)
-                               // MainActivity.fm.writeWhisperMessage(user!!)
+
+                                when {
+                                    firstWhisper == true -> {
+                                        mainActivityVM.updateFirstWhisper(false)
+                                        MainActivity.fm.writeWhisperMessage(user!! , "text" , message.text)
+                                    }
+                                    firstWhisper == false -> {
+                                        MainActivity.fm.writeWMessage(whisperItem!! , "text" , message.text)
+                                    }
+                                }
                             }
 
                         } else {

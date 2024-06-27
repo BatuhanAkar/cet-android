@@ -48,6 +48,7 @@ import com.batuscode.hosbes.utility.MainActivityVM
 import com.batuscode.hosbes.utility.PreferenceManager
 import com.batuscode.hosbes.utility.PrivateRoomsViewModel
 import com.batuscode.hosbes.utility.SessionService
+import com.batuscode.hosbes.utility.WhisperViewModel
 import com.batuscode.hosbes.views.Authentication
 import com.batuscode.hosbes.views.Chat
 import com.batuscode.hosbes.views.MyChats
@@ -56,6 +57,7 @@ import com.batuscode.hosbes.views.PrivateRooms
 import com.batuscode.hosbes.views.SelectUsername
 import com.batuscode.hosbes.views.SplashScreen
 import com.batuscode.hosbes.views.Whisper
+import com.batuscode.hosbes.views.WhisperChat
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.google.firebase.auth.FirebaseAuth
@@ -140,6 +142,7 @@ class MainActivity : ComponentActivity() {
                 val authViewModel: AuthViewModel = viewModel()
                 val mainActivityVM: MainActivityVM by viewModels()
                 val chatViewModel:ChatViewModel by viewModels()
+                val whisperViewModel:WhisperViewModel by viewModels()
 
 
                 val currentUser by authViewModel.currentUser.collectAsState()
@@ -247,7 +250,11 @@ class MainActivity : ComponentActivity() {
                         }
                         
                         composable("whisper"){
-                            Whisper(mainActivityVM = mainActivityVM, chatViewModel = chatViewModel)
+                            Whisper(mainActivityVM = mainActivityVM, whisperViewModel = whisperViewModel)
+                        }
+                        
+                        composable("whisperchat"){
+                            WhisperChat(mainActivityVM = mainActivityVM, chatViewModel = chatViewModel)
                         }
                     }
 

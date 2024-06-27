@@ -1,5 +1,6 @@
 package com.batuscode.hosbes.utility
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.batuscode.hosbes.models.PrivateRoom
 import com.batuscode.hosbes.models.Whisper
@@ -12,6 +13,32 @@ class WhisperViewModel: ViewModel() {
     val whisper: StateFlow<List<Whisper>> get()  = _whisper
 
     fun pushWhisper(whisper: Whisper){
+        Log.d("whisperflow" , "fısıldama eklendi...")
+        val iter = _whisper.value.toMutableList()
 
+        iter.add(whisper)
+        _whisper.value = iter
+    }
+
+    fun changedWhisper(whisper: Whisper){
+        val iter = _whisper.value.toMutableList()
+
+        val position = iter.indexOf(whisper)
+
+        if (position in iter.indices){
+
+            iter[position].lm = whisper.lm
+            iter[position].lt = whisper.lt
+
+            _whisper.value.get(position).lm = iter.get(position).lm
+            _whisper.value.get(position).lt = iter.get(position).lt
+
+        }
+
+
+    }
+
+    fun refreshWhispers(){
+        _whisper.value = emptyList()
     }
 }

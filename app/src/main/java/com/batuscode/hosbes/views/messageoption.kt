@@ -161,8 +161,9 @@ fun OptionContent( sheetState: SheetState , scope: CoroutineScope , mainActivity
                     scope.launch {
                         sheetState.hide()
                     }
-                    MainActivity.fm.handleWhisper(whisperUserUid!! , mainActivityVM = mainActivityVM)
-                    MainActivity.navigate?.navigate("whisper")
+                    mainActivityVM.updateFirstWhisper(true) // ilk fısıltı etkin
+                    MainActivity.fm.handleWhisper(whisperUserUid!! , mainActivityVM = mainActivityVM) // ilk fısıltı olduğu için kullanıcıyı getir ...
+                    MainActivity.navigate?.navigate("whisperchat") // ilk fısıltı olduğu için sohbete it ...
                 } ,
                 border = null,
                 modifier = Modifier

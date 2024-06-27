@@ -84,6 +84,7 @@ class FirebaseManager {
 
     lateinit var whisperViewModel: WhisperViewModel
 
+    /*TODO: whisper event listener initialize*/
     val whisperEventListener: ChildEventListener = object :ChildEventListener {
         override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
             Log.d("whisperList" , "fısıltı geldi...")
@@ -94,7 +95,11 @@ class FirebaseManager {
         }
 
         override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
-            TODO("Not yet implemented")
+
+            Log.d("whisperList" , "fısıltı değişti...")
+
+            val whisper = snapshot.getValue<Whisper>()
+            whisperViewModel.changedWhisper(whisper!!)
         }
 
         override fun onChildRemoved(snapshot: DataSnapshot) {
@@ -641,18 +646,37 @@ class FirebaseManager {
     }
 
 
+    /*TODO:pull whisper*/
     fun pullWhisper(){
         // kullanıcının fısıltılarını çekecek ...
         val uid = currentUser?.uid.toString()
-//        W.child(uid)
-//            .addChildEventListener()
+        W.child(uid)
+            .addChildEventListener(whisperEventListener)
     }
 
-    fun writeWhisperMessage(user: User , value: String){
+    fun detachWhisperListener(){
+        val uid = currentUser?.uid.toString()
+        W.child(uid).removeEventListener(whisperEventListener)
+    }
+
+    fun pullWhisperChat(whisperItem:Whisper){
+        W_C
+            .child(whisperItem.wid!!)
+            .addChildEventListener(chatEventListener)
+    }
+
+    fun detachWhisperChatListener(whisperItem: Whisper){
+        W_C
+            .child(whisperItem.wid!!)
+            .removeEventListener(chatEventListener)
+    }
+
+    /*TODO: write whisper message*/
+    fun writeWhisperMessage(user: User , type: String , value: String){
         // hem kendine hem karşıdakine fısıltı ayarla ...
         val time = System.currentTimeMillis()
 
-        // kendinni ayarla ...
+        // kendini ayarla ...
 
         val uid = currentUser?.uid
         val displayName = currentUser?.displayName
@@ -686,15 +710,50 @@ class FirebaseManager {
                     .addOnCompleteListener {
                         if (it.isSuccessful){
                             val messageId = W_C.push().key.toString()
-                            val message = Message(uid,photoUrl,displayName,value,messageId,"text",time)
+                            val message = Message(uid,photoUrl,displayName,value,messageId,type,time)
 
                             W_C
                                 .child(wid)
                                 .child(messageId).setValue(message)
+                                .addOnCompleteListener{
+                                    if (it.isSuccessful){
+
+                                        val childUpdate = hashMapOf<String,Any>(
+
+                                            uid + "/" + user.uid + "/" + "lm" to value ,
+                                            uid + "/" + user.uid + "/" + "lt" to time ,
+                                            user.uid + "/" + uid + "/" + "lm" to value ,
+                                            user.uid + "/" + uid + "/" + "lt" to value
+                                        )
+                                        W.updateChildren(childUpdate)
+                                    }
+                                }
                         }
                     }
             }
         }
+
+
+
+    }
+
+    fun writeWMessage(whisperItem: Whisper , type: String , value: String){
+
+        var messageId = W_C.push().key.toString()
+
+        val tStamp = System.currentTimeMillis()
+        val senderId: String? = currentUser?.uid
+        val senderImage: String? = currentUser?.photoUrl.toString()
+        val senderName: String? = currentUser?.displayName
+        val value: String? = value
+
+
+        val message = Message(senderId , senderImage , senderName , value , messageId , type , tStamp)
+
+        W_C
+            .child(whisperItem.wid!!)
+            .child(messageId)
+            .setValue(message)
 
 
 
@@ -1111,7 +1170,7 @@ class FirebaseManager {
             .get()
             .addOnCompleteListener { document ->
                 val user = document.result.toObject(User::class.java)
-                mainActivityVM.updateUser(user = user!!)
+                mainActivityVM.updateUser(user = user!!) // kullanıcıyı güncelle ...
             }
     }
 

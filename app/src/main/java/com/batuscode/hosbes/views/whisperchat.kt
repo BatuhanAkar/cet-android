@@ -18,7 +18,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -26,53 +25,65 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import com.batuscode.hosbes.MainActivity
-import com.batuscode.hosbes.R
 import com.batuscode.hosbes.ui.theme.HoşbeşTheme
 import com.batuscode.hosbes.utility.ChatViewModel
 import com.batuscode.hosbes.utility.MainActivityVM
-import com.batuscode.hosbes.utility.WhisperViewModel
 import com.batuscode.hosbes.views.ui.MessageTextField
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Whisper(mainActivityVM: MainActivityVM , whisperViewModel: WhisperViewModel){
+fun WhisperChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
     val lifecycleOwner = LocalLifecycleOwner.current
+    val firstWhisper by mainActivityVM.firstWhisper.collectAsState()
+    val user by mainActivityVM.user.collectAsState()
+    val whisperItem by mainActivityVM.whisperItem.collectAsState()
 
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver{_,event ->
 
             when(event){
                 Lifecycle.Event.ON_CREATE -> {
-                    Log.d("whisperScreen" , "ON_CREATE")
+                    Log.d("WhisperChat" , "ON_CREATE")
 
-                    whisperViewModel.refreshWhispers()
-                    MainActivity.fm.detachWhisperListener()
-                    MainActivity.fm.pullWhisper()
+                    chatViewModel.refreshChat() // sohbeti sıfırla ...
+                    mainActivityVM.connectChannel("W") // kanal id güncelle ...
+
+                    // burda ilk fısıltı mı bak ...
+
+                    if (firstWhisper == false){
+                        MainActivity.fm.detachWhisperChatListener(whisperItem!!)
+                        MainActivity.fm.pullWhisperChat(whisperItem!!)
+                    }
+
 
                 }
                 Lifecycle.Event.ON_START -> {
-                    Log.d("whisperScreen" , "ON_START")
+                    Log.d("WhisperChat" , "ON_START")
 
                 }
                 Lifecycle.Event.ON_RESUME -> {
-                    Log.d("whisperScreen" , "ON_RESUME")
+                    Log.d("WhisperChat" , "ON_RESUME")
 
                 }
                 Lifecycle.Event.ON_PAUSE -> {
-                    Log.d("whisperScreen" , "ON_PAUSE")
+                    Log.d("WhisperChat" , "ON_PAUSE")
 
                 }
                 Lifecycle.Event.ON_STOP -> {
-                    Log.d("whisperScreen" , "ON_STOP")
-                    MainActivity.fm.detachWhisperListener()
+                    Log.d("WhisperChat" , "ON_STOP")
+                    if (firstWhisper == true){
+                        mainActivityVM.updateFirstWhisper(false)
+                    } else {
+                        MainActivity.fm.detachWhisperChatListener(whisperItem!!)
+                    }
 
                 }
                 Lifecycle.Event.ON_DESTROY -> {
-                    Log.d("whisperScreen" , "ON_DESTROY")
+                    Log.d("WhisperChat" , "ON_DESTROY")
 
                 }
                 Lifecycle.Event.ON_ANY -> {
-                    Log.d("whisperScreen" , "ON_ANY")
+                    Log.d("WhisperChat" , "ON_ANY")
 
                 }
             }
@@ -94,7 +105,11 @@ fun Whisper(mainActivityVM: MainActivityVM , whisperViewModel: WhisperViewModel)
             TopAppBar(
                 title = {
 
-                    Text(text = "user?.displayName ?: fısılda")
+                    (if (firstWhisper == true) user?.displayName ?: "fısılda" else whisperItem?.wdisplayName)?.let {
+                        Text(
+                            text = it
+                        )
+                    }
 
                 } ,
                 navigationIcon = {
@@ -112,17 +127,53 @@ fun Whisper(mainActivityVM: MainActivityVM , whisperViewModel: WhisperViewModel)
         }
     )
     { innerPadding ->
+        ConstraintLayout (modifier = Modifier
+            .fillMaxSize()
+            .padding(innerPadding)
+        ) {
+            val (messageRecyclerView , messageTextField) = createRefs()
+
+            ChatFlow( mainActivityVM ,
+                chatViewModel = chatViewModel ,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .imePadding()
+                    .constrainAs(
+                        messageRecyclerView
+                    ) {
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                        top.linkTo(parent.top)
+                        bottom.linkTo(messageTextField.top)
+                        height = Dimension.fillToConstraints
+
+                    }
+            )
+
+            MessageTextField ( chatViewModel , mainActivityVM = mainActivityVM ,
+                modifier = Modifier
+                    .constrainAs(
+                        messageTextField
+                    )
+                    {
+                        top.linkTo(messageRecyclerView.bottom)
+                        bottom.linkTo(parent.bottom)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    }
+            ) {}
+
+        }
 
 
-        WhisperFlow(whisperViewModel = whisperViewModel, mainActivityVM = mainActivityVM , modifier = Modifier.padding(innerPadding))
     }
 
 }
 
 @Preview(showBackground = true , showSystemUi = true)
 @Composable
-fun WhisperPreview(){
+fun WhisperChatPreview(){
     HoşbeşTheme {
-        Whisper(mainActivityVM = MainActivityVM(), whisperViewModel = WhisperViewModel())
+        WhisperChat(mainActivityVM = MainActivityVM() , chatViewModel = ChatViewModel())
     }
 }

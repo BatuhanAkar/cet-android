@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModel
 import com.batuscode.hosbes.models.Message
 import com.batuscode.hosbes.models.PrivateRoom
 import com.batuscode.hosbes.models.User
+import com.batuscode.hosbes.models.Whisper
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import java.text.SimpleDateFormat
@@ -317,5 +318,19 @@ class MainActivityVM:ViewModel() {
 
     fun updateWhisperUserUid(uid:String){
         _whisperUserUid.value = uid
+    }
+
+    private val _whisperItem = MutableStateFlow<Whisper?>(null)
+    val whisperItem:StateFlow<Whisper?> get() = _whisperItem
+
+    fun updateWhisperItem(whisper: Whisper){
+        _whisperItem.value = whisper
+    }
+
+    private val _firstWhisper = MutableStateFlow<Boolean?>(false)
+    val firstWhisper: StateFlow<Boolean?> get() = _firstWhisper
+
+    fun updateFirstWhisper(state:Boolean){
+        _firstWhisper.value = state
     }
 }

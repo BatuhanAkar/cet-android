@@ -8,7 +8,9 @@ data class Whisper(
     val wdisplayName:String? = null ,
     val wphotoUrl:String? = null ,
     val wuid:String? = null ,
-    val wid:String? = null
+    val wid:String? = null ,
+    var lm:String? = null ,
+    var lt:Long? = null
     ){
 
     override fun hashCode(): Int {
