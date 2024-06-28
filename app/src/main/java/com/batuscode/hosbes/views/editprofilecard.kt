@@ -299,7 +299,7 @@ fun Content(mainActivityVM: MainActivityVM){
         val (updateButton , profileCard) = createRefs()
 
 
-        Row ( verticalAlignment = Alignment.CenterVertically ,
+        /*Row ( verticalAlignment = Alignment.CenterVertically ,
             modifier = Modifier
                 .constrainAs(profileCard)
                 {
@@ -309,92 +309,97 @@ fun Content(mainActivityVM: MainActivityVM){
                     height = Dimension.fillToConstraints
                 }
         ) {
+
+
+
+
+
+
+
+
+
+        }*/
+
+
+        // profile card layout ...
+
+        ConstraintLayout (
+            modifier = Modifier
+                .constrainAs(profileCard)
+                {
+                    top.linkTo(parent.top)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                    height = Dimension.fillToConstraints
+                }
+        ) {
+            val (imageBox , selectButton , usernameTextfield) = createRefs()
+
             Box (
                 modifier = Modifier
                     .wrapContentWidth(align = Alignment.CenterHorizontally)
                     .padding(end = 8.5.dp)
                     .width(80.dp)
-            ) {
-
-                ConstraintLayout(
-
-                    modifier = Modifier
-                        .wrapContentSize(align = Alignment.Center)
-                ) {
-                    val (profileImage, changeImageButton) = createRefs()
-
-
-                    Image(
-                        bitmap = if (changeImage) newPP!!  else currentPP!! ,
-                        contentDescription = "",
-                        modifier = Modifier
-                            .clip(CircleShape)
-                            .background(Color.Blue)
-                            .width(80.dp)
-                            .height(80.dp)
-                            .constrainAs(profileImage)
-                            {
-
-                                start.linkTo(parent.start)
-                                end.linkTo(parent.end)
-                                top.linkTo(parent.top)
-
-                            }
-                        ,
-                        contentScale = ContentScale.Crop
-                    )
-
-
-
-                    OutlinedIconButton(
-                        onClick = {
-
-                            if (checkPermisson()){
-
-
-                                                            val intent = Intent(
-                                                                Intent.ACTION_PICK,
-                                                                MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-                                                            )
-                                                            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                                                            launcher.launch(intent)
-
-                            } else {
-
-                                mainActivityVM.updateShowPermissionDialog(true)
-
-
-                            }
-
-
-                                  } ,
-                        border = null ,
-                        modifier = Modifier
-                            .absoluteOffset(-35.dp)
-                            .padding(0.dp)
-                            .constrainAs(changeImageButton)
-                            {
-                                start.linkTo(profileImage.end)
-                                bottom.linkTo(profileImage.bottom)
-
-                            }
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.add_circle_24px) ,
-                            contentDescription = "" ,
-                            tint = Color.White
-                        )
+                    .constrainAs(imageBox)
+                    {
+                        start.linkTo(parent.start)
+                        top.linkTo(parent.top)
+                        bottom.linkTo(parent.bottom)
                     }
-                }
+            ) {
+                Image(
+                    /*bitmap = if (changeImage) newPP!!  else currentPP!!*/ painter = painterResource(
+                        id = R.drawable.istockphoto_517188688_612x612
+                    ) ,
+                    contentDescription = "",
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .width(80.dp)
+                        .height(80.dp)
+                    ,
+                    contentScale = ContentScale.FillBounds
+                )
 
             }
 
+            OutlinedIconButton(
+                onClick = {
 
+                    if (checkPermisson()){
+
+
+                        val intent = Intent(
+                            Intent.ACTION_PICK,
+                            MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+                        )
+                        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                        launcher.launch(intent)
+
+                    } else {
+
+                        mainActivityVM.updateShowPermissionDialog(true)
+
+
+                    }
+
+
+                } ,
+                border = null ,
+                modifier = Modifier
+                    .absoluteOffset(-35.dp)
+                    .padding(0.dp)
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.add_circle_24px) ,
+                    contentDescription = "" ,
+                    tint = Color.White
+                )
+            }
 
 
             TextField(
 
-                value = if (newUsername.isEmpty() && !run) displayName!! else newUsername
+                value = /*if (newUsername.isEmpty() && !run) displayName!! else newUsername*/ newUsername
                 ,
                 onValueChange = {newText ->
                     if (newText.length == 0){
@@ -407,14 +412,18 @@ fun Content(mainActivityVM: MainActivityVM){
                     focusedIndicatorColor = Color.Transparent ,
                     unfocusedIndicatorColor = Color.Transparent ,
                     containerColor = Color.DarkGray.copy(0.1f)
-                )
+                ) ,
+
+                modifier = Modifier
+                    .constrainAs(usernameTextfield)
+                    {
+                        end.linkTo(parent.end)
+                        top.linkTo(imageBox.top)
+                        bottom.linkTo(imageBox.bottom)
+                        start.linkTo(imageBox.end)
+                        width = Dimension.fillToConstraints
+                    }
             )
-
-
-
-
-
-
         }
 
 
@@ -484,15 +493,14 @@ fun DialogContent(){
 
 }
 
-
+/*
 @Preview(showBackground = true , showSystemUi = true)
 @Composable
 fun DialogContentPreview(){
     HoşbeşTheme {
         DialogContent()
     }
-}
-/*
+}*//*
 @Preview(showBackground = true , showSystemUi = true)
 @Composable
 fun PermissionDialogPreview(){
@@ -500,7 +508,8 @@ fun PermissionDialogPreview(){
         PermissionDialog()
     }
 }
-
+*/
+@RequiresApi(Build.VERSION_CODES.R)
 @Preview(showBackground = true , showSystemUi = true)
 @Composable
 fun ContentPreview(){
@@ -508,4 +517,4 @@ fun ContentPreview(){
     HoşbeşTheme {
         Content(mainActivityVM)
     }
-}*/
+}
