@@ -183,7 +183,7 @@ fun WhisperView(whisper: Whisper , mainActivityVM: MainActivityVM){
                                     style = TextStyle(
                                         fontWeight = FontWeight.Bold ,
                                         fontSize = 20.sp ,
-                                        color = Color.Green
+                                        color = if (whisper.readed == false ) Color.Green else Color.Gray
                                     ),
                                     maxLines = 1,
                                     softWrap = true,

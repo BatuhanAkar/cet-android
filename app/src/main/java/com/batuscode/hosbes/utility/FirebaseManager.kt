@@ -671,6 +671,26 @@ class FirebaseManager {
             .removeEventListener(chatEventListener)
     }
 
+
+    /*TODO: okundu bilgisi güncelle*/
+    fun updateReaded(whisperItem: Whisper){
+
+        val uid = currentUser?.uid
+        val wuid = whisperItem.wuid
+
+
+        val childUpdate = hashMapOf<String,Any>(
+
+            uid + "/" + wuid + "/" + "readed" to true ,
+
+
+
+
+        )
+        W.updateChildren(childUpdate)
+
+    }
+
     /*TODO: write whisper message*/
     fun writeWhisperMessage(user: User , type: String , value: String , mainActivityVM: MainActivityVM){
         // hem kendine hem karşıdakine fısıltı ayarla ...

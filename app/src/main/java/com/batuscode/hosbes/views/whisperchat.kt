@@ -53,6 +53,7 @@ fun WhisperChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
                     MainActivity.fm.detachWhisperChatListener(whisperItem?.wid!!)
                     MainActivity.fm.pullWhisperChat(whisperItem?.wid!!)
 
+                    setReaded(whisperItem = whisperItem!!)
 
 
                 }
@@ -162,8 +163,21 @@ fun WhisperChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
 }
 
 
-@Composable
 fun setReaded(whisperItem: Whisper){
+
+    // fısıltının okunup okunmadığını al son mesaj karşı tarafa ait ise okundu olarak güncelle ...
+
+    val remoteId = whisperItem.wuid
+    val lastId = whisperItem.lwuid
+
+    if ((remoteId == lastId) && whisperItem.readed == false){
+
+        // okundu işaretle ...
+
+        MainActivity.fm.updateReaded(whisperItem)
+
+    }
+
 }
 
 @Preview(showBackground = true , showSystemUi = true)
