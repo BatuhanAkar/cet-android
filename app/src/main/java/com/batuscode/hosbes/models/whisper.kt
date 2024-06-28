@@ -10,7 +10,9 @@ data class Whisper(
     val wuid:String? = null ,
     val wid:String? = null ,
     var lm:String? = null ,
-    var lt:Long? = null
+    var lt:Long? = null ,
+    var lwuid:String? = null ,
+    var readed:Boolean? = false
     ){
 
     override fun hashCode(): Int {

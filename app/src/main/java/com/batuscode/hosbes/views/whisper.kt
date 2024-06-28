@@ -113,8 +113,20 @@ fun Whisper(mainActivityVM: MainActivityVM , whisperViewModel: WhisperViewModel)
     )
     { innerPadding ->
 
+        ConstraintLayout(
+            modifier = Modifier
+                .padding(innerPadding)
+        ) {
 
-        WhisperFlow(whisperViewModel = whisperViewModel, mainActivityVM = mainActivityVM , modifier = Modifier.padding(innerPadding))
+        }
+        WhisperFlow(
+            whisperViewModel = whisperViewModel ,
+            mainActivityVM = mainActivityVM ,
+            modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxSize()
+                .imePadding()
+        )
     }
 
 }

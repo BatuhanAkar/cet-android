@@ -25,6 +25,7 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import com.batuscode.hosbes.MainActivity
+import com.batuscode.hosbes.models.Whisper
 import com.batuscode.hosbes.ui.theme.HoşbeşTheme
 import com.batuscode.hosbes.utility.ChatViewModel
 import com.batuscode.hosbes.utility.MainActivityVM
@@ -51,6 +52,7 @@ fun WhisperChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
 
                     MainActivity.fm.detachWhisperChatListener(whisperItem?.wid!!)
                     MainActivity.fm.pullWhisperChat(whisperItem?.wid!!)
+
 
 
                 }
@@ -157,6 +159,11 @@ fun WhisperChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
 
     }
 
+}
+
+
+@Composable
+fun setReaded(whisperItem: Whisper){
 }
 
 @Preview(showBackground = true , showSystemUi = true)

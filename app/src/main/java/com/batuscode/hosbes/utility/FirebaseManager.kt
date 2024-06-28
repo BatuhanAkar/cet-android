@@ -725,9 +725,17 @@ class FirebaseManager {
 
                                             uid + "/" + user.uid + "/" + "lm" to value ,
                                             uid + "/" + user.uid + "/" + "lt" to time ,
+                                            uid + "/" + user.uid + "/" + "lwuid" to uid ,
+                                            uid + "/" + user.uid + "/" + "readed" to true ,
+
+
                                             user.uid + "/" + uid + "/" + "lm" to value ,
-                                            user.uid + "/" + uid + "/" + "lt" to time
-                                        )
+                                            user.uid + "/" + uid + "/" + "lt" to time ,
+                                            user.uid + "/" + uid + "/" + "lwuid" to uid ,
+                                            user.uid + "/" + uid + "/" + "readed" to false
+
+
+                                            )
                                         W.updateChildren(childUpdate)
                                     }
                                 }
@@ -764,8 +772,16 @@ class FirebaseManager {
 
                         senderId + "/" + wuid + "/" + "lm" to value!! ,
                         senderId + "/" + wuid + "/" + "lt" to tStamp ,
+                        senderId + "/" + wuid + "/" + "lwuid" to senderId!! ,
+                        senderId + "/" + wuid + "/" + "readed" to true ,
+
+
                         wuid + "/" + senderId + "/" + "lm" to value ,
-                        wuid + "/" + senderId + "/" + "lt" to tStamp
+                        wuid + "/" + senderId + "/" + "lt" to tStamp ,
+                        wuid + "/" + senderId + "/" + "lwuid" to senderId ,
+                        wuid + "/" + senderId + "/" + "readed" to false
+
+
                     )
                     W.updateChildren(childUpdate)
                 }
@@ -904,6 +920,7 @@ class FirebaseManager {
     }
 
 
+    /*TODO: kullanici adini güncelle fm*/
     fun updateDisplayName(_displayName:String , mainActivityVM: MainActivityVM){
 
         val profileChangeReguest = userProfileChangeRequest{
@@ -913,9 +930,16 @@ class FirebaseManager {
         currentUser?.updateProfile(profileChangeReguest)
             ?.addOnSuccessListener {
                 mainActivityVM.updateDisplayName(_displayName)
-                mainActivityVM.updateStartUpdate(false)
 
 
+                val uid = currentUser?.uid
+                firestore.collection("users").document(uid!!).update("displayName" , _displayName)
+                    .addOnCompleteListener {
+                        if (it.isSuccessful){
+                            Log.d("updatedbuserinfo" , "successfully")
+                            mainActivityVM.updateStartUpdate(false)
+                        }
+                    }
             }
     }
 

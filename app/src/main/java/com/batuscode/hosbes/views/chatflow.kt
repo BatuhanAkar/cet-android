@@ -95,40 +95,26 @@ fun ChatFlow( mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel , mo
     val uid = FirebaseManager.currentUser?.uid.toString()
     val chats = chatViewModel.chat.collectAsState()
 
-    LaunchedEffect(chats.value.size) {
-//        state.animateScrollToItem(chats.value.size - 1)
+    LaunchedEffect(key1 = chats.value.size) {
+        if (-1 != (chats.value.size) - 1){
+            state.animateScrollToItem((chats.value.size) - 1) // son ogeye kaydır ...
+
+        }
     }
 
     LazyColumn(
         state = state,
         modifier = modifier
     ) {
-
         items(chats.value!! , key = {it.messageId!!}){ message ->
             Log.d("jokermessage" , "öğe eklendi... :: " + message.messageId)
-/*
-
-            if (it.senderId.equals(uid)){
-                MyMessage( mainActivityVM , it.type!! , message = it)
-            } else {
-
-                MessageItemView(message = it , it.type!!)
-            }
-*/
-
             MessageItemView(message = message , type =  message.type!! , mainActivityVM = mainActivityVM , chatViewModel)
-
         }
-
     }
-
 }
 
 @Composable
 fun getColor():Color{
-
-
-
     val colors = listOf(
         colorResource(id = R.color.a) ,
         colorResource(id = R.color.b) ,
@@ -141,16 +127,11 @@ fun getColor():Color{
         colorResource(id = R.color.i) ,
         colorResource(id = R.color.j)
     )
-
-
-
     return colors.get(Random.nextInt(colors.size))
 }
 
 @Composable
 fun MessageItemView(message:Message , type:String , mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
-
-
     val context: Context = LocalContext.current
 
     var image by remember{
@@ -161,7 +142,6 @@ fun MessageItemView(message:Message , type:String , mainActivityVM: MainActivity
 
 
     // gönderen resmi ile mesaj görünümünü yan yana koy...
-
 
     Row (
         verticalAlignment = Alignment.Top ,
