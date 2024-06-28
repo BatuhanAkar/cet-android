@@ -41,6 +41,16 @@ class WhisperViewModel: ViewModel() {
 
     }
 
+    fun removedWhisper(whisper: Whisper){
+        Log.d("whisperflow" , "fısıldama eklendi...")
+        val iter = _whisper.value.toMutableList()
+
+        val position = iter.indexOf(whisper)
+
+        iter.removeAt(position)
+        _whisper.value = iter
+    }
+
     fun refreshWhispers(){
         _whisper.value = emptyList()
     }

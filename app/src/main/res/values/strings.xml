@@ -36,4 +36,7 @@
     <string name="edited">"Düzenlendi "</string>
     <string name="delete">Mesajı sil</string>
     <string name="whisper">Fısılda</string>
+    <string name="delete_message">Sohbeti sil</string>
+    <string name="delete_message_just_for_me">Sohbeti sadece benden sil</string>
+    <string name="delete_message_everyone">Sohbeti iki taraf için sil</string>
 </resources>

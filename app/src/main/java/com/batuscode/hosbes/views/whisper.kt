@@ -2,6 +2,7 @@ package com.batuscode.hosbes.views
 
 import android.util.Log
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
@@ -37,6 +38,8 @@ import com.batuscode.hosbes.views.ui.MessageTextField
 @Composable
 fun Whisper(mainActivityVM: MainActivityVM , whisperViewModel: WhisperViewModel){
     val lifecycleOwner = LocalLifecycleOwner.current
+
+    val showMenu by mainActivityVM.showMenu.collectAsState()
 
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver{_,event ->
@@ -113,20 +116,23 @@ fun Whisper(mainActivityVM: MainActivityVM , whisperViewModel: WhisperViewModel)
     )
     { innerPadding ->
 
-        ConstraintLayout(
+        Column(
             modifier = Modifier
                 .padding(innerPadding)
         ) {
-
+            
+            if (showMenu == true){
+                Menu(mainActivityVM = mainActivityVM)
+            }
+            WhisperFlow(
+                whisperViewModel = whisperViewModel ,
+                mainActivityVM = mainActivityVM ,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .imePadding()
+            )
         }
-        WhisperFlow(
-            whisperViewModel = whisperViewModel ,
-            mainActivityVM = mainActivityVM ,
-            modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxSize()
-                .imePadding()
-        )
+
     }
 
 }

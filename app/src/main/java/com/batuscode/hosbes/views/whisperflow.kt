@@ -197,6 +197,8 @@ fun WhisperView(whisper: Whisper , mainActivityVM: MainActivityVM){
                         // seçenekler butonu
                         OutlinedIconButton(
                             onClick = {
+                                mainActivityVM.updateShowMenu(true)
+                                mainActivityVM.updateWhisperItem(whisper = whisper)
                             } ,
                             border = null ,
                             modifier = Modifier

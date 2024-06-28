@@ -103,7 +103,9 @@ class FirebaseManager {
         }
 
         override fun onChildRemoved(snapshot: DataSnapshot) {
-            TODO("Not yet implemented")
+
+            val whisper = snapshot.getValue<Whisper>()
+            whisperViewModel.removedWhisper(whisper!!)
         }
 
         override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
@@ -855,6 +857,60 @@ class FirebaseManager {
             }
 
 
+
+    }
+
+    /*TODO: sohbeti benden sil ... fm */
+
+    fun deleteChatFromMe(whisperItem: Whisper , Wref: DatabaseReference , mainActivityVM: MainActivityVM){
+
+        val uid = currentUser?.uid // kendi id si ...
+        val wuid = whisperItem.wuid // fısıltılaşılan kişinin id si ... // W referansı için ...
+
+        val wid = whisperItem.wid // fısıltı id si ... // W_C referansı için ...
+
+        Wref.child(uid!!)
+            .child(wuid!!)
+            .setValue(null)
+            .addOnCompleteListener {
+                if (it.isSuccessful){
+                    mainActivityVM.updateShowMenu(false)
+                }
+            }
+
+
+    }
+
+    /*TODO: sohbeti herkesten sil ... fm */
+
+    fun deleteChatEveryone(whisperItem: Whisper , Wref: DatabaseReference , W_Cref: DatabaseReference , mainActivityVM: MainActivityVM){
+
+        val uid = currentUser?.uid // kendi id si ...
+        val wuid = whisperItem.wuid // fısıltılaşılan kişinin id si ... // W referansı için ...
+
+        val wid = whisperItem.wid // fısıltı id si ... // W_C referansı için ...
+
+        Wref.child(wuid!!)
+            .child(uid!!)
+            .setValue(null)
+            .addOnCompleteListener {
+                if (it.isSuccessful){
+                    mainActivityVM.updateShowMenu(false)
+                }
+            }
+
+
+        Wref.child(uid!!)
+            .child(wuid!!)
+            .setValue(null)
+            .addOnCompleteListener {
+                if (it.isSuccessful){
+                    mainActivityVM.updateShowMenu(false)
+                }
+            }
+        W_Cref
+            .child(wid!!)
+            .setValue(null)
 
     }
 

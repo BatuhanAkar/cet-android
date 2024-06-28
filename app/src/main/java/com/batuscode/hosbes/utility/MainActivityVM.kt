@@ -369,4 +369,11 @@ class MainActivityVM:ViewModel() {
     fun updateInHosbeslerim(state: Boolean){
         _inHosbeslerim.value = state
     }
+
+    private val _showMenu = MutableStateFlow<Boolean?>(false)
+    val showMenu:StateFlow<Boolean?> get() = _showMenu
+
+    fun updateShowMenu(state: Boolean){
+        _showMenu.value = state
+    }
 }

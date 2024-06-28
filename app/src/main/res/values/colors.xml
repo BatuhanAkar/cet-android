@@ -9,6 +9,7 @@
     <color name="white">#FFFFFFFF</color>
     <color name="swhite">#F0F0F0</color>
 
+    <color name="delete">#ea4f4f</color>
     <color name="message">#79aa7b</color>
     <color name="a">#e3f9eb</color>
     <color name="b">#ddffea</color>

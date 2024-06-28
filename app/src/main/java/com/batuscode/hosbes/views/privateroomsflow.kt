@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -73,8 +74,9 @@ fun PrivateRoomsFlow( mainActivityVM: MainActivityVM , privateRoomsViewModel: Pr
 
     val chunkedRooms = rooms.value.chunked(2)
 
-    LazyColumn (
+    LazyColumn ( verticalArrangement = Arrangement.spacedBy(8.dp),
         modifier = Modifier
+            .fillMaxSize()
             .padding(paddingValues)
     ){
 
@@ -82,12 +84,14 @@ fun PrivateRoomsFlow( mainActivityVM: MainActivityVM , privateRoomsViewModel: Pr
 
             items(privateRooms , key = {it.roomId!!}) { room ->
 
+
                 Room(room , mainActivityVM = mainActivityVM)
 
 
 
             }
         }
+
     }
 }
 
@@ -253,8 +257,8 @@ fun RoomPreview(){
     }
 }*/
 
-/*
 
+/*
 @Preview(showBackground = true , showSystemUi = true)
 @Composable
 fun PrivateRoomsFlowPreview(){
@@ -264,5 +268,4 @@ fun PrivateRoomsFlowPreview(){
         PrivateRoomsFlow(paddingValues = PaddingValues(1.dp) , privateRoomsViewModel = privateRoomsViewModel , mainActivityVM = mainActivityVM)
     }
 }
-
 */
