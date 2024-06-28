@@ -37,6 +37,7 @@ fun WhisperChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
     val lifecycleOwner = LocalLifecycleOwner.current
     val user by mainActivityVM.user.collectAsState()
     val whisperItem by mainActivityVM.whisperItem.collectAsState()
+    val showMessageOption by mainActivityVM.showMessageOption.collectAsState()
 
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver{_,event ->
@@ -44,6 +45,8 @@ fun WhisperChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
             when(event){
                 Lifecycle.Event.ON_CREATE -> {
                     Log.d("WhisperChat" , "ON_CREATE")
+
+                    mainActivityVM.updateInWhisper(true) // fısıltıda mesaj seçeneklerinin kontrolü için ...
 
                     chatViewModel.refreshChat() // sohbeti sıfırla ...
                     mainActivityVM.connectChannel("W") // kanal id güncelle ...
@@ -71,6 +74,8 @@ fun WhisperChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
                 }
                 Lifecycle.Event.ON_STOP -> {
                     Log.d("WhisperChat" , "ON_STOP")
+                    mainActivityVM.updateInWhisper(false) // fısıltıda mesaj seçeneklerinin kontrolü için ...
+
                     MainActivity.fm.detachWhisperChatListener(whisperItem?.wid!!)
 
                 }
@@ -124,6 +129,10 @@ fun WhisperChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
             .padding(innerPadding)
         ) {
             val (messageRecyclerView , messageTextField) = createRefs()
+
+            if (showMessageOption == true){
+                MessageOption(mainActivityVM = mainActivityVM, chatViewModel = chatViewModel)
+            }
 
             ChatFlow( mainActivityVM ,
                 chatViewModel = chatViewModel ,

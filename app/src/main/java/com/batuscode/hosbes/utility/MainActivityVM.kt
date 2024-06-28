@@ -356,4 +356,17 @@ class MainActivityVM:ViewModel() {
         _whisperId.value = id
     }
 
+    private val _inWhisper = MutableStateFlow<Boolean?>(false)
+    val inWhisper:StateFlow<Boolean?> get() = _inWhisper
+
+    fun updateInWhisper(state: Boolean){
+        _inWhisper.value = state
+    }
+
+    private val _inHosbeslerim = MutableStateFlow<Boolean?>(false)
+    val inHosbeslerim:StateFlow<Boolean?> get() = _inHosbeslerim
+
+    fun updateInHosbeslerim(state: Boolean){
+        _inHosbeslerim.value = state
+    }
 }

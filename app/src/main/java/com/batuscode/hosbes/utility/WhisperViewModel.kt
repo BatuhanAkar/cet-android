@@ -30,9 +30,11 @@ class WhisperViewModel: ViewModel() {
 
             iter[position].lm = whisper.lm
             iter[position].lt = whisper.lt
+            iter[position].readed = whisper.readed
 
             _whisper.value.get(position).lm = iter.get(position).lm
             _whisper.value.get(position).lt = iter.get(position).lt
+            _whisper.value.get(position).readed = iter.get(position).readed
 
         }
 
@@ -41,109 +43,6 @@ class WhisperViewModel: ViewModel() {
 
     fun refreshWhispers(){
         _whisper.value = emptyList()
-    }
-
-    /*TODO: fısıltı sohbet liste viewModel...*/
-
-    private val _wchats = MutableStateFlow<List<Message>>(emptyList())
-    val wchat:StateFlow<List<Message>> get() = _wchats
-
-
-    fun pushChat(message: Message){
-
-        val chatIterator = _wchats.value.toMutableList()
-
-        chatIterator.add(message)
-
-        var position = chatIterator.indexOf(message)
-
-        Log.d("jokermessage" , "eklenen öğenin pozisyonu :: " + position)
-
-//        val updatedChat = chatIterator + message
-
-        _wchats.value = chatIterator
-
-        var realposition = _wchats.value.indexOf(message)
-        Log.d("jokermessage" , "eklenen öğenin gerçek pozisyonu :: " + realposition)
-
-        Log.d("jokermessage" , "yeni mesaj eklenmeden sonraki boyut :: " + _wchats.value?.size)
-
-//        val current = _chats.value
-//
-//        val lastIndex = current + message
-//
-//        _chats.value = lastIndex
-    }
-
-    fun messageRemmoved(message: Message){
-
-        val oldChats = _wchats.value.toMutableList()
-
-        val position = oldChats.indexOf(message)
-
-        if (position in oldChats.indices){
-
-
-            oldChats.remove(message)
-
-            _wchats.value = oldChats
-
-        }
-
-
-
-    }
-
-    fun messageChanged(message: Message){
-
-
-
-        val oldChats = _wchats.value.toMutableList()
-
-
-        val position = oldChats.indexOf(message)
-        Log.d("jokermessage" , "yeni mesajın pozisyonu :: " + position)
-
-        if (oldChats != null && position in oldChats.indices){
-            Log.d("jokermessage" , "pozisyon aktif...")
-
-
-            val old = oldChats[position!!]
-            Log.d("jokermessage" , "old message :: " + old.message!!)
-
-            oldChats[position!!].message = message.message
-            oldChats[position!!].edited = message.edited
-            oldChats[position!!].time = message.time
-
-
-
-
-
-            val changedmessage = oldChats.get(position)
-
-            Log.d("jokermessage" , "changed message :: " + changedmessage.message!!)
-
-            _wchats.value.get(position).message = oldChats.get(position).message
-            _wchats.value.get(position).edited = oldChats.get(position).edited
-            _wchats.value.get(position).time = oldChats.get(position).time
-
-
-
-            val esas = _wchats.value?.get(position)
-            Log.d("jokermessage" , "esas :: " + esas?.message!!)
-
-        } else {
-            Log.d("jokermessage" , "pozisyon aktif değil ...")
-
-        }
-
-
-    }
-
-    fun refreshChat(){
-
-        _wchats.value = emptyList()
-
     }
 
 }

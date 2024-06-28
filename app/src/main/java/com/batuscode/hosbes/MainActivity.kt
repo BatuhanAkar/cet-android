@@ -25,20 +25,15 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkManager
-import androidx.work.WorkRequest
 import com.batuscode.hosbes.ui.theme.HoşbeşTheme
 import com.batuscode.hosbes.utility.AuthViewModel
 import com.batuscode.hosbes.utility.ChatViewModel
@@ -46,12 +41,10 @@ import com.batuscode.hosbes.utility.FirebaseManager
 import com.batuscode.hosbes.utility.GlideApp
 import com.batuscode.hosbes.utility.MainActivityVM
 import com.batuscode.hosbes.utility.PreferenceManager
-import com.batuscode.hosbes.utility.PrivateRoomsViewModel
 import com.batuscode.hosbes.utility.SessionService
 import com.batuscode.hosbes.utility.WhisperViewModel
 import com.batuscode.hosbes.views.Authentication
 import com.batuscode.hosbes.views.Chat
-import com.batuscode.hosbes.views.MyChats
 import com.batuscode.hosbes.views.PrivateRoomChat
 import com.batuscode.hosbes.views.PrivateRooms
 import com.batuscode.hosbes.views.SelectUsername
@@ -62,8 +55,6 @@ import com.batuscode.hosbes.views._WhisperChat
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.database
 
 class MainActivity : ComponentActivity() {
 
@@ -236,9 +227,6 @@ class MainActivity : ComponentActivity() {
                             Chat(mainActivityVM , chatViewModel)
                         }
 
-                        composable("mychats"){
-                            MyChats(navController)
-                        }
 
                         composable("privaterooms"){
                             Log.d("firedb" , "navigated...")

@@ -409,6 +409,19 @@ private fun CustomTextField( chatViewModel: ChatViewModel , mainActivityVM: Main
                                     mainActivityVM.updateEditMessageFieldMode(false)
 
                                     MainActivity.fm.editPrMessage( "text" , messageItem!! , message.text , FirebaseManager.P1 , room = room!!)
+                                } else if (channelId == "W"){
+                                    mainActivityVM.updateMessageSended(true)
+                                    mainActivityVM.updateEditMessageFieldMode(false)
+
+                                    if (_whisper == true){
+                                        Log.d("whisperchat" , "message sended ...")
+                                        mainActivityVM.update_whisper(false)
+                                        // ilk defa mesaj yollandı bayrağını true ayarla .... mesajı yolla ...
+                                        MainActivity.fm.writeWhisperMessage(user = user!! , "text" , message.text , mainActivityVM)
+                                    } else {
+                                        MainActivity.fm.editWMessage( whisperItem!! , message.text , FirebaseManager.W_C,messageItem!! , "text")
+                                    }
+
                                 }
 
                             } else {

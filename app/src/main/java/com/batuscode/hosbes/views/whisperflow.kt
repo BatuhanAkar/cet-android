@@ -36,6 +36,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -44,6 +45,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import com.batuscode.hosbes.MainActivity
 import com.batuscode.hosbes.R
 import com.batuscode.hosbes.models.Whisper
@@ -74,6 +77,7 @@ fun WhisperFlow(whisperViewModel: WhisperViewModel , mainActivityVM: MainActivit
 fun WhisperView(whisper: Whisper , mainActivityVM: MainActivityVM){
     val context: Context = LocalContext.current
     val timeStamp by remember { mutableStateOf(  dateformatHour(whisper.lt!!) ) }
+    val showMessageOption by mainActivityVM.showMessageOption.collectAsState()
 
     var image by remember {
         mutableStateOf<ImageBitmap?>(null)
@@ -86,18 +90,31 @@ fun WhisperView(whisper: Whisper , mainActivityVM: MainActivityVM){
         shape = RectangleShape ,
         modifier = Modifier
             .fillMaxWidth()
+            .height(80.dp)
     ) {
 
-        Row {
-            // karşı kullanıcının resmi ...
+
+        if (showMessageOption == true){
+          //  MessageOption(mainActivityVM = mainActivityVM, chatViewModel = )
+        }
+
+        // karşı kullanıcının resmi ...
 
 
-            Row (
-                verticalAlignment = Alignment.Top ,
+        Row (
+            verticalAlignment = Alignment.Top ,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(5.5.dp)
+        )
+        {
+
+            ConstraintLayout(
                 modifier = Modifier
-                    .padding(5.5.dp)
-            )
-            {
+                    .fillMaxWidth()
+            ) {
+                
+                val (profileImage , explainlayout) = createRefs()
 
                 GlideApp.with(context)
                     .asBitmap()
@@ -128,7 +145,13 @@ fun WhisperView(whisper: Whisper , mainActivityVM: MainActivityVM){
                             .padding(top = 5.dp, bottom = 5.dp)
                             .clip(RoundedCornerShape(10.dp))
                             .width(60.dp)
-                            .height(60.dp),
+                            .height(60.dp)
+                            .constrainAs(profileImage) {
+                                start.linkTo(parent.start)
+                                end.linkTo(explainlayout.start)
+                                top.linkTo(parent.top)
+                                bottom.linkTo(parent.bottom)
+                            },
                         contentScale = ContentScale.FillBounds
                     )
 
@@ -136,10 +159,19 @@ fun WhisperView(whisper: Whisper , mainActivityVM: MainActivityVM){
 
 
 
+
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(start = 9.dp)
+                        .constrainAs(explainlayout) {
+                            start.linkTo(profileImage.end)
+                            end.linkTo(parent.end)
+                            top.linkTo(profileImage.top)
+                            bottom.linkTo(profileImage.bottom)
+                            height = Dimension.fillToConstraints
+                            width = Dimension.fillToConstraints
+                        }
                 )
                 {
 
@@ -154,17 +186,28 @@ fun WhisperView(whisper: Whisper , mainActivityVM: MainActivityVM){
                             .padding(0.dp)
                     )
                     {
-
-                        Row (
-                            verticalAlignment = Alignment.CenterVertically
+                        Text(
+                            text = whisper.wdisplayName!!,
+                            style = TextStyle(
+                                fontWeight = FontWeight.SemiBold ,
+                                fontSize = 17.sp
+                            )
                         )
-                        {
-                            Text(
-                                text = whisper.wdisplayName!!,
-                                style = TextStyle(
-                                    fontWeight = FontWeight.SemiBold ,
-                                    fontSize = 17.sp
-                                )
+
+                        // seçenekler butonu
+                        OutlinedIconButton(
+                            onClick = {
+                            } ,
+                            border = null ,
+                            modifier = Modifier
+                                .padding(0.dp)
+                                .size(24.dp)
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.more_horiz_24px) ,
+                                contentDescription = "" ,
+                                modifier = Modifier
+                                    .align(Alignment.Top)
                             )
                         }
                     }
@@ -175,54 +218,96 @@ fun WhisperView(whisper: Whisper , mainActivityVM: MainActivityVM){
                             .fillMaxWidth()
                     )
                     {
-                        if (whisper.lwuid != null && whisper.lwuid?.equals(whisper.wuid) == true){
 
-                            if (whisper.lm != null){
-                                Text(
-                                    text = whisper.lm!! ,
-                                    style = TextStyle(
-                                        fontWeight = FontWeight.Bold ,
-                                        fontSize = 20.sp ,
-                                        color = if (whisper.readed == false ) Color.Green else Color.Gray
-                                    ),
-                                    maxLines = 1,
-                                    softWrap = true,
-                                    overflow = TextOverflow.Ellipsis,
-                                    modifier = Modifier
-                                )
+                        ConstraintLayout(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                        ) {
+
+                            val (message , time) = createRefs()
+
+
+                            if (whisper.lwuid != null && whisper.lwuid?.equals(whisper.wuid) == true){
+
+                                if (whisper.lm != null){
+
+                                    Text(
+                                        text = whisper.lm!!,
+                                        style = TextStyle(
+                                            fontWeight = FontWeight.Bold ,
+                                            fontSize = 20.sp ,
+                                            color = if (whisper.readed == false) colorResource(id = R.color.message) else Color.Gray
+                                        ),
+                                        maxLines = 1,
+                                        softWrap = true,
+                                        overflow = TextOverflow.Ellipsis,
+                                        modifier = Modifier
+                                            .constrainAs(message){
+                                                start.linkTo(parent.start)
+                                                top.linkTo(parent.top)
+                                                bottom.linkTo(parent.bottom)
+                                                end.linkTo(time.start)
+                                                width = Dimension.fillToConstraints
+                                            }
+                                    )
+
+
+                                }
+
+                            } else{
+
+                                if (whisper.lm != null){
+
+
+                                    Text(
+                                        text = whisper.lm!!,
+                                        style = TextStyle(
+                                            fontWeight = FontWeight.Bold ,
+                                            fontSize = 20.sp ,
+                                            color = Color.Gray
+                                        ),
+                                        maxLines = 1,
+                                        softWrap = true,
+                                        overflow = TextOverflow.Ellipsis,
+                                        modifier = Modifier
+                                            .constrainAs(message){
+                                                start.linkTo(parent.start)
+                                                top.linkTo(parent.top)
+                                                bottom.linkTo(parent.bottom)
+                                                end.linkTo(time.start)
+                                                width = Dimension.fillToConstraints
+                                            }
+                                    )
+
+                                }
+
                             }
 
-                        } else{
+                            Text(
+                                text = timeStamp ,
+                                style = TextStyle(
+                                    fontSize = 12.sp
+                                ) ,
+                                modifier = Modifier
+                                    .padding(2.5.dp)
+                                    .constrainAs(time) {
 
-                            if (whisper.lm != null){
+                                        top.linkTo(message.top)
+                                        bottom.linkTo(message.bottom)
+                                        end.linkTo(parent.end)
+                                        width = Dimension.fillToConstraints
 
-
-                                Text(
-                                    text = whisper.lm!! ,
-                                    style = TextStyle(
-                                        fontWeight = FontWeight.Bold ,
-                                        fontSize = 20.sp ,
-                                        color = Color.Gray
-                                    ),
-                                    maxLines = 1,
-                                    softWrap = true,
-                                    overflow = TextOverflow.Ellipsis,
-                                    modifier = Modifier
-                                )
-
-                            }
-
+                                    }
+                            )
                         }
 
-                        Text(
-                            text = timeStamp ,
-                            style = TextStyle(
-                                fontSize = 12.sp
-                            ) ,
-                        )
                     }
                 }
+
             }
+
+
+
         }
     }
 }

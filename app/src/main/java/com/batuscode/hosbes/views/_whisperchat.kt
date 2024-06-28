@@ -57,6 +57,9 @@ fun _WhisperChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
             when(event){
                 Lifecycle.Event.ON_CREATE -> {
                     Log.d("WhisperChat" , "ON_CREATE")
+
+                    mainActivityVM.updateInWhisper(true) // fısıltıda mesaj seçeneklerinin kontrolü için ...
+
                     mainActivityVM.update_whisper(true)
 
                     chatViewModel.refreshChat() // sohbeti sıfırla ...
@@ -78,6 +81,8 @@ fun _WhisperChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
                 }
                 Lifecycle.Event.ON_STOP -> {
                     Log.d("WhisperChat" , "ON_STOP")
+                    mainActivityVM.updateInWhisper(false) // fısıltıda mesaj seçeneklerinin kontrolü için ...
+
                     MainActivity.fm.detachWhisperChatListener(wid!!)
                     mainActivityVM.update_whisper(false)
                 }

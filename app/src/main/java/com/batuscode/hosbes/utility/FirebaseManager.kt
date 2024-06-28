@@ -768,6 +768,53 @@ class FirebaseManager {
 
     }
 
+    fun editWMessage(whisperItem: Whisper , value: String , channel: DatabaseReference , messageItem:Message , type: String){
+
+        val tStamp = System.currentTimeMillis() // düzenlenen zaman ...
+        val value: String? = value // mesaj ...
+        val edited:Boolean = true // düzenlendi ...
+
+        val messageId = messageItem.messageId // sabit id kullan ...
+        val senderId: String? = currentUser?.uid
+        val senderImage: String? = currentUser?.photoUrl.toString()
+        val senderName: String? = currentUser?.displayName
+
+        val message = Message(senderId , senderImage , senderName , value , messageId , type , tStamp , edited)
+
+
+
+
+        val wid = whisperItem.wid // fısıltı oda id ' si ...
+        val wuid = whisperItem.wuid // fısıltı karşı taraf id ...
+
+        channel.child(wid!!) // fısıltı odası ...
+            .child(messageId!!) // mesaj ...
+            .setValue(message)
+            .addOnCompleteListener {
+                if (it.isSuccessful){
+
+                    val childUpdate = hashMapOf<String,Any>(
+
+                        senderId + "/" + wuid + "/" + "lm" to value!! ,
+                        senderId + "/" + wuid + "/" + "lt" to tStamp ,
+                        senderId + "/" + wuid + "/" + "lwuid" to senderId!! ,
+                        senderId + "/" + wuid + "/" + "readed" to true ,
+
+
+                        wuid + "/" + senderId + "/" + "lm" to value ,
+                        wuid + "/" + senderId + "/" + "lt" to tStamp ,
+                        wuid + "/" + senderId + "/" + "lwuid" to senderId ,
+                        wuid + "/" + senderId + "/" + "readed" to false
+
+
+                    )
+                    W.updateChildren(childUpdate)
+
+                }
+            }
+
+    }
+
     fun writeWMessage( wuid:String , wid:String , type: String , value: String){
 
         var messageId = W_C.push().key.toString()

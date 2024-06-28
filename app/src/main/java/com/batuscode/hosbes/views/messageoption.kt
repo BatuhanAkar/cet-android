@@ -74,6 +74,7 @@ fun OptionContent( sheetState: SheetState , scope: CoroutineScope , mainActivity
     val channelId by mainActivityVM.channelId.collectAsState()
     val room by mainActivityVM.privateRoom.collectAsState()
     val whisperUserUid by mainActivityVM.whisperUserUid.collectAsState()
+    val inWhisper by mainActivityVM.inWhisper.collectAsState()
 
     Column {
 
@@ -151,32 +152,37 @@ fun OptionContent( sheetState: SheetState , scope: CoroutineScope , mainActivity
 
             // fısılda...
 
+            // fısıldama sohbetlerinde değilse ...
+            if (inWhisper == false){
 
-            OutlinedButton(
-                onClick = {
+                OutlinedButton(
+                    onClick = {
 
-                    /*TODO: fısılda */
+                        /*TODO: fısılda */
 
-                    // ...
-                    scope.launch {
-                        sheetState.hide()
-                    }
-                    MainActivity.fm.handleWhisper(whisperUserUid!! , mainActivityVM = mainActivityVM) // ilk fısıltı olduğu için kullanıcıyı getir ...
-                    MainActivity.navigate?.navigate("_whisperchat") // ilk fısıltı olduğu için sohbete it ...
-                } ,
-                border = null,
-                modifier = Modifier
-                    .fillMaxWidth()
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Edit ,
-                    contentDescription = "" ,
+                        // ...
+                        scope.launch {
+                            sheetState.hide()
+                        }
+                        mainActivityVM.updateShowMessageOption(false)
+                        MainActivity.fm.handleWhisper(whisperUserUid!! , mainActivityVM = mainActivityVM) // ilk fısıltı olduğu için kullanıcıyı getir ...
+                        MainActivity.navigate?.navigate("_whisperchat") // ilk fısıltı olduğu için sohbete it ...
+                    } ,
+                    border = null,
                     modifier = Modifier
-                        .size(16.dp)
-                )
+                        .fillMaxWidth()
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Edit ,
+                        contentDescription = "" ,
+                        modifier = Modifier
+                            .size(16.dp)
+                    )
 
 
-                Text(text = stringResource(id = R.string.whisper))
+                    Text(text = stringResource(id = R.string.whisper))
+                }
+
             }
 
 
