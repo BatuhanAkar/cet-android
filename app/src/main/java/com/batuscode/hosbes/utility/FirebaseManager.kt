@@ -109,11 +109,9 @@ class FirebaseManager {
         }
 
         override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
-            TODO("Not yet implemented")
         }
 
         override fun onCancelled(error: DatabaseError) {
-            TODO("Not yet implemented")
         }
 
 
@@ -156,11 +154,9 @@ class FirebaseManager {
         }
 
         override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
-            TODO("Not yet implemented")
         }
 
         override fun onCancelled(error: DatabaseError) {
-            TODO("Not yet implemented")
         }
 
 
@@ -194,36 +190,42 @@ class FirebaseManager {
 
       listenPrivateRooms = prvRoomRef.addSnapshotListener { snapshots , e ->
 
-
-            for (dc in snapshots!!.documentChanges){
-
-                when
-                {
-
-                    dc.type == DocumentChange.Type.ADDED -> {
-
-
-                        Log.d("documentType" , "added... " + dc.document.get("roomName"))
-
-                        val room = dc.document.toObject(PrivateRoom::class.java)
-
-                        privateRoomsViewModel.pushRoom(room)
+          if (snapshots != null){
 
 
 
-                    }
+              for (dc in snapshots!!.documentChanges){
 
-                    dc.type == DocumentChange.Type.MODIFIED -> {
+                  when (dc.type) {
+                      DocumentChange.Type.ADDED -> {
 
-                        Log.d("documentType" , "MODIFIED... " + dc.document.get("roomName"))
 
-                        val room = dc.document.toObject(PrivateRoom::class.java)
-                        Log.d("documentType" , "MODIFIED... activePar " + dc.document.get("activePar"))
+                          Log.d("documentType" , "added... " + dc.document.get("roomName"))
 
-                        privateRoomsViewModel.modifiedRoom(room)
-                    }
-                }
-            }
+                          val room = dc.document.toObject(PrivateRoom::class.java)
+
+                          privateRoomsViewModel.pushRoom(room)
+
+
+                      }
+                      DocumentChange.Type.MODIFIED -> {
+
+                          Log.d("documentType" , "MODIFIED... " + dc.document.get("roomName"))
+
+                          val room = dc.document.toObject(PrivateRoom::class.java)
+                          Log.d("documentType" , "MODIFIED... activePar " + dc.document.get("activePar"))
+
+                          privateRoomsViewModel.modifiedRoom(room)
+                      }
+
+                      DocumentChange.Type.REMOVED -> {
+
+                      }
+                  }
+              }
+
+          }
+
         }
     }
 
