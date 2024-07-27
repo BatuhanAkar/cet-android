@@ -82,12 +82,28 @@ fun PrivateRoomsFlow( mainActivityVM: MainActivityVM , privateRoomsViewModel: Pr
 
         chunkedRooms.forEachIndexed { index, privateRooms ->
 
-            items(privateRooms , key = {it.roomId!!}) { room ->
+            item (
+                key = index
+            ) {
+
+                Row ( horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ){
+
+                    privateRooms.forEach{ room ->
 
 
-                Room(room , mainActivityVM = mainActivityVM)
+                        Room(room , mainActivityVM = mainActivityVM)
 
 
+                    }
+
+//                    items(privateRooms , key = {it.roomId!!}) { room ->
+//                        Room(room , mainActivityVM = mainActivityVM)
+//
+//                    }
+                }
 
             }
         }
@@ -258,7 +274,7 @@ fun RoomPreview(){
 }*/
 
 
-/*
+
 @Preview(showBackground = true , showSystemUi = true)
 @Composable
 fun PrivateRoomsFlowPreview(){
@@ -268,4 +284,3 @@ fun PrivateRoomsFlowPreview(){
         PrivateRoomsFlow(paddingValues = PaddingValues(1.dp) , privateRoomsViewModel = privateRoomsViewModel , mainActivityVM = mainActivityVM)
     }
 }
-*/
