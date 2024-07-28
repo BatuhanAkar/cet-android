@@ -257,6 +257,7 @@ fun Room(room: PrivateRoom , mainActivityVM: MainActivityVM){
                 fontSize = 16.sp
             ) ,
             modifier = Modifier
+                .width(180.dp)
                 .padding(5.5.dp)
         )
 

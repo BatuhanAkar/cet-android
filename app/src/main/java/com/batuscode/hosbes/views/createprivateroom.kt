@@ -256,7 +256,8 @@ fun CreatePrivateRoomContent(mainActivityVM: MainActivityVM){
             Progress()
 
 
-        } else {
+        }
+        else {
             createButton = true
         }
 
@@ -303,16 +304,19 @@ fun CreatePrivateRoomContent(mainActivityVM: MainActivityVM){
 
         }
 
+        // TODO: özel odayı veri tabanına yaz ...
         if (writePrivateRoom == true){
 
             val parCount = sliderState.toLong()
 
+            val ownerId = MainActivity.PreferenceManager?.getuidShared("uid")
             MainActivity.fm.writePrivateRoom(
                 roomName = roomName!!,
                 roomId = roomId,
                 photoUrl = privateRoomPhotoUrl,
                 parCount = parCount,
-                mainActivityVM = mainActivityVM
+                mainActivityVM = mainActivityVM ,
+                ownerId = ownerId
             )
 
             mainActivityVM.uploadComlated(false)
@@ -407,6 +411,7 @@ fun CreatePrivateRoomContent(mainActivityVM: MainActivityVM){
                         fontSize = 16.sp
                     ) ,
                     modifier = Modifier
+                        .width(180.dp)
                         .padding(5.5.dp)
                 )
 
@@ -456,28 +461,34 @@ fun CreatePrivateRoomContent(mainActivityVM: MainActivityVM){
             Row (
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = "${sliderState.toInt()} " + stringResource(id = R.string.people) ,
-                    modifier = Modifier
-                        .padding(5.5.dp)
-                )
+
+                if (sliderState.toInt() != 0){
+
+                    Text(
+                        text = "${sliderState.toInt()} " + stringResource(id = R.string.people) ,
+                        modifier = Modifier
+                            .padding(5.5.dp)
+                    )
+                }
+
                 Slider(
                     value = sliderState ,
                     onValueChange = {
                     sliderState = it
                 } ,
-                    valueRange = 0f..200f,
-                    steps = 199 ,
+                    valueRange = 0f..20f,
+                    steps = 19 ,
                     colors = SliderDefaults.colors(
                         thumbColor = Color.White ,
                         activeTrackColor = Color.LightGray ,
                         inactiveTickColor = Color.Black ,
-                    )
+                    ) ,
+                    modifier = Modifier
+                        .padding(15.dp)
                 )
             }
 
-
-
+            // TODO: özel oda oluştur butonu ...
             Button(
                 onClick = {
 

@@ -21,6 +21,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.asImageBitmap
 import com.batuscode.hosbes.MainActivity
 import com.batuscode.hosbes.models.Message
+import com.batuscode.hosbes.models.Participnat
 import com.batuscode.hosbes.models.PrivateRoom
 import com.batuscode.hosbes.models.User
 import com.batuscode.hosbes.models.Whisper
@@ -163,7 +164,13 @@ class FirebaseManager {
     }
 
     fun handleJoinRoom( mainActivityVM: MainActivityVM , type:String , room: PrivateRoom){
+        val uid = currentUser?.uid
+        val displayName = currentUser?.displayName
+        val photoUrl = currentUser?.photoUrl.toString()
 
+        val participant = Participnat(
+            displayName, photoUrl, uid
+        )
         val prvRoomDocRef:DocumentReference = firestore.collection("prvRoom").document(room.roomId!!)
 
         firestore.runTransaction { transaction ->
@@ -172,11 +179,22 @@ class FirebaseManager {
             if (type.equals("joined")){
 
                 val activePar = snapshot.getLong("activePar")!! + 1
+
+                P1.child("participants")
+                    .child(room.roomId)
+                    .child(uid!!).setValue(participant)
+
+
                 transaction.update(prvRoomDocRef , "activePar" , activePar)
-            } else {
+            } else{
                 val activePar = snapshot.getLong("activePar")!! - 1
+
+                P1.child("participants")
+                    .child(room.roomId)
+                    .child(uid!!).setValue(null)
                 transaction.update(prvRoomDocRef , "activePar" , activePar)
             }
+
         }.addOnSuccessListener {
             Log.d("updateactivepar" , "success...")
         }
@@ -1070,12 +1088,13 @@ class FirebaseManager {
 
 
     @Composable
-    fun writePrivateRoom(roomName:String? , roomId:String? , photoUrl: String? , parCount:Long , mainActivityVM: MainActivityVM){
+    fun writePrivateRoom(roomName:String? , roomId:String? , ownerId:String? , photoUrl: String? , parCount:Long , mainActivityVM: MainActivityVM){
         val privateRoom = PrivateRoom(
             roomName = roomName!! ,
             roomId = roomId!! ,
             photoUrl = photoUrl!! ,
-            parCount = parCount
+            parCount = parCount ,
+            ownerId = ownerId
         )
 
 
@@ -1086,9 +1105,13 @@ class FirebaseManager {
 
             }
             .addOnCompleteListener{
+
+                // TODO: özel oda veri tebabnına yazıldı ... shaiplik bilgilerine odayı ekle ...
+
                 mainActivityVM.updateCreatingPrivateRoom(false)
             }
     }
+
 
     @Composable
     fun uploadPrivateRoomPhoto(bitmap: Bitmap? , mainActivityVM: MainActivityVM , uid:String){

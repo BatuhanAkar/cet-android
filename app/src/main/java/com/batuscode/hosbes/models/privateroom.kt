@@ -9,7 +9,8 @@ data class PrivateRoom(
     val roomId:String? = null ,
     val photoUrl:String? = null ,
     val parCount:Long = 0 ,
-    var activePar:Long = 0
+    var activePar:Long = 0 ,
+    val ownerId: String? = null
 ) {
 
 

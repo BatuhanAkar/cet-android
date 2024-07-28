@@ -376,4 +376,11 @@ class MainActivityVM:ViewModel() {
     fun updateShowMenu(state: Boolean){
         _showMenu.value = state
     }
+
+    private val _showRoomInfo = MutableStateFlow<Boolean?>(false)
+    val showRoomInfo:StateFlow<Boolean?> get() = _showRoomInfo
+
+    fun updateShowRoomInfo(state:Boolean){
+        _showRoomInfo.value = state
+    }
 }

@@ -92,11 +92,12 @@ fun PrivateRoomChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewMode
     var message by remember {
         mutableStateOf("")
     }
+
     val lifecycle = LocalLifecycleOwner.current
     val channelId by mainActivityVM.channelId.collectAsState()
     val outForSelectImage by mainActivityVM.outForSelectImage.collectAsState()
     val showMessageOption by mainActivityVM.showMessageOption.collectAsState()
-
+    val showRoomInfo by mainActivityVM.showRoomInfo.collectAsState()
 
     DisposableEffect(lifecycle) {
         val observe = LifecycleEventObserver { _, event ->
@@ -193,7 +194,9 @@ fun PrivateRoomChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewMode
             TopAppBar(title = {
                               Text(text = room?.roomName.toString())
             } , actions = {
-                IconButton(onClick = { /*TODO*/ }) {
+                IconButton(onClick = {
+                    mainActivityVM.updateShowRoomInfo(true)
+                }) {
                     Icon(painter = painterResource(id = R.drawable.info_24px), contentDescription = "")
                 }
             },
@@ -216,6 +219,10 @@ fun PrivateRoomChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewMode
     ){innerPadding ->
 
 
+        if (showRoomInfo == true){
+
+            PrivateRoomInfo(room = room!!, mainActivityVM = mainActivityVM)
+        }
 
 
         ConstraintLayout (modifier = Modifier

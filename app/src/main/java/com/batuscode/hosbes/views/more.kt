@@ -295,9 +295,17 @@ fun MoreContent(scope: CoroutineScope , sheetState: SheetState , mainActivityVM:
                 }
         ) {
 
-            // delete account button
+            // TODO: delete account button ...
+
             TextButton(
-                onClick = { /*TODO*/ } ,
+                onClick = {
+
+                    /**
+                     *
+                     * **/
+
+
+                } ,
                 modifier = Modifier.fillMaxWidth()
             ) {
 
