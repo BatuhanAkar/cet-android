@@ -1,11 +1,12 @@
 package com.batuscode.hosbes.utility
 
+import androidx.lifecycle.ViewModel
 import com.batuscode.hosbes.models.Participnat
 import com.batuscode.hosbes.models.PrivateRoom
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
-class ParticipantsViewModel {
+class ParticipantsViewModel: ViewModel() {
 
     private val _participants = MutableStateFlow<List<Participnat>>(emptyList())
     val participnats: StateFlow<List<Participnat>> get()  = _participants
@@ -16,5 +17,10 @@ class ParticipantsViewModel {
         roomIter.add(participnat)
         _participants.value = roomIter
 
+    }
+
+
+    fun refreshParticipantList(){
+        _participants.value = emptyList()
     }
 }

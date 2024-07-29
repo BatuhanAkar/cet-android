@@ -40,6 +40,7 @@ import com.batuscode.hosbes.utility.ChatViewModel
 import com.batuscode.hosbes.utility.FirebaseManager
 import com.batuscode.hosbes.utility.GlideApp
 import com.batuscode.hosbes.utility.MainActivityVM
+import com.batuscode.hosbes.utility.ParticipantsViewModel
 import com.batuscode.hosbes.utility.PreferenceManager
 import com.batuscode.hosbes.utility.SessionService
 import com.batuscode.hosbes.utility.WhisperViewModel
@@ -134,6 +135,8 @@ class MainActivity : ComponentActivity() {
                 val mainActivityVM: MainActivityVM by viewModels()
                 val chatViewModel:ChatViewModel by viewModels()
                 val whisperViewModel:WhisperViewModel by viewModels()
+
+                val participantsViewModel:ParticipantsViewModel by viewModels()
                 fm.whisperViewModel = whisperViewModel
 
                 val currentUser by authViewModel.currentUser.collectAsState()
@@ -237,7 +240,7 @@ class MainActivity : ComponentActivity() {
                         }
                         
                         composable("privateroomchat"){
-                            PrivateRoomChat(mainActivityVM = mainActivityVM , chatViewModel)
+                            PrivateRoomChat(mainActivityVM = mainActivityVM , chatViewModel , participantsViewModel)
                         }
                         
                         composable("whisper"){

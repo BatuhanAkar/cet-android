@@ -59,6 +59,7 @@ fun ParticipantsFlow(participantsViewModel: ParticipantsViewModel , privateRoom:
 
             when(event){
                 Lifecycle.Event.ON_CREATE -> {
+                    participantsViewModel.refreshParticipantList()
                     MainActivity.fm.pullPrivateRoomParticipants(privateRoom, participantsViewModel)
                 }
                 Lifecycle.Event.ON_START -> {}
@@ -130,8 +131,6 @@ fun ParticipantsView(participnat: Participnat , context:Context){
 
 
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
     ){
         Column (
             horizontalAlignment = Alignment.CenterHorizontally ,

@@ -212,8 +212,9 @@ class FirebaseManager {
             .get()
             .addOnSuccessListener {
                 it.children.forEach { dataSnapshot ->
-
                     val participnat = dataSnapshot.getValue(Participnat::class.java)
+                    Log.d("participant" , " eklendi ... " + participnat?.displayName)
+
                     participantsViewModel.pushParticipants(participnat!!)
                 }
             }

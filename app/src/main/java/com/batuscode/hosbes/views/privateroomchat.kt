@@ -70,6 +70,7 @@ import com.batuscode.hosbes.ui.theme.HoşbeşTheme
 import com.batuscode.hosbes.utility.ChatViewModel
 import com.batuscode.hosbes.utility.FirebaseManager
 import com.batuscode.hosbes.utility.MainActivityVM
+import com.batuscode.hosbes.utility.ParticipantsViewModel
 import com.batuscode.hosbes.views.ui.ChannelMenu
 import com.batuscode.hosbes.views.ui.MessageTextField
 import com.bumptech.glide.Glide
@@ -81,7 +82,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 @SuppressLint("StateFlowValueCalledInComposition")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PrivateRoomChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
+fun PrivateRoomChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel , participantsViewModel: ParticipantsViewModel){
 
 
     val context: Context = LocalContext.current
@@ -215,6 +216,7 @@ fun PrivateRoomChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewMode
                         contentDescription = "" ,
                         modifier = Modifier
                             .clickable {
+                                MainActivity.PreferenceManager?.saveSession("inPrivateRoom" , false)
                                 MainActivity.fm.handleJoinRoom( mainActivityVM ,"exit" , room!!)
                                 MainActivity.navigate?.popBackStack()
                             }
@@ -228,7 +230,7 @@ fun PrivateRoomChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewMode
 
         if (showRoomInfo == true){
 
-            PrivateRoomInfo(room = room!!, mainActivityVM = mainActivityVM)
+            PrivateRoomInfo(room = room!!, mainActivityVM = mainActivityVM , participantsViewModel = participantsViewModel)
         }
 
 
@@ -291,6 +293,6 @@ fun PrivateRoomPreview(){
     val mainActivityVM:MainActivityVM = viewModel()
     HoşbeşTheme {
         val chatViewModel: ChatViewModel = viewModel()
-        PrivateRoomChat(mainActivityVM , chatViewModel)
+        PrivateRoomChat(mainActivityVM , chatViewModel , ParticipantsViewModel())
     }
 }

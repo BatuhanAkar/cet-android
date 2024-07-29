@@ -35,7 +35,7 @@ import kotlinx.coroutines.CoroutineScope
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PrivateRoomInfo(room: PrivateRoom , mainActivityVM: MainActivityVM){
+fun PrivateRoomInfo(room: PrivateRoom , mainActivityVM: MainActivityVM , participantsViewModel: ParticipantsViewModel){
 
 
     val context = LocalContext.current
@@ -56,14 +56,14 @@ fun PrivateRoomInfo(room: PrivateRoom , mainActivityVM: MainActivityVM){
 
         ) {
 
-        InfoContent( room , scope , mainActivityVM , context)
+        InfoContent( room , scope , mainActivityVM , context , participantsViewModel)
 
     }
 
 }
 
 @Composable
-fun InfoContent(room:PrivateRoom , scope: CoroutineScope , mainActivityVM: MainActivityVM , context:Context){
+fun InfoContent(room:PrivateRoom , scope: CoroutineScope , mainActivityVM: MainActivityVM , context:Context , participantsViewModel: ParticipantsViewModel){
     Column {
 
         // TODO: oda bilgileri içinde odayı sil butonu ...
@@ -83,7 +83,7 @@ fun InfoContent(room:PrivateRoom , scope: CoroutineScope , mainActivityVM: MainA
         }
 
         // TODO: oda katılımcılarının gösterilecği kısım ...
-        ParticipantsFlow(participantsViewModel = ParticipantsViewModel() , room)
+        ParticipantsFlow(participantsViewModel = participantsViewModel , room)
 
     }
 }
@@ -93,6 +93,6 @@ fun InfoContent(room:PrivateRoom , scope: CoroutineScope , mainActivityVM: MainA
 fun InfoContentPreview(){
 
     HoşbeşTheme {
-        InfoContent(room = PrivateRoom(), scope = rememberCoroutineScope(), mainActivityVM = MainActivityVM(), context = LocalContext.current)
+        InfoContent(room = PrivateRoom(), scope = rememberCoroutineScope(), mainActivityVM = MainActivityVM(), context = LocalContext.current , ParticipantsViewModel())
     }
 }
