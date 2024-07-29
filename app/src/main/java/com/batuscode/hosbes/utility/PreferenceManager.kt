@@ -9,7 +9,6 @@ class PreferenceManager(context: Context) {
         return context.getSharedPreferences(key , Context.MODE_PRIVATE)
     }
 
-
     fun saveSession(key:String , value: Boolean){
         val editor = sharedPreference(key).edit()
         editor.putBoolean(key , value)

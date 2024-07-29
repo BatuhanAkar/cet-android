@@ -103,7 +103,6 @@ class MainActivity : ComponentActivity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
-
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -204,6 +203,9 @@ class MainActivity : ComponentActivity() {
                     }
 
                 }
+
+
+
                 handler.postDelayed({
                     splash = false
                                     },5000)

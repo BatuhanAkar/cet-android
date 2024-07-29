@@ -25,6 +25,8 @@ import com.batuscode.hosbes.models.Participnat
 import com.batuscode.hosbes.models.PrivateRoom
 import com.batuscode.hosbes.models.User
 import com.batuscode.hosbes.models.Whisper
+import com.batuscode.hosbes.utility.FirebaseManager.Companion.P1
+import com.batuscode.hosbes.utility.FirebaseManager.Companion.firestore
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
@@ -1381,11 +1383,14 @@ class FirebaseManager {
 class SessionService:Service() {
     lateinit var preferenceManager:PreferenceManager
     var uid:String? = ""
-
+    var session:Boolean? = false
+    var privRoomId:String? = ""
     override fun onCreate() {
         super.onCreate()
         preferenceManager = PreferenceManager(context = this) ;
         uid = preferenceManager.getuidShared("uid")
+        session = preferenceManager.getSession("inPrivateRoom")
+        privRoomId = preferenceManager.getuidShared("privateRoomId")
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -1395,6 +1400,24 @@ class SessionService:Service() {
         FirebaseManager.firestore.collection("users")
             .document(uid.toString())
             .update("isOnline" , false)
+
+        if (session == true){
+            val prvRoomDocRef:DocumentReference = firestore.collection("prvRoom").document(privRoomId!!)
+
+            firestore.runTransaction { transaction ->
+                val snapshot = transaction.get(prvRoomDocRef)
+                val activePar = snapshot.getLong("activePar")!! - 1
+
+                P1.child("participants")
+                    .child(privRoomId!!)
+                    .child(uid!!).setValue(null)
+                transaction.update(prvRoomDocRef , "activePar" , activePar)
+
+            }.addOnSuccessListener {
+                preferenceManager.saveSession("inPrivateRoom" , false)
+                Log.d("updateactivepar" , "success...")
+            }
+        }
 
         return START_NOT_STICKY
     }

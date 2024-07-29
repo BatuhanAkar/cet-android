@@ -383,4 +383,5 @@ class MainActivityVM:ViewModel() {
     fun updateShowRoomInfo(state:Boolean){
         _showRoomInfo.value = state
     }
+
 }

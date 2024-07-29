@@ -106,7 +106,7 @@ fun WhisperChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
             TopAppBar(
                 title = {
 
-                    Text(text = "whisperItem?.wdisplayName!!") // degistir ...
+                    Text(text = whisperItem?.wdisplayName!!) // degistir ...
 
                 } ,
                 navigationIcon = {

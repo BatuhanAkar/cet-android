@@ -112,6 +112,9 @@ fun PrivateRoomChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewMode
 
                     MainActivity.fm.removePrChatListener(FirebaseManager.P1 , room!!)
                     MainActivity.fm.pullPRChat(FirebaseManager.P1 , room!!)
+
+                    MainActivity.PreferenceManager?.saveSession("inPrivateRoom" , true)
+                    MainActivity.PreferenceManager?.saveuid("privateRoomId" , room?.roomId!!)
                 }
                 Lifecycle.Event.ON_START -> {
 
@@ -192,7 +195,11 @@ fun PrivateRoomChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewMode
         topBar = {
 
             TopAppBar(title = {
-                              Text(text = room?.roomName.toString())
+                              Text(
+                                  text = room?.roomName.toString() ,
+                                  maxLines = 2 ,
+
+                              )
             } , actions = {
                 IconButton(onClick = {
                     mainActivityVM.updateShowRoomInfo(true)

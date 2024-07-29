@@ -444,7 +444,10 @@ fun CreatePrivateRoomContent(mainActivityVM: MainActivityVM){
                 TextField(
                     value = roomName ,
                     onValueChange = {
-                                    roomName = it
+                        if (it.length <= 19){
+                            roomName = it
+
+                        }
                     } ,
                     label = {
                         Text(text = stringResource(id = R.string.privateroomname))
@@ -453,6 +456,8 @@ fun CreatePrivateRoomContent(mainActivityVM: MainActivityVM){
                         unfocusedIndicatorColor = Color.Transparent ,
                         focusedIndicatorColor = Color.Transparent
                     ) ,
+                    maxLines = 1 ,
+                    singleLine = true ,
                     modifier = Modifier
                         .background(Color.Gray.copy(0.5f))
                 )
