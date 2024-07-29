@@ -83,7 +83,7 @@ fun InfoContent(room:PrivateRoom , scope: CoroutineScope , mainActivityVM: MainA
         }
 
         // TODO: oda katılımcılarının gösterilecği kısım ...
-        ParticipantsFlow(participantsViewModel = ParticipantsViewModel())
+        ParticipantsFlow(participantsViewModel = ParticipantsViewModel() , room)
 
     }
 }

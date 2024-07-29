@@ -23,6 +23,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ImageBitmap
@@ -35,8 +36,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import com.batuscode.hosbes.MainActivity
 import com.batuscode.hosbes.R
 import com.batuscode.hosbes.models.Participnat
+import com.batuscode.hosbes.models.PrivateRoom
 import com.batuscode.hosbes.ui.theme.HoşbeşTheme
 import com.batuscode.hosbes.utility.GlideApp
 import com.batuscode.hosbes.utility.ParticipantsViewModel
@@ -44,7 +47,7 @@ import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 
 @Composable
-fun ParticipantsFlow(participantsViewModel: ParticipantsViewModel){
+fun ParticipantsFlow(participantsViewModel: ParticipantsViewModel , privateRoom: PrivateRoom){
     val context = LocalContext.current
     val participants = participantsViewModel.participnats.collectAsState()
     val chunkedParticipnat = participants.value.chunked(5)
@@ -55,7 +58,7 @@ fun ParticipantsFlow(participantsViewModel: ParticipantsViewModel){
 
             when(event){
                 Lifecycle.Event.ON_CREATE -> {
-
+                    MainActivity.fm.pullPrivateRoomParticipants(privateRoom, participantsViewModel)
                 }
                 Lifecycle.Event.ON_START -> {}
                 Lifecycle.Event.ON_RESUME -> {}
@@ -74,7 +77,9 @@ fun ParticipantsFlow(participantsViewModel: ParticipantsViewModel){
         }
     }
 
-    LazyColumn{
+    LazyColumn(
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ){
 
         chunkedParticipnat.forEachIndexed{ index, participants ->
             item(key = index){
@@ -123,8 +128,13 @@ fun ParticipantsView(participnat: Participnat , context:Context){
 
 
 
-    Row {
-        Column {
+    Row (
+        modifier = Modifier
+            .width(180.dp)
+    ){
+        Column (
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             if (image != null){
 
 
@@ -154,7 +164,8 @@ fun ParticipantsView(participnat: Participnat , context:Context){
 
             }
 
-            Text(text = "Batuhan")
+            Text(
+                text = "aghghghghghghg" )
         }
     }
 }

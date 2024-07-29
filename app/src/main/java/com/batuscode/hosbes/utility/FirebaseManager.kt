@@ -204,6 +204,19 @@ class FirebaseManager {
 
     lateinit var listenPrivateRooms: ListenerRegistration
 
+    fun pullPrivateRoomParticipants(privateRoom: PrivateRoom , participantsViewModel: ParticipantsViewModel){
+        P1.child("participants")
+            .child(privateRoom.roomId!!)
+            .get()
+            .addOnSuccessListener {
+                it.children.forEach { dataSnapshot ->
+
+                    val participnat = dataSnapshot.getValue(Participnat::class.java)
+                    participantsViewModel.pushParticipants(participnat!!)
+                }
+            }
+    }
+
     fun pullPrivateRooms(privateRoomsViewModel: PrivateRoomsViewModel){
 
       listenPrivateRooms = prvRoomRef.addSnapshotListener { snapshots , e ->
