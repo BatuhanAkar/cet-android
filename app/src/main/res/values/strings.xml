@@ -40,4 +40,9 @@
     <string name="delete_message_just_for_me">Sohbeti sadece benden sil</string>
     <string name="delete_message_everyone">Sohbeti iki taraf için sil</string>
     <string name="deleteRoom">Odayı kapat</string>
+    <string name="deletingpivateroom">Oda kapatılsın mı ?</string>
+    <string name="deleteroom">Sil</string>
+    <string name="cancel">İptal</string>
+    <string name="roomisdeleted">Oda kapatıldı</string>
+    <string name="ok">Tamam</string>
 </resources>

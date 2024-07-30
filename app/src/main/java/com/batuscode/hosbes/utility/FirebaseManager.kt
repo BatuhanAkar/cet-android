@@ -206,6 +206,22 @@ class FirebaseManager {
 
     lateinit var listenPrivateRooms: ListenerRegistration
 
+
+    fun deletePrivateRoom(room: PrivateRoom){
+        firestore.collection("prvRoom").document(room.roomId!!).delete()
+            .addOnSuccessListener {
+
+            }
+
+        P1.child(room.roomId!!)
+            .setValue(null)
+
+        P1.child("participants")
+            .child(room.roomId)
+            .setValue(null)
+
+    }
+
     fun pullPrivateRoomParticipants(privateRoom: PrivateRoom , participantsViewModel: ParticipantsViewModel){
         P1.child("participants")
             .child(privateRoom.roomId!!)
@@ -220,7 +236,7 @@ class FirebaseManager {
             }
     }
 
-    fun pullPrivateRooms(privateRoomsViewModel: PrivateRoomsViewModel){
+    fun pullPrivateRooms(privateRoomsViewModel: PrivateRoomsViewModel , mainActivityVM: MainActivityVM){
 
       listenPrivateRooms = prvRoomRef.addSnapshotListener { snapshots , e ->
 
@@ -253,6 +269,15 @@ class FirebaseManager {
                       }
 
                       DocumentChange.Type.REMOVED -> {
+                          val room = dc.document.toObject(PrivateRoom::class.java)
+                          val prvRoomId = MainActivity.PreferenceManager?.getuidShared("privateRoomId")
+
+                          if (room.roomId.equals(prvRoomId)){
+                              MainActivity.navigate?.popBackStack()
+
+                          }
+                          mainActivityVM.updateRoomExist(false)
+                          privateRoomsViewModel.roomRemoved(room)
 
                       }
                   }
@@ -1104,13 +1129,15 @@ class FirebaseManager {
 
 
     @Composable
-    fun writePrivateRoom(roomName:String? , roomId:String? , ownerId:String? , photoUrl: String? , parCount:Long , mainActivityVM: MainActivityVM){
+    fun writePrivateRoom(roomName:String? , roomId:String? , ownerId:String? ,
+                         photoUrl: String? , parCount:Long , mainActivityVM: MainActivityVM){
         val privateRoom = PrivateRoom(
             roomName = roomName!! ,
             roomId = roomId!! ,
             photoUrl = photoUrl!! ,
             parCount = parCount ,
             ownerId = ownerId
+
         )
 
 

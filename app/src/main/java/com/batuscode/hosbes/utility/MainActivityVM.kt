@@ -384,4 +384,10 @@ class MainActivityVM:ViewModel() {
         _showRoomInfo.value = state
     }
 
+    private val _roomExist = MutableStateFlow<Boolean?>(true)
+    val roomExist:StateFlow<Boolean?> get() = _roomExist
+
+    fun updateRoomExist(state: Boolean){
+        _roomExist.value = state
+    }
 }

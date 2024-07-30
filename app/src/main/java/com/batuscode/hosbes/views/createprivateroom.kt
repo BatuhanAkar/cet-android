@@ -316,7 +316,7 @@ fun CreatePrivateRoomContent(mainActivityVM: MainActivityVM){
                 photoUrl = privateRoomPhotoUrl,
                 parCount = parCount,
                 mainActivityVM = mainActivityVM ,
-                ownerId = ownerId
+                ownerId = ownerId 
             )
 
             mainActivityVM.uploadComlated(false)

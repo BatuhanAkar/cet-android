@@ -40,6 +40,21 @@ class PrivateRoomsViewModel: ViewModel() {
 
     }
 
+    fun roomRemoved(room: PrivateRoom){
+        val oldChats = _rooms.value.toMutableList()
+
+        val position = oldChats.indexOf(room)
+
+        if (position in oldChats.indices){
+
+
+            oldChats.remove(room)
+
+            _rooms.value = oldChats
+
+        }
+    }
+
     fun refreshRooms(){
         _rooms.value = emptyList()
     }

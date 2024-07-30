@@ -7,11 +7,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -21,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -43,6 +46,37 @@ fun PrivateRooms(mainActivityVM: MainActivityVM){
 
     val privateRoomsViewModel:PrivateRoomsViewModel = viewModel()
     val showCreatePrivateRoom by mainActivityVM.showCreatePrivateRoom.collectAsState()
+    val roomExist by mainActivityVM.roomExist.collectAsState()
+
+    if (roomExist == false){
+        AlertDialog(
+            onDismissRequest = {
+                mainActivityVM.updateRoomExist(true)
+            } ,
+            title = {
+                Text(text = stringResource(id = R.string.roomisdeleted))
+            } ,
+            confirmButton = {
+                TextButton(
+                    onClick = {
+
+                    } ,
+                )
+                {
+                    Text(text = stringResource(id = R.string.ok))
+                }
+
+
+            } ,
+            dismissButton = {
+            } ,
+            properties = DialogProperties(
+                decorFitsSystemWindows = true ,
+                usePlatformDefaultWidth = true ,
+                dismissOnClickOutside = true
+            )
+        )
+    }
 
     Scaffold (
         topBar = {
@@ -94,7 +128,7 @@ fun PrivateRooms(mainActivityVM: MainActivityVM){
 
                         privateRoomsViewModel.refreshRooms()
                         MainActivity.fm.detachPrivateRoomsListener()
-                        MainActivity.fm.pullPrivateRooms(privateRoomsViewModel)
+                        MainActivity.fm.pullPrivateRooms(privateRoomsViewModel , mainActivityVM)
                     }
                     Lifecycle.Event.ON_START -> {
                         Log.d("privaterooms" , "ON_START....")

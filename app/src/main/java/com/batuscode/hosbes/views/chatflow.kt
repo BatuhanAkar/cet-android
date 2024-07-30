@@ -140,6 +140,8 @@ fun MessageItemView(message:Message , type:String , mainActivityVM: MainActivity
 
     val timeStamp by remember { mutableStateOf(  dateformatHour(message.time!!) ) }
 
+    val inWhisper by mainActivityVM.inWhisper.collectAsState()
+
 
     // gönderen resmi ile mesaj görünümünü yan yana koy...
 
@@ -239,25 +241,27 @@ fun MessageItemView(message:Message , type:String , mainActivityVM: MainActivity
 
                 }
 
-
-
-                OutlinedIconButton(
-                    onClick = {
-                        mainActivityVM.updateWhisperUserUid(message.senderId!!)
-                        mainActivityVM.updateMessageItem(message)
-                        mainActivityVM.updateShowMessageOption(true)
-                    } ,
-                    border = null ,
-                    modifier = Modifier
-                        .padding(0.dp)
-                        .size(24.dp)
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.more_horiz_24px) ,
-                        contentDescription = "" ,
+                if (inWhisper == false) {
+                    OutlinedIconButton(
+                        onClick = {
+                            mainActivityVM.updateWhisperUserUid(message.senderId!!)
+                            mainActivityVM.updateMessageItem(message)
+                            mainActivityVM.updateShowMessageOption(true)
+                        } ,
+                        border = null ,
                         modifier = Modifier
-                            .align(Alignment.Top)
-                    )
+                            .padding(0.dp)
+                            .size(24.dp)
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.more_horiz_24px) ,
+                            contentDescription = "" ,
+                            modifier = Modifier
+                                .align(Alignment.Top)
+                        )
+                    }
+
+
                 }
             }
 
