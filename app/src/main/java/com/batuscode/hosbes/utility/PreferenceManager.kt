@@ -28,4 +28,14 @@ class PreferenceManager(context: Context) {
     fun getuidShared(key: String): String {
         return sharedPreference(key).getString(key , null).toString()
     }
+
+    fun saveLastChatTime(key:String , value:Long){
+        val editor = sharedPreference(key).edit()
+        editor.putLong(key , value)
+        editor.apply()
+    }
+
+    fun getLastChatTime(key: String): Long {
+        return sharedPreference(key).getLong(key , 0L)
+    }
 }

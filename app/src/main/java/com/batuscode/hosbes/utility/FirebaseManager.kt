@@ -38,6 +38,7 @@ import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.Query
 import com.google.firebase.database.getValue
 import com.google.firebase.database.ktx.database
 import com.google.firebase.firestore.CollectionReference
@@ -82,6 +83,7 @@ class FirebaseManager {
 
 
 
+    lateinit var chatQuery:Query
 
     lateinit var chatViewModel: ChatViewModel
 
@@ -390,11 +392,21 @@ class FirebaseManager {
             .removeEventListener(chatEventListener)
     }
 
-    fun pullChat(mainActivityVM: MainActivityVM , channel: DatabaseReference){
+    fun pullChat(mainActivityVM: MainActivityVM , channel: DatabaseReference , loadMoreChat:Boolean){
+        if (!loadMoreChat){
+             chatQuery = channel.orderByChild("time").limitToLast(10)
+            Log.d("loadmorechat" , "fazlasi değil ...")
+        } else {
+            var lastChatTime = MainActivity.PreferenceManager?.getLastChatTime("lastChatTime")
+            Log.d("loadmorechat" , "son mesaj zaman değeri ... " + lastChatTime)
 
+            var lct = lastChatTime?.toDouble()
+            chatQuery = channel.orderByChild("time").endBefore(lct!!).limitToLast(10)
+            Log.d("loadmorechat" , "fazlasi ...")
 
+        }
 
-        channel.addChildEventListener(chatEventListener)
+        chatQuery.addChildEventListener(chatEventListener)
 
 
         handler.postDelayed({

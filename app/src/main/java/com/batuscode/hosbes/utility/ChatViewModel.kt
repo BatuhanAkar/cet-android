@@ -7,6 +7,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.batuscode.hosbes.MainActivity
 import com.batuscode.hosbes.models.Message
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,20 +30,16 @@ class ChatViewModel: ViewModel() {
 
         Log.d("jokermessage" , "eklenen öğenin pozisyonu :: " + position)
 
-//        val updatedChat = chatIterator + message
 
         _chats.value = chatIterator
 
-        var realposition = _chats.value.indexOf(message)
-        Log.d("jokermessage" , "eklenen öğenin gerçek pozisyonu :: " + realposition)
+        _chats.value.sortedBy { it.time }
 
-        Log.d("jokermessage" , "yeni mesaj eklenmeden sonraki boyut :: " + _chats.value?.size)
+        var message = _chats.value.get(0)
+        var lastChatId = message.time
+        MainActivity.PreferenceManager?.saveLastChatTime("lastChatTime" , lastChatId!!)
 
-//        val current = _chats.value
-//
-//        val lastIndex = current + message
-//
-//        _chats.value = lastIndex
+
     }
 
     fun messageRemmoved(message: Message){

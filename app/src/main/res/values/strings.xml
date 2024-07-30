@@ -45,4 +45,5 @@
     <string name="cancel">İptal</string>
     <string name="roomisdeleted">Oda kapatıldı</string>
     <string name="ok">Tamam</string>
+    <string name="closeaccount">Hesabı sil</string>
 </resources>

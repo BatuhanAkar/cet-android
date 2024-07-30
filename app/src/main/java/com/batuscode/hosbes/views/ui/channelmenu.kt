@@ -28,6 +28,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -190,6 +191,7 @@ fun ChannelMenu( mainActivityVM: MainActivityVM ,chatViewModel: ChatViewModel ,
 
 @Composable
 fun changeChannel(selectedChannelId:String , chatViewModel: ChatViewModel , mainActivityVM: MainActivityVM){
+    val loadMoreChat by mainActivityVM.loadMoreChat.collectAsState()
 
     var handler = Handler(Looper.getMainLooper())
 
@@ -212,7 +214,7 @@ fun changeChannel(selectedChannelId:String , chatViewModel: ChatViewModel , main
 
         handler.postDelayed({
 
-            MainActivity.fm.pullChat(mainActivityVM = mainActivityVM , FirebaseManager.C2)
+            MainActivity.fm.pullChat(mainActivityVM = mainActivityVM , FirebaseManager.C2 , loadMoreChat!!)
 
 
 
@@ -235,7 +237,7 @@ fun changeChannel(selectedChannelId:String , chatViewModel: ChatViewModel , main
 
         handler.postDelayed({
 
-            MainActivity.fm.pullChat(mainActivityVM = mainActivityVM , FirebaseManager.C1)
+            MainActivity.fm.pullChat(mainActivityVM = mainActivityVM , FirebaseManager.C1 , loadMoreChat!!)
 
         } , 5000)
 

@@ -78,7 +78,10 @@ fun OptionContent( sheetState: SheetState , scope: CoroutineScope , mainActivity
     val whisperUserUid by mainActivityVM.whisperUserUid.collectAsState()
     val inWhisper by mainActivityVM.inWhisper.collectAsState()
 
-    Column {
+    Column (
+        modifier = Modifier
+            .wrapContentSize()
+    ){
 
         if (messageItem?.senderId == FirebaseManager.currentUser?.uid){
 

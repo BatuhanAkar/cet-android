@@ -46,6 +46,7 @@ import com.batuscode.hosbes.utility.SessionService
 import com.batuscode.hosbes.utility.WhisperViewModel
 import com.batuscode.hosbes.views.Authentication
 import com.batuscode.hosbes.views.Chat
+import com.batuscode.hosbes.views.DeleteAccount
 import com.batuscode.hosbes.views.PrivateRoomChat
 import com.batuscode.hosbes.views.PrivateRooms
 import com.batuscode.hosbes.views.SelectUsername
@@ -253,6 +254,10 @@ class MainActivity : ComponentActivity() {
                         
                         composable("_whisperchat"){
                             _WhisperChat(mainActivityVM = mainActivityVM, chatViewModel = chatViewModel)
+                        }
+
+                        composable("deleteaccount"){
+                            DeleteAccount()
                         }
                     }
 

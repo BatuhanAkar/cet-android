@@ -44,6 +44,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.BlurredEdgeTreatment
@@ -94,22 +95,94 @@ fun ChatFlow( mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel , mo
     val lifecycle = LocalLifecycleOwner.current
     val uid = FirebaseManager.currentUser?.uid.toString()
     val chats = chatViewModel.chat.collectAsState()
+    val channelId by mainActivityVM.channelId.collectAsState()
+    val selectedChannel by mainActivityVM.selectedChannel.collectAsState()
+    val loadMoreChat by mainActivityVM.loadMoreChat.collectAsState()
 
+    var isAtTop by remember {
+        mutableStateOf(false)
+    }
+    var isAtBottom by remember {
+        mutableStateOf(true)
+    }
     LaunchedEffect(key1 = chats.value.size) {
         if (-1 != (chats.value.size) - 1){
             state.animateScrollToItem((chats.value.size) - 1) // son ogeye kaydır ...
 
         }
+
+        snapshotFlow { state.firstVisibleItemIndex }
+            .collect{ index ->
+                isAtTop = index == 0
+                isAtBottom = state.layoutInfo.visibleItemsInfo.lastOrNull()?.index == state.layoutInfo.totalItemsCount - 1
+            }
     }
 
     LazyColumn(
         state = state,
-        modifier = modifier
+        modifier = modifier ,
     ) {
         items(chats.value!! , key = {it.messageId!!}){ message ->
             Log.d("jokermessage" , "öğe eklendi... :: " + message.messageId)
             MessageItemView(message = message , type =  message.type!! , mainActivityVM = mainActivityVM , chatViewModel)
         }
+    }
+
+    if (isAtTop){
+        isAtTop = false
+        Log.d("chatflowstatecontrol" , "liste en yukarıda ... ")
+        mainActivityVM.updateLoadMoreChat(true)
+
+        if (channelId == "C1"){
+            MainActivity.fm.removeChatEventListener(FirebaseManager.C1)
+            MainActivity.fm.pullChat(mainActivityVM = mainActivityVM , FirebaseManager.C1 , loadMoreChat!!)
+        } else if (channelId == "C2"){
+            MainActivity.fm.removeChatEventListener(FirebaseManager.C2)
+            MainActivity.fm.pullChat(mainActivityVM = mainActivityVM , FirebaseManager.C2 , loadMoreChat!!)
+
+
+        } else if (channelId == "P1"){
+
+
+            Log.d("mainchat" , "channelId == P1....")
+            if (selectedChannel == "Hoşbeş"){
+                MainActivity.fm.removeChatEventListener(FirebaseManager.P1)
+                MainActivity.fm.pullChat(mainActivityVM = mainActivityVM , FirebaseManager.C1 , loadMoreChat!!)
+            } else if (selectedChannel == "Mavi Boncuk"){
+                MainActivity.fm.removeChatEventListener(FirebaseManager.P1)
+                MainActivity.fm.pullChat(mainActivityVM = mainActivityVM , FirebaseManager.C2 , loadMoreChat!!)
+            }
+
+        } else if (channelId == "W"){
+
+
+            // sohbet dinleyicisini silmek için wid gerekir .... çekk ...
+
+            Log.d("mainchat" , "channelId == W....")
+            if (selectedChannel == "Hoşbeş"){
+                mainActivityVM.connectChannel("C1")
+                mainActivityVM.updateSelectedChannel("Hoşbeş")
+                chatViewModel.refreshChat()
+                // MainActivity.fm.detachWhisperChatListener(wid!!)
+
+                MainActivity.fm.pullChat(mainActivityVM = mainActivityVM , FirebaseManager.C1 , loadMoreChat!!)
+            } else if (selectedChannel == "Mavi Boncuk"){
+                mainActivityVM.connectChannel("C2")
+                chatViewModel.refreshChat()
+                mainActivityVM.updateSelectedChannel("Mavi Boncuk")
+                //  MainActivity.fm.detachWhisperChatListener(wid!!)
+                MainActivity.fm.pullChat(mainActivityVM = mainActivityVM , FirebaseManager.C2 , loadMoreChat!!)
+            }
+
+        }
+
+
+
+    }
+
+    if (isAtBottom){
+        Log.d("chatflowstatecontrol" , "liste en aşağıda ... ")
+
     }
 }
 

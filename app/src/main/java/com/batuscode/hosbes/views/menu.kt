@@ -68,77 +68,60 @@ fun MenuContent(mainActivityVM: MainActivityVM){
 
     val whisperItem by mainActivityVM.whisperItem.collectAsState()
 
-    Scaffold { innerPadding ->
+    Column(
+        modifier = Modifier
+            .wrapContentSize()
+    ) {
 
-        Column(
+        // sohbeti benden sil butonu
+
+        OutlinedButton(
+            onClick = {
+
+                /*TODO: sohbeti sil butonu */
+
+                MainActivity.fm.deleteChatFromMe(whisperItem = whisperItem!! , Wref = FirebaseManager.W , mainActivityVM = mainActivityVM)
+
+            } ,
+            border = null,
             modifier = Modifier
-                .padding(innerPadding)
+                .fillMaxWidth()
         ) {
 
-            // sohbeti benden sil butonu
-
-            OutlinedButton(
-                onClick = {
-
-                    /*TODO: sohbeti sil butonu */
-
-                    MainActivity.fm.deleteChatFromMe(whisperItem = whisperItem!! , Wref = FirebaseManager.W , mainActivityVM = mainActivityVM)
-
-                } ,
-                border = null,
-                modifier = Modifier
-                    .fillMaxWidth()
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.delete_20px),
-                    contentDescription = "" ,
-                    modifier = Modifier
-                        .size(20.dp)
-                )
+            Text(
+                text = stringResource(id = R.string.delete_message_just_for_me) ,
+                color = colorResource(id = R.color.delete)
+            )
+        }
 
 
-                Text(
-                    text = stringResource(id = R.string.delete_message_just_for_me) ,
-                    color = colorResource(id = R.color.delete)
-                )
-            }
+        // sohbeti herkesden sil ...
 
 
-            // sohbeti herkesden sil ...
+        OutlinedButton(
+            onClick = {
+
+                /*TODO: sohbeti sil butonu */
 
 
-            OutlinedButton(
-                onClick = {
+                MainActivity.fm.deleteChatEveryone(whisperItem = whisperItem!! , Wref = FirebaseManager.W , W_Cref = FirebaseManager.W_C , mainActivityVM = mainActivityVM)
 
-                    /*TODO: sohbeti sil butonu */
-
-
-                    MainActivity.fm.deleteChatEveryone(whisperItem = whisperItem!! , Wref = FirebaseManager.W , W_Cref = FirebaseManager.W_C , mainActivityVM = mainActivityVM)
-
-                } ,
-                border = null,
-                modifier = Modifier
-                    .fillMaxWidth()
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.delete_20px),
-                    contentDescription = "" ,
-                    modifier = Modifier
-                        .size(20.dp)
-                )
+            } ,
+            border = null,
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
 
 
-                Text(
-                    text = stringResource(id = R.string.delete_message_everyone) ,
-                    color = colorResource(id = R.color.delete)
-                )
-            }
-
-
+            Text(
+                text = stringResource(id = R.string.delete_message_everyone) ,
+                color = colorResource(id = R.color.delete)
+            )
         }
 
 
     }
+
 }
 
 @Preview(showBackground = true , showSystemUi = true)

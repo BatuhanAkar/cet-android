@@ -390,4 +390,11 @@ class MainActivityVM:ViewModel() {
     fun updateRoomExist(state: Boolean){
         _roomExist.value = state
     }
+
+    private val _loadMoreChat = MutableStateFlow<Boolean?>(false)
+    val loadMoreChat:StateFlow<Boolean?> get() = _loadMoreChat
+
+    fun updateLoadMoreChat(state: Boolean){
+        _loadMoreChat.value = state
+    }
 }

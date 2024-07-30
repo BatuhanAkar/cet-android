@@ -295,15 +295,16 @@ fun MoreContent(scope: CoroutineScope , sheetState: SheetState , mainActivityVM:
                 }
         ) {
 
-            // TODO: delete account button ...
+            // TODO: Hesabı sil butonu ...
 
             TextButton(
                 onClick = {
 
                     /**
-                     *
+                     * hesabı silme sayfasına yönlendir ...
                      * **/
 
+                    MainActivity.navigate?.navigate("deleteaccount")
 
                 } ,
                 modifier = Modifier.fillMaxWidth()
