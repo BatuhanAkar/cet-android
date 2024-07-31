@@ -720,18 +720,28 @@ class FirebaseManager {
         val uid = currentUser?.uid.toString()
         W.child(uid).removeEventListener(whisperEventListener)
     }
-    fun pullWhisperChat(wid:String){
+    fun pullWhisperChat(wid:String , loadMoreChat:Boolean){
+        if (loadMoreChat){
 
+            var lastChatTime = MainActivity.PreferenceManager?.getLastChatTime("lastChatTime")
+            var lct = lastChatTime?.toDouble()
+            whisoerChatQuery = W_C.child(wid).orderByChild("time").endAt(lct!!).limitToLast(10)
 
-        W_C
-            .child(wid)
-            .addChildEventListener(chatEventListener)
+            whisoerChatQuery
+                .addChildEventListener(chatEventListener)
+        } else {
+            whisoerChatQuery = W_C.child(wid).orderByChild("time").limitToLast(13)
+
+            whisoerChatQuery
+                .addChildEventListener(chatEventListener)
+        }
     }
 
     fun detachWhisperChatListener(wid: String){
-        W_C
-            .child(wid)
-            .removeEventListener(chatEventListener)
+        if (::whisoerChatQuery.isInitialized){
+            whisoerChatQuery
+                .removeEventListener(chatEventListener)
+        }
     }
 
 

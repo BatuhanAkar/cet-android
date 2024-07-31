@@ -101,6 +101,10 @@ fun ChatFlow( mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel , mo
     val uid = FirebaseManager.currentUser?.uid.toString()
     val chats = chatViewModel.chat.collectAsState()
     val scope = rememberCoroutineScope()
+    val loadMoreChat by mainActivityVM.loadMoreChat.collectAsState()
+
+    val inWhisper by mainActivityVM.inWhisper.collectAsState()
+
     var isAtTop by remember {
         mutableStateOf(false)
     }
@@ -109,6 +113,8 @@ fun ChatFlow( mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel , mo
     }
     val density = LocalDensity.current
     val view = LocalView.current
+    val whisperItem by mainActivityVM.whisperItem.collectAsState()
+
 
     DisposableEffect(lifecycle) {
 
@@ -140,7 +146,17 @@ fun ChatFlow( mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel , mo
 
         snapshotFlow { state.firstVisibleItemIndex }
             .collect { index ->
-                isAtTop = index == 0
+                if (index == 0){
+                    if (inWhisper == true){
+                        mainActivityVM.updateLoadMoreChat(true)
+                        MainActivity.fm.loadMoreChat = loadMoreChat!!
+
+                        MainActivity.fm.pullWhisperChat(whisperItem?.wid!! , loadMoreChat!!)
+
+                    }
+
+                    Log.d("swipeTop" , "en üstte...")
+                }
                 isAtBottom =
                     state.layoutInfo.visibleItemsInfo.lastOrNull()?.index == state.layoutInfo.totalItemsCount - 1
             }

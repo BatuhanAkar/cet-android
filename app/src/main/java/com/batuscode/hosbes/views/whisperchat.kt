@@ -38,6 +38,7 @@ fun WhisperChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
     val user by mainActivityVM.user.collectAsState()
     val whisperItem by mainActivityVM.whisperItem.collectAsState()
     val showMessageOption by mainActivityVM.showMessageOption.collectAsState()
+    val loadMoreChat by mainActivityVM.loadMoreChat.collectAsState()
 
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver{_,event ->
@@ -54,7 +55,7 @@ fun WhisperChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
                     // burda ilk fısıltı mı bak ...
 
                     MainActivity.fm.detachWhisperChatListener(whisperItem?.wid!!)
-                    MainActivity.fm.pullWhisperChat(whisperItem?.wid!!)
+                    MainActivity.fm.pullWhisperChat(whisperItem?.wid!! , loadMoreChat!!)
 
                     setReaded(whisperItem = whisperItem!!)
 
@@ -70,7 +71,8 @@ fun WhisperChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
                 }
                 Lifecycle.Event.ON_PAUSE -> {
                     Log.d("WhisperChat" , "ON_PAUSE")
-
+                    mainActivityVM.updateLoadMoreChat(false)
+                    MainActivity.fm.loadMoreChat = false
                 }
                 Lifecycle.Event.ON_STOP -> {
                     Log.d("WhisperChat" , "ON_STOP")

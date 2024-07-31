@@ -40,15 +40,14 @@ fun _WhisperChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
     val lifecycleOwner = LocalLifecycleOwner.current // yaşam döngüsü kontrolcüsü ...
     val whisperfirst by mainActivityVM.whisperfirst.collectAsState()
     val wid by mainActivityVM.whisperId.collectAsState() // fısıltı oda id si ...
-
+    val loadMoreChat by mainActivityVM.loadMoreChat.collectAsState()
     val user by mainActivityVM.user.collectAsState()
     val showMessageOption by mainActivityVM.showMessageOption.collectAsState()
-
 
     if (whisperfirst == true){
         mainActivityVM.updatewhisperfirst(false)
         MainActivity.fm.detachWhisperChatListener(wid!!)
-        MainActivity.fm.pullWhisperChat(wid!!)
+        MainActivity.fm.pullWhisperChat(wid!! , loadMoreChat!!)
     }
 
     DisposableEffect(lifecycleOwner) {
@@ -77,6 +76,7 @@ fun _WhisperChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
                 }
                 Lifecycle.Event.ON_PAUSE -> {
                     Log.d("WhisperChat" , "ON_PAUSE")
+                    mainActivityVM.updateLoadMoreChat(false)
 
                 }
                 Lifecycle.Event.ON_STOP -> {

@@ -18,29 +18,51 @@ class ChatViewModel: ViewModel() {
 
     private val _chats = MutableStateFlow<List<Message>>(emptyList())
     val chat:StateFlow<List<Message>> get() = _chats
-    val oldMessages = mutableListOf<Message>()
+    var oldMessages = mutableListOf<Message>()
 
 
     fun pushChat(message: Message , loadMoreChat:Boolean){
 
-        val chatIterator = _chats.value.toMutableList()
+        if (loadMoreChat){
+            Log.d("whisperChatItems" , "fazlasını çekme...")
 
-        chatIterator.add(message)
+            val chatIterator = _chats.value.toMutableList()
 
-        var position = chatIterator.indexOf(message)
+            oldMessages.add(message)
 
-        Log.d("jokermessage" , "eklenen öğenin pozisyonu :: " + position)
+            var position = chatIterator.indexOf(message)
 
-
-
-
-        _chats.value = chatIterator
-
-        _chats.value.sortedBy { it.time }
+            Log.d("jokermessage" , "eklenen öğenin pozisyonu :: " + position)
 
 
-        var lastChatId = _chats.value.first().messageId
-        MainActivity.PreferenceManager?.saveuid("lastChatId" , lastChatId!!)
+
+
+            _chats.value = oldMessages + chatIterator
+
+            _chats.value.sortedBy { it.time }
+
+
+            var lastChatTime = _chats.value.first().time
+            var lct = lastChatTime
+            MainActivity.PreferenceManager?.saveLastChatTime("lastChatTime" , lct!!)
+        } else {
+            val chatIterator = _chats.value.toMutableList()
+            Log.d("whisperChatItems" , "ilk çekme...")
+
+            chatIterator.add(message)
+
+            var position = chatIterator.indexOf(message)
+
+            Log.d("jokermessage" , "eklenen öğenin pozisyonu :: " + position)
+
+            _chats.value = chatIterator
+
+            _chats.value.sortedBy { it.time }
+
+            var lastChatTime = _chats.value.first().time
+            var lct = lastChatTime
+            MainActivity.PreferenceManager?.saveLastChatTime("lastChatTime" , lct!!)
+        }
 
     }
 
@@ -110,7 +132,7 @@ class ChatViewModel: ViewModel() {
     }
 
     fun refreshChat(){
-
+        oldMessages = mutableListOf<Message>()
         _chats.value = emptyList()
 
     }
