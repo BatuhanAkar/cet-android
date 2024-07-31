@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.util.Log
+import android.view.ViewTreeObserver
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -43,6 +44,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -51,12 +53,15 @@ import androidx.compose.ui.draw.BlurredEdgeTreatment
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -82,6 +87,7 @@ import com.batuscode.hosbes.utility.MainActivityVM
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -89,100 +95,70 @@ import kotlin.random.Random
 
 
 @Composable
-fun ChatFlow( mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel , modifier: Modifier = Modifier){
-
+fun ChatFlow( mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel , modifier: Modifier = Modifier) {
     val state = rememberLazyListState()
     val lifecycle = LocalLifecycleOwner.current
     val uid = FirebaseManager.currentUser?.uid.toString()
     val chats = chatViewModel.chat.collectAsState()
-    val channelId by mainActivityVM.channelId.collectAsState()
-    val selectedChannel by mainActivityVM.selectedChannel.collectAsState()
-    val loadMoreChat by mainActivityVM.loadMoreChat.collectAsState()
-
+    val scope = rememberCoroutineScope()
     var isAtTop by remember {
         mutableStateOf(false)
     }
     var isAtBottom by remember {
         mutableStateOf(true)
     }
-    LaunchedEffect(key1 = chats.value.size) {
-        if (-1 != (chats.value.size) - 1){
-            state.animateScrollToItem((chats.value.size) - 1) // son ogeye kaydır ...
+    val density = LocalDensity.current
+    val view = LocalView.current
 
+    DisposableEffect(lifecycle) {
+
+        val listener = ViewTreeObserver.OnGlobalLayoutListener {
+            val rect = android.graphics.Rect()
+            view.getWindowVisibleDisplayFrame(rect)
+
+            val screenHeight = view.height
+            val keypadHeight = screenHeight - rect.bottom
+
+            if (keypadHeight > screenHeight * 0.15){
+                scope.launch {
+                    state.animateScrollToItem((chats.value.size) - 1) // son ogeye kaydır ...
+                }
+            }
+        }
+
+        view.viewTreeObserver.addOnGlobalLayoutListener(listener)
+
+        onDispose {
+            view.viewTreeObserver.removeOnGlobalLayoutListener(listener)
+        }
+    }
+    LaunchedEffect(key1 = chats.value.size) {
+
+        if (-1 != (chats.value.size) - 1) {
+            state.animateScrollToItem((chats.value.size) - 1) // son ogeye kaydır ...
         }
 
         snapshotFlow { state.firstVisibleItemIndex }
-            .collect{ index ->
+            .collect { index ->
                 isAtTop = index == 0
-                isAtBottom = state.layoutInfo.visibleItemsInfo.lastOrNull()?.index == state.layoutInfo.totalItemsCount - 1
+                isAtBottom =
+                    state.layoutInfo.visibleItemsInfo.lastOrNull()?.index == state.layoutInfo.totalItemsCount - 1
             }
     }
 
     LazyColumn(
         state = state,
-        modifier = modifier ,
+        modifier = modifier,
     ) {
-        items(chats.value!! , key = {it.messageId!!}){ message ->
-            Log.d("jokermessage" , "öğe eklendi... :: " + message.messageId)
-            MessageItemView(message = message , type =  message.type!! , mainActivityVM = mainActivityVM , chatViewModel)
+        items(chats.value!!, key = { it.messageId!! }) { message ->
+            Log.d("jokermessage", "öğe eklendi... :: " + message.messageId)
+            MessageItemView(
+                message = message,
+                type = message.type!!,
+                mainActivityVM = mainActivityVM,
+                chatViewModel
+            )
         }
-    }
-
-    if (isAtTop){
-        isAtTop = false
-        Log.d("chatflowstatecontrol" , "liste en yukarıda ... ")
-        mainActivityVM.updateLoadMoreChat(true)
-
-        if (channelId == "C1"){
-            MainActivity.fm.removeChatEventListener(FirebaseManager.C1)
-            MainActivity.fm.pullChat(mainActivityVM = mainActivityVM , FirebaseManager.C1 , loadMoreChat!!)
-        } else if (channelId == "C2"){
-            MainActivity.fm.removeChatEventListener(FirebaseManager.C2)
-            MainActivity.fm.pullChat(mainActivityVM = mainActivityVM , FirebaseManager.C2 , loadMoreChat!!)
-
-
-        } else if (channelId == "P1"){
-
-
-            Log.d("mainchat" , "channelId == P1....")
-            if (selectedChannel == "Hoşbeş"){
-                MainActivity.fm.removeChatEventListener(FirebaseManager.P1)
-                MainActivity.fm.pullChat(mainActivityVM = mainActivityVM , FirebaseManager.C1 , loadMoreChat!!)
-            } else if (selectedChannel == "Mavi Boncuk"){
-                MainActivity.fm.removeChatEventListener(FirebaseManager.P1)
-                MainActivity.fm.pullChat(mainActivityVM = mainActivityVM , FirebaseManager.C2 , loadMoreChat!!)
-            }
-
-        } else if (channelId == "W"){
-
-
-            // sohbet dinleyicisini silmek için wid gerekir .... çekk ...
-
-            Log.d("mainchat" , "channelId == W....")
-            if (selectedChannel == "Hoşbeş"){
-                mainActivityVM.connectChannel("C1")
-                mainActivityVM.updateSelectedChannel("Hoşbeş")
-                chatViewModel.refreshChat()
-                // MainActivity.fm.detachWhisperChatListener(wid!!)
-
-                MainActivity.fm.pullChat(mainActivityVM = mainActivityVM , FirebaseManager.C1 , loadMoreChat!!)
-            } else if (selectedChannel == "Mavi Boncuk"){
-                mainActivityVM.connectChannel("C2")
-                chatViewModel.refreshChat()
-                mainActivityVM.updateSelectedChannel("Mavi Boncuk")
-                //  MainActivity.fm.detachWhisperChatListener(wid!!)
-                MainActivity.fm.pullChat(mainActivityVM = mainActivityVM , FirebaseManager.C2 , loadMoreChat!!)
-            }
-
-        }
-
-
-
-    }
-
-    if (isAtBottom){
-        Log.d("chatflowstatecontrol" , "liste en aşağıda ... ")
-
     }
 }
 

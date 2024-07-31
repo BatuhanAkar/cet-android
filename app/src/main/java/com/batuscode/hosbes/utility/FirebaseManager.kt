@@ -89,6 +89,8 @@ class FirebaseManager {
 
     lateinit var whisperViewModel: WhisperViewModel
 
+    var loadMoreChat: Boolean = false
+
     /*TODO: whisper event listener initialize*/
     val whisperEventListener: ChildEventListener = object :ChildEventListener {
         override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
@@ -125,21 +127,16 @@ class FirebaseManager {
     val chatEventListener: ChildEventListener = object : ChildEventListener {
         override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
 
+
             val message:Message = snapshot.getValue<Message>()!!
 
             Log.d("message" , "chat :: " + message.message)
 
-
             when{
-
-
                 message.type.equals("text") -> {
-                    chatViewModel.pushChat(message)
+                    chatViewModel.pushChat(message , loadMoreChat)
                 }
-
             }
-
-
         }
 
         override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
@@ -392,20 +389,9 @@ class FirebaseManager {
             .removeEventListener(chatEventListener)
     }
 
-    fun pullChat(mainActivityVM: MainActivityVM , channel: DatabaseReference , loadMoreChat:Boolean){
-        if (!loadMoreChat){
-             chatQuery = channel.orderByChild("time").limitToLast(10)
-            Log.d("loadmorechat" , "fazlasi değil ...")
-        } else {
-            var lastChatTime = MainActivity.PreferenceManager?.getLastChatTime("lastChatTime")
-            Log.d("loadmorechat" , "son mesaj zaman değeri ... " + lastChatTime)
+    fun pullChat(mainActivityVM: MainActivityVM , channel: DatabaseReference){
 
-            var lct = lastChatTime?.toDouble()
-            chatQuery = channel.orderByChild("time").endBefore(lct!!).limitToLast(10)
-            Log.d("loadmorechat" , "fazlasi ...")
-
-        }
-
+        chatQuery = channel.limitToLast(10)
         chatQuery.addChildEventListener(chatEventListener)
 
 

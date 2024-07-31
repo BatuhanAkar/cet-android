@@ -214,7 +214,7 @@ fun changeChannel(selectedChannelId:String , chatViewModel: ChatViewModel , main
 
         handler.postDelayed({
 
-            MainActivity.fm.pullChat(mainActivityVM = mainActivityVM , FirebaseManager.C2 , loadMoreChat!!)
+            MainActivity.fm.pullChat(mainActivityVM = mainActivityVM , FirebaseManager.C2)
 
 
 
@@ -237,7 +237,7 @@ fun changeChannel(selectedChannelId:String , chatViewModel: ChatViewModel , main
 
         handler.postDelayed({
 
-            MainActivity.fm.pullChat(mainActivityVM = mainActivityVM , FirebaseManager.C1 , loadMoreChat!!)
+            MainActivity.fm.pullChat(mainActivityVM = mainActivityVM , FirebaseManager.C1)
 
         } , 5000)
 

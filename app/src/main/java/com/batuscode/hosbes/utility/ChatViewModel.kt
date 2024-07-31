@@ -18,9 +18,10 @@ class ChatViewModel: ViewModel() {
 
     private val _chats = MutableStateFlow<List<Message>>(emptyList())
     val chat:StateFlow<List<Message>> get() = _chats
+    val oldMessages = mutableListOf<Message>()
 
 
-    fun pushChat(message: Message){
+    fun pushChat(message: Message , loadMoreChat:Boolean){
 
         val chatIterator = _chats.value.toMutableList()
 
@@ -31,14 +32,15 @@ class ChatViewModel: ViewModel() {
         Log.d("jokermessage" , "eklenen öğenin pozisyonu :: " + position)
 
 
+
+
         _chats.value = chatIterator
 
         _chats.value.sortedBy { it.time }
 
-        var message = _chats.value.get(0)
-        var lastChatId = message.time
-        MainActivity.PreferenceManager?.saveLastChatTime("lastChatTime" , lastChatId!!)
 
+        var lastChatId = _chats.value.first().messageId
+        MainActivity.PreferenceManager?.saveuid("lastChatId" , lastChatId!!)
 
     }
 
