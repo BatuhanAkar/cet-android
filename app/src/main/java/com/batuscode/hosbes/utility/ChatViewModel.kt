@@ -20,6 +20,9 @@ class ChatViewModel: ViewModel() {
     val chat:StateFlow<List<Message>> get() = _chats
     var oldMessages = mutableListOf<Message>()
 
+    fun removeDuplicateObject(chats:List<Message>) : List<Message>{
+        return chats.distinctBy { it.messageId }
+    }
 
     fun pushChat(message: Message , loadMoreChat:Boolean){
 
@@ -30,21 +33,19 @@ class ChatViewModel: ViewModel() {
 
             oldMessages.add(message)
 
-            var position = chatIterator.indexOf(message)
+            _chats.value = removeDuplicateObject(oldMessages + chatIterator)
 
-            Log.d("jokermessage" , "eklenen öğenin pozisyonu :: " + position)
+            var lastChatId = _chats.value.first().messageId
+            MainActivity.PreferenceManager?.saveuid("lastChatId" , lastChatId!!)
 
-
-
-
-            _chats.value = oldMessages + chatIterator
-
-            _chats.value.sortedBy { it.time }
-
-
-            var lastChatTime = _chats.value.first().time
+            var lastChatTime = _chats.value.last().time
             var lct = lastChatTime
+
             MainActivity.PreferenceManager?.saveLastChatTime("lastChatTime" , lct!!)
+
+            var firstChatTime = _chats.value.first().time
+            var fct = firstChatTime
+            MainActivity.PreferenceManager?.saveLastChatTime("firstChatTime" , fct!!)
         } else {
             val chatIterator = _chats.value.toMutableList()
             Log.d("whisperChatItems" , "ilk çekme...")
@@ -57,7 +58,9 @@ class ChatViewModel: ViewModel() {
 
             _chats.value = chatIterator
 
-            _chats.value.sortedBy { it.time }
+            var lastChatId = _chats.value.first().messageId
+            MainActivity.PreferenceManager?.saveuid("lastChatId" , lastChatId!!)
+
 
             var lastChatTime = _chats.value.first().time
             var lct = lastChatTime

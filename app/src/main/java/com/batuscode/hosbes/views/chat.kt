@@ -87,6 +87,12 @@ import com.batuscode.hosbes.utility.FirebaseManager
 import com.batuscode.hosbes.utility.MainActivityVM
 import com.batuscode.hosbes.views.ui.ChannelMenu
 import com.batuscode.hosbes.views.ui.MessageTextField
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.R)
 @SuppressLint("UnrememberedMutableInteractionSource")
@@ -123,6 +129,7 @@ fun Chat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
 
     val wid by mainActivityVM.whisperId.collectAsState()
 
+    val Cscope = CoroutineScope(Dispatchers.Default)
 
     DisposableEffect(lifecycle) {
         val observe = LifecycleEventObserver { _, event ->
@@ -130,6 +137,79 @@ fun Chat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
 
             when(event){
                 Lifecycle.Event.ON_CREATE -> {
+
+                    Cscope.launch {
+                        while (isActive){
+                            delay(900000)
+                            Log.d("reloadmessage" , "tetikledi...")
+
+                            if (channelId == "C1"){
+                                Log.d("mainchat" , "on create.... channelId == C1 ")
+
+                                mainActivityVM.connectChannel("C1")
+
+                                mainActivityVM.updateSelectedChannel("Hoşbeş")
+                                chatViewModel.refreshChat()
+
+                                MainActivity.fm.removeChatEventListener(FirebaseManager.C1)
+                                MainActivity.fm.pullChat(mainActivityVM = mainActivityVM , FirebaseManager.C1 , true)
+                            }
+                            else if (channelId == "C2"){
+                                Log.d("mainchat" , "on create.... channelId == C2 ")
+
+                                mainActivityVM.connectChannel("C2")
+
+                                mainActivityVM.updateSelectedChannel("Mavi Boncuk")
+                                chatViewModel.refreshChat()
+
+                                MainActivity.fm.removeChatEventListener(FirebaseManager.C2)
+                                MainActivity.fm.pullChat(mainActivityVM = mainActivityVM , FirebaseManager.C2 , true)
+
+
+                            }
+                            else if (channelId == "P1"){
+
+
+                                Log.d("mainchat" , "channelId == P1....")
+                                if (selectedChannel == "Hoşbeş"){
+                                    mainActivityVM.connectChannel("C1")
+                                    mainActivityVM.updateSelectedChannel("Hoşbeş")
+                                    chatViewModel.refreshChat()
+                                    MainActivity.fm.removeChatEventListener(FirebaseManager.P1)
+                                    MainActivity.fm.pullChat(mainActivityVM = mainActivityVM , FirebaseManager.C1 , true)
+                                } else if (selectedChannel == "Mavi Boncuk"){
+                                    mainActivityVM.connectChannel("C2")
+                                    chatViewModel.refreshChat()
+                                    mainActivityVM.updateSelectedChannel("Mavi Boncuk")
+                                    MainActivity.fm.removeChatEventListener(FirebaseManager.P1)
+                                    MainActivity.fm.pullChat(mainActivityVM = mainActivityVM , FirebaseManager.C2 , true)
+                                }
+
+                            }
+                            else if (channelId == "W"){
+
+
+                                // sohbet dinleyicisini silmek için wid gerekir .... çekk ...
+
+                                Log.d("mainchat" , "channelId == W....")
+                                if (selectedChannel == "Hoşbeş"){
+                                    chatViewModel.refreshChat()
+                                    mainActivityVM.connectChannel("C1")
+                                    mainActivityVM.updateSelectedChannel("Hoşbeş")
+                                    // MainActivity.fm.detachWhisperChatListener(wid!!)
+
+                                    MainActivity.fm.pullChat(mainActivityVM = mainActivityVM , FirebaseManager.C1 , true)
+                                } else if (selectedChannel == "Mavi Boncuk"){
+                                    chatViewModel.refreshChat()
+                                    mainActivityVM.connectChannel("C2")
+                                    mainActivityVM.updateSelectedChannel("Mavi Boncuk")
+                                    //  MainActivity.fm.detachWhisperChatListener(wid!!)
+                                    MainActivity.fm.pullChat(mainActivityVM = mainActivityVM , FirebaseManager.C2 , true)
+                                }
+
+                            }
+                        }
+                    }
 
                     Log.d("mainchat" , "on create....")
 
@@ -142,8 +222,9 @@ fun Chat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
                         chatViewModel.refreshChat()
 
                         MainActivity.fm.removeChatEventListener(FirebaseManager.C1)
-                        MainActivity.fm.pullChat(mainActivityVM = mainActivityVM , FirebaseManager.C1)
-                    } else if (channelId == "C2"){
+                        MainActivity.fm.pullChat(mainActivityVM = mainActivityVM , FirebaseManager.C1 , false)
+                    }
+                    else if (channelId == "C2"){
                         Log.d("mainchat" , "on create.... channelId == C2 ")
 
                         mainActivityVM.connectChannel("C2")
@@ -152,10 +233,11 @@ fun Chat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
                         chatViewModel.refreshChat()
 
                         MainActivity.fm.removeChatEventListener(FirebaseManager.C2)
-                        MainActivity.fm.pullChat(mainActivityVM = mainActivityVM , FirebaseManager.C2)
+                        MainActivity.fm.pullChat(mainActivityVM = mainActivityVM , FirebaseManager.C2 , false)
 
 
-                    } else if (channelId == "P1"){
+                    }
+                    else if (channelId == "P1"){
 
 
                         Log.d("mainchat" , "channelId == P1....")
@@ -164,16 +246,17 @@ fun Chat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
                             mainActivityVM.updateSelectedChannel("Hoşbeş")
                             chatViewModel.refreshChat()
                             MainActivity.fm.removeChatEventListener(FirebaseManager.P1)
-                            MainActivity.fm.pullChat(mainActivityVM = mainActivityVM , FirebaseManager.C1)
+                            MainActivity.fm.pullChat(mainActivityVM = mainActivityVM , FirebaseManager.C1 , false)
                         } else if (selectedChannel == "Mavi Boncuk"){
                             mainActivityVM.connectChannel("C2")
                             chatViewModel.refreshChat()
                             mainActivityVM.updateSelectedChannel("Mavi Boncuk")
                             MainActivity.fm.removeChatEventListener(FirebaseManager.P1)
-                            MainActivity.fm.pullChat(mainActivityVM = mainActivityVM , FirebaseManager.C2)
+                            MainActivity.fm.pullChat(mainActivityVM = mainActivityVM , FirebaseManager.C2 , false)
                         }
 
-                    } else if (channelId == "W"){
+                    }
+                    else if (channelId == "W"){
 
 
                         // sohbet dinleyicisini silmek için wid gerekir .... çekk ...
@@ -185,13 +268,13 @@ fun Chat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
                             mainActivityVM.updateSelectedChannel("Hoşbeş")
                            // MainActivity.fm.detachWhisperChatListener(wid!!)
 
-                            MainActivity.fm.pullChat(mainActivityVM = mainActivityVM , FirebaseManager.C1)
+                            MainActivity.fm.pullChat(mainActivityVM = mainActivityVM , FirebaseManager.C1 , false)
                         } else if (selectedChannel == "Mavi Boncuk"){
                             chatViewModel.refreshChat()
                             mainActivityVM.connectChannel("C2")
                             mainActivityVM.updateSelectedChannel("Mavi Boncuk")
                           //  MainActivity.fm.detachWhisperChatListener(wid!!)
-                            MainActivity.fm.pullChat(mainActivityVM = mainActivityVM , FirebaseManager.C2)
+                            MainActivity.fm.pullChat(mainActivityVM = mainActivityVM , FirebaseManager.C2 , false)
                         }
 
                     }
@@ -244,7 +327,7 @@ fun Chat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
 
         onDispose {
 
-
+            Cscope.cancel()
             lifecycle.lifecycle.removeObserver(observe)
 
 

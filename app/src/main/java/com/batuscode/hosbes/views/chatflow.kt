@@ -87,6 +87,9 @@ import com.batuscode.hosbes.utility.MainActivityVM
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -114,7 +117,9 @@ fun ChatFlow( mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel , mo
     val density = LocalDensity.current
     val view = LocalView.current
     val whisperItem by mainActivityVM.whisperItem.collectAsState()
+    val room by mainActivityVM.privateRoom.collectAsState()
 
+    var inPrivateRoom = MainActivity.PreferenceManager?.getSession("inPrivateRoom")
 
     DisposableEffect(lifecycle) {
 
@@ -144,14 +149,21 @@ fun ChatFlow( mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel , mo
             state.animateScrollToItem((chats.value.size) - 1) // son ogeye kaydır ...
         }
 
+        delay(2000)
         snapshotFlow { state.firstVisibleItemIndex }
             .collect { index ->
                 if (index == 0){
                     if (inWhisper == true){
                         mainActivityVM.updateLoadMoreChat(true)
-                        MainActivity.fm.loadMoreChat = loadMoreChat!!
+                        MainActivity.fm.loadMoreChat = true
 
-                        MainActivity.fm.pullWhisperChat(whisperItem?.wid!! , loadMoreChat!!)
+                        if (inPrivateRoom!!){
+                            MainActivity.fm.pullPRChat(FirebaseManager.P1 , room!! , true , false)
+
+                        } else {
+                            MainActivity.fm.pullWhisperChat(whisperItem?.wid!! , true , false)
+
+                        }
 
                     }
 
@@ -160,6 +172,10 @@ fun ChatFlow( mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel , mo
                 isAtBottom =
                     state.layoutInfo.visibleItemsInfo.lastOrNull()?.index == state.layoutInfo.totalItemsCount - 1
             }
+    }
+
+    if (isAtBottom){
+        MainActivity.fm.loadMoreChat = false
     }
 
     LazyColumn(

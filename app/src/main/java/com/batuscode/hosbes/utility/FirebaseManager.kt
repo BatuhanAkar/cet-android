@@ -85,6 +85,7 @@ class FirebaseManager {
 
     lateinit var chatQuery:Query
     lateinit var whisoerChatQuery:Query
+    lateinit var PRChatQuery:Query
 
     lateinit var chatViewModel: ChatViewModel
 
@@ -129,15 +130,37 @@ class FirebaseManager {
         override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
 
 
-            val message:Message = snapshot.getValue<Message>()!!
+            if (loadMoreChat){
+                val message:Message = snapshot.getValue<Message>()!!
 
-            Log.d("message" , "chat :: " + message.message)
+                var lastChatId = MainActivity.PreferenceManager?.getuidShared("lastChatId")
 
-            when{
-                message.type.equals("text") -> {
-                    chatViewModel.pushChat(message , loadMoreChat)
+
+                Log.d("message" , "chat :: " + message.message)
+
+                when{
+                    message.type.equals("text") -> {
+                        if (!message.messageId.equals(lastChatId)){
+                            chatViewModel.pushChat(message , loadMoreChat)
+                        }
+                    }
                 }
+
+            } else {
+
+                val message:Message = snapshot.getValue<Message>()!!
+
+                Log.d("message" , "chat :: " + message.message)
+
+                when{
+                    message.type.equals("text") -> {
+                        chatViewModel.pushChat(message , loadMoreChat)
+                    }
+                }
+
             }
+
+
         }
 
         override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
@@ -377,31 +400,82 @@ class FirebaseManager {
     }
 
 
-    fun pullPRChat(channel: DatabaseReference , room:PrivateRoom){
+    fun pullPRChat(channel: DatabaseReference , room:PrivateRoom , loadMoreChat: Boolean , updateListener: Boolean){
 
         Log.d("pullPRChat" , "roomID :: " + room.roomId!!)
 
-        channel.child(room.roomId)
-            .addChildEventListener(chatEventListener)
+        if (!loadMoreChat){
+            PRChatQuery = channel.child(room.roomId).orderByChild("time").limitToLast(13)
+
+            PRChatQuery
+                .addChildEventListener(chatEventListener)
+        }
+        else if (updateListener){
+            var lastChatTime = MainActivity.PreferenceManager?.getLastChatTime("firstChatTime")
+            var lct = lastChatTime?.toDouble()
+
+            PRChatQuery = channel.child(room.roomId).orderByChild("time").startAt(lct!!).limitToLast(10)
+
+            PRChatQuery
+                .addChildEventListener(chatEventListener)
+        }
+
+        else {
+
+
+            var lastChatTime = MainActivity.PreferenceManager?.getLastChatTime("firstChatTime")
+            var lct = lastChatTime?.toDouble()
+
+            PRChatQuery = channel.child(room.roomId).orderByChild("time").endBefore(lct!!).limitToLast(10)
+
+            PRChatQuery
+                .addChildEventListener(chatEventListener)
+
+        }
 
     }
     fun removePrChatListener(channel: DatabaseReference , room:PrivateRoom){
-        channel.child(room.roomId!!)
-            .removeEventListener(chatEventListener)
+        if (::PRChatQuery.isInitialized){
+
+            PRChatQuery
+                .removeEventListener(chatEventListener)
+        }
     }
 
-    fun pullChat(mainActivityVM: MainActivityVM , channel: DatabaseReference){
+    fun pullChat(mainActivityVM: MainActivityVM , channel: DatabaseReference , updateListener:Boolean){
 
-        chatQuery = channel.limitToLast(10)
-        chatQuery.addChildEventListener(chatEventListener)
+        if (updateListener){
 
+            var firstChatTime = MainActivity.PreferenceManager?.getLastChatTime("firstChatTime")
 
-        handler.postDelayed({
-            mainActivityVM.updateChatLoading(true)
-
+            var fct = firstChatTime?.toDouble()
 
 
-        } , 1000)    }
+            chatQuery = channel.orderByChild("time").startAt(fct!!).limitToLast(10)
+            chatQuery.addChildEventListener(chatEventListener)
+
+
+            handler.postDelayed({
+                mainActivityVM.updateChatLoading(true)
+
+
+
+            } , 1000)
+        }
+        else {
+
+            chatQuery = channel.limitToLast(10)
+            chatQuery.addChildEventListener(chatEventListener)
+
+
+            handler.postDelayed({
+                mainActivityVM.updateChatLoading(true)
+
+
+
+            } , 1000)
+        }
+    }
 
     fun removeChatEventListener(channel:DatabaseReference){
         Log.d("chatEventlistener" , "removed listener :: ")
@@ -720,16 +794,31 @@ class FirebaseManager {
         val uid = currentUser?.uid.toString()
         W.child(uid).removeEventListener(whisperEventListener)
     }
-    fun pullWhisperChat(wid:String , loadMoreChat:Boolean){
+    fun pullWhisperChat(wid:String , loadMoreChat:Boolean , updateListener: Boolean){
         if (loadMoreChat){
+            Log.d("whisperChatItems" , "in...")
 
-            var lastChatTime = MainActivity.PreferenceManager?.getLastChatTime("lastChatTime")
+            var lastChatId = MainActivity.PreferenceManager?.getuidShared("lastChatId")
+
+            var lastChatTime = MainActivity.PreferenceManager?.getLastChatTime("firstChatTime")
             var lct = lastChatTime?.toDouble()
-            whisoerChatQuery = W_C.child(wid).orderByChild("time").endAt(lct!!).limitToLast(10)
+            whisoerChatQuery = W_C.child(wid).orderByChild("time").endBefore(lct!!).limitToLast(10)
 
             whisoerChatQuery
                 .addChildEventListener(chatEventListener)
-        } else {
+        }
+        else if (updateListener){
+            var lastChatTime = MainActivity.PreferenceManager?.getLastChatTime("firstChatTime")
+            var lct = lastChatTime?.toDouble()
+            whisoerChatQuery = W_C.child(wid).orderByChild("time").startAt(lct!!).limitToLast(10)
+
+            whisoerChatQuery
+                .addChildEventListener(chatEventListener)
+        }
+
+        else {
+            Log.d("whisperChatItems" , "out...")
+
             whisoerChatQuery = W_C.child(wid).orderByChild("time").limitToLast(13)
 
             whisoerChatQuery

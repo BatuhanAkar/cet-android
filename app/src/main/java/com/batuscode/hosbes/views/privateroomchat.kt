@@ -76,7 +76,13 @@ import com.batuscode.hosbes.views.ui.MessageTextField
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 
 
 @SuppressLint("StateFlowValueCalledInComposition")
@@ -99,20 +105,45 @@ fun PrivateRoomChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewMode
     val outForSelectImage by mainActivityVM.outForSelectImage.collectAsState()
     val showMessageOption by mainActivityVM.showMessageOption.collectAsState()
     val showRoomInfo by mainActivityVM.showRoomInfo.collectAsState()
+    val loadMoreChat by mainActivityVM.loadMoreChat.collectAsState()
+    val Cscope = CoroutineScope(Dispatchers.Default)
+
 
     DisposableEffect(lifecycle) {
+
         val observe = LifecycleEventObserver { _, event ->
 
 
             when(event){
                 Lifecycle.Event.ON_CREATE -> {
+
+                    Cscope.launch {
+                        while (isActive){
+
+                            delay(6000)
+
+                            chatViewModel.refreshChat()
+                            mainActivityVM.connectChannel("P1")
+                            mainActivityVM.updateInWhisper(true) // ( fısıltı için olanı burdada kullan ... ) fısıltıda mesaj seçeneklerinin kontrolü için ...
+
+                            Log.d("mainchat" , "PrivateRoomChat on create....")
+
+                            MainActivity.fm.removePrChatListener(FirebaseManager.P1 , room!!)
+                            MainActivity.fm.pullPRChat(FirebaseManager.P1 , room!! , loadMoreChat!! , true)
+
+                            MainActivity.PreferenceManager?.saveSession("inPrivateRoom" , true)
+                            MainActivity.PreferenceManager?.saveuid("privateRoomId" , room?.roomId!!)
+                        }
+                    }
+
                     chatViewModel.refreshChat()
                     mainActivityVM.connectChannel("P1")
+                    mainActivityVM.updateInWhisper(true) // ( fısıltı için olanı burdada kullan ... ) fısıltıda mesaj seçeneklerinin kontrolü için ...
 
                     Log.d("mainchat" , "PrivateRoomChat on create....")
 
                     MainActivity.fm.removePrChatListener(FirebaseManager.P1 , room!!)
-                    MainActivity.fm.pullPRChat(FirebaseManager.P1 , room!!)
+                    MainActivity.fm.pullPRChat(FirebaseManager.P1 , room!! , loadMoreChat!! , false)
 
                     MainActivity.PreferenceManager?.saveSession("inPrivateRoom" , true)
                     MainActivity.PreferenceManager?.saveuid("privateRoomId" , room?.roomId!!)
@@ -139,6 +170,8 @@ fun PrivateRoomChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewMode
                 }
                 Lifecycle.Event.ON_PAUSE -> {
 
+                    mainActivityVM.updateLoadMoreChat(false)
+                    MainActivity.fm.loadMoreChat = false
                     when{
 
                         outForSelectImage == false -> {
@@ -156,7 +189,10 @@ fun PrivateRoomChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewMode
 
 
                 }
-                Lifecycle.Event.ON_STOP -> {}
+                Lifecycle.Event.ON_STOP -> {
+                    mainActivityVM.updateInWhisper(false) // fısıltıda mesaj seçeneklerinin kontrolü için ...
+
+                }
                 Lifecycle.Event.ON_DESTROY -> {
                     Log.d("privateroomchat" , "on destory....")
 
@@ -175,7 +211,7 @@ fun PrivateRoomChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewMode
 
         onDispose {
 
-
+            Cscope.cancel()
             lifecycle.lifecycle.removeObserver(observe)
 
 

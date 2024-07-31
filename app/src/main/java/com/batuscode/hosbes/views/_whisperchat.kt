@@ -47,7 +47,7 @@ fun _WhisperChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
     if (whisperfirst == true){
         mainActivityVM.updatewhisperfirst(false)
         MainActivity.fm.detachWhisperChatListener(wid!!)
-        MainActivity.fm.pullWhisperChat(wid!! , loadMoreChat!!)
+       // MainActivity.fm.pullWhisperChat(wid!! , loadMoreChat!!)
     }
 
     DisposableEffect(lifecycleOwner) {

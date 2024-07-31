@@ -30,6 +30,11 @@ import com.batuscode.hosbes.ui.theme.HoşbeşTheme
 import com.batuscode.hosbes.utility.ChatViewModel
 import com.batuscode.hosbes.utility.MainActivityVM
 import com.batuscode.hosbes.views.ui.MessageTextField
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -39,23 +44,43 @@ fun WhisperChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
     val whisperItem by mainActivityVM.whisperItem.collectAsState()
     val showMessageOption by mainActivityVM.showMessageOption.collectAsState()
     val loadMoreChat by mainActivityVM.loadMoreChat.collectAsState()
+    val Cscope = CoroutineScope(Dispatchers.Default)
 
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver{_,event ->
 
             when(event){
                 Lifecycle.Event.ON_CREATE -> {
+
+                    Cscope.launch {
+                        delay(6000)
+                        chatViewModel.refreshChat() // sohbeti sıfırla ...
+
+                        mainActivityVM.updateInWhisper(true) // fısıltıda mesaj seçeneklerinin kontrolü için ...
+
+                        mainActivityVM.connectChannel("W") // kanal id güncelle ...
+
+                        // burda ilk fısıltı mı bak ...
+
+                        MainActivity.fm.detachWhisperChatListener(whisperItem?.wid!!)
+                        MainActivity.fm.pullWhisperChat(whisperItem?.wid!! , loadMoreChat!! , true)
+
+                        setReaded(whisperItem = whisperItem!!)
+
+
+                    }
+
                     Log.d("WhisperChat" , "ON_CREATE")
+                    chatViewModel.refreshChat() // sohbeti sıfırla ...
 
                     mainActivityVM.updateInWhisper(true) // fısıltıda mesaj seçeneklerinin kontrolü için ...
 
-                    chatViewModel.refreshChat() // sohbeti sıfırla ...
                     mainActivityVM.connectChannel("W") // kanal id güncelle ...
 
                     // burda ilk fısıltı mı bak ...
 
                     MainActivity.fm.detachWhisperChatListener(whisperItem?.wid!!)
-                    MainActivity.fm.pullWhisperChat(whisperItem?.wid!! , loadMoreChat!!)
+                    MainActivity.fm.pullWhisperChat(whisperItem?.wid!! , loadMoreChat!! , false)
 
                     setReaded(whisperItem = whisperItem!!)
 
@@ -94,6 +119,7 @@ fun WhisperChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
         lifecycleOwner.lifecycle.addObserver(observer)
 
         onDispose {
+            Cscope.cancel()
             lifecycleOwner.lifecycle.removeObserver(observer)
         }
     }

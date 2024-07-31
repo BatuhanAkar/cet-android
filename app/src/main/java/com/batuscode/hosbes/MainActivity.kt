@@ -112,7 +112,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             HoşbeşTheme {
 
-
+                fm.loadMoreChat = false
 
                 context = LocalContext.current
 
