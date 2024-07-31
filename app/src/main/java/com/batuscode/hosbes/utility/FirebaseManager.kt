@@ -84,6 +84,7 @@ class FirebaseManager {
 
 
     lateinit var chatQuery:Query
+    lateinit var whisoerChatQuery:Query
 
     lateinit var chatViewModel: ChatViewModel
 
@@ -719,8 +720,9 @@ class FirebaseManager {
         val uid = currentUser?.uid.toString()
         W.child(uid).removeEventListener(whisperEventListener)
     }
-
     fun pullWhisperChat(wid:String){
+
+
         W_C
             .child(wid)
             .addChildEventListener(chatEventListener)
