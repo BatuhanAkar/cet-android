@@ -57,6 +57,9 @@ import com.batuscode.hosbes.views._WhisperChat
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.google.firebase.auth.FirebaseAuth
+import org.jitsi.meet.sdk.JitsiMeet
+import org.jitsi.meet.sdk.JitsiMeetConferenceOptions
+import java.net.URL
 
 class MainActivity : ComponentActivity() {
 
@@ -109,9 +112,19 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        val serverURL:URL
+        serverURL = URL("https://92.112.193.179")
         setContent {
             HoşbeşTheme {
 
+
+
+                var defaultOptions = JitsiMeetConferenceOptions.Builder()
+                    .setServerURL(serverURL)
+                    .setFeatureFlag("welcomepage.enabled" , false)
+                    .build()
+
+                JitsiMeet.setDefaultConferenceOptions(defaultOptions)
                 fm.loadMoreChat = false
 
                 context = LocalContext.current
@@ -259,6 +272,7 @@ class MainActivity : ComponentActivity() {
                         composable("deleteaccount"){
                             DeleteAccount()
                         }
+
                     }
 
                 } else {
@@ -274,7 +288,9 @@ class MainActivity : ComponentActivity() {
 
             }
         }
+
     }
+
 }
 
 

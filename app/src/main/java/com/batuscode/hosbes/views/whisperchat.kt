@@ -1,5 +1,7 @@
 package com.batuscode.hosbes.views
 
+import android.content.Context
+import android.content.Intent
 import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,6 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -17,7 +20,9 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -25,6 +30,7 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import com.batuscode.hosbes.MainActivity
+import com.batuscode.hosbes.R
 import com.batuscode.hosbes.models.Whisper
 import com.batuscode.hosbes.ui.theme.HoşbeşTheme
 import com.batuscode.hosbes.utility.ChatViewModel
@@ -36,6 +42,11 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+fun startCall(context: Context){
+//    val intent = Intent(context , Call::class.java)
+//    context.startActivity(intent)
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WhisperChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
@@ -45,6 +56,7 @@ fun WhisperChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
     val showMessageOption by mainActivityVM.showMessageOption.collectAsState()
     val loadMoreChat by mainActivityVM.loadMoreChat.collectAsState()
     val Cscope = CoroutineScope(Dispatchers.Default)
+    val context = LocalContext.current
 
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver{_,event ->
@@ -147,6 +159,14 @@ fun WhisperChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
                                 MainActivity.navigate?.popBackStack()
                             }
                     )
+                } ,
+
+                actions = {
+                    OutlinedIconButton(onClick = {
+                        startCall(context)
+                    }) {
+                        Icon(painter = painterResource(id = R.drawable.call_24px), contentDescription = "")
+                    }
                 }
             )
         }
@@ -198,7 +218,6 @@ fun WhisperChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
     }
 
 }
-
 
 fun setReaded(whisperItem: Whisper){
 
