@@ -42,9 +42,12 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-fun startCall(context: Context){
-//    val intent = Intent(context , Call::class.java)
-//    context.startActivity(intent)
+fun startCall(context: Context , uid:String , displayName:String , photoUrl:String){
+    val intent = Intent(context , VoiceCalls::class.java)
+    intent.putExtra("uid" , uid)
+    intent.putExtra("displayName" , displayName)
+    intent.putExtra("photoUrl" , photoUrl)
+    context.startActivity(intent)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -57,6 +60,8 @@ fun WhisperChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
     val loadMoreChat by mainActivityVM.loadMoreChat.collectAsState()
     val Cscope = CoroutineScope(Dispatchers.Default)
     val context = LocalContext.current
+
+
 
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver{_,event ->
@@ -163,7 +168,12 @@ fun WhisperChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
 
                 actions = {
                     OutlinedIconButton(onClick = {
-                        startCall(context)
+                        val uid = whisperItem?.wuid
+                        val photoUrl = whisperItem?.wphotoUrl
+                        val displayName = whisperItem?.wdisplayName
+
+                        startCall(MainActivity.context , uid!! , photoUrl!! , displayName!!)
+
                     }) {
                         Icon(painter = painterResource(id = R.drawable.call_24px), contentDescription = "")
                     }

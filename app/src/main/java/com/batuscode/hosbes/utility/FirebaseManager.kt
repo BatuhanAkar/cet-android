@@ -20,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.asImageBitmap
 import com.batuscode.hosbes.MainActivity
+import com.batuscode.hosbes.models.Calls
 import com.batuscode.hosbes.models.Message
 import com.batuscode.hosbes.models.Participnat
 import com.batuscode.hosbes.models.PrivateRoom
@@ -39,6 +40,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.Query
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.getValue
 import com.google.firebase.database.ktx.database
 import com.google.firebase.firestore.CollectionReference
@@ -1504,6 +1506,156 @@ class FirebaseManager {
             }
     }
 
+    /*TODO: listen incoming calls*/
+
+    lateinit var listenICCQueryRegistiration:ListenerRegistration
+    fun listenICC(uid:String , mainActivityVM: MainActivityVM){
+
+        listenICCQueryRegistiration = usersRef.document(uid).addSnapshotListener{
+            snapshot , e ->
+
+            if (snapshot != null && snapshot.exists()){
+                var call = snapshot.getBoolean("call")
+                if (call != null){
+                    mainActivityVM.updateCall(call)
+                    Log.d("ICC" , "gelen arama " + call)
+
+                }
+            }
+
+        }
+    }
+
+    fun detachListenerICC(){
+        if (::listenICCQueryRegistiration.isInitialized){
+            listenICCQueryRegistiration.remove()
+        }
+    }
+
+    /** arama isteği gönder ...*/
+
+    fun callrequest( ownerId: String , uid: String , displayName:String , photoUrl:String , voiceCallsViewModel: VoiceCallsViewModel){
+
+
+        usersRef.document(ownerId)
+            .update("call" , true)
+
+        usersRef.document(uid)
+            .get()
+            .addOnCompleteListener {
+
+               var call = it.result.getBoolean("call")
+
+                voiceCallsViewModel.updateRequestCall(call!!)
+
+
+            }
+
+        /**
+         * arama isteği yapıldığında arama geçmişine kaydet ...
+         * */
+
+        // bilgiler aranan kişinin ... arayan kendine kaydedecek arayan ...
+        val Wcalls = Calls(
+            displayName = displayName ,
+            photoUrl = photoUrl ,
+            uid = uid ,
+            type = "in" , // in algıla giden gelen arama ...
+            time = System.currentTimeMillis() ,
+            act = true // kabul edildi mi ... arayan kişi ekranda kalması için ilkte true ayarlanır ...
+
+        )
+
+        W.child("calls")
+            .child(ownerId)
+            .child(uid)
+            .setValue(Wcalls)
+            .addOnCompleteListener {
+                if (it.isSuccessful){
+                    // arama yapan kişinin arama geçmişine arama kaydedildi ise arama durumunu dinlemeye başla ...
+                    listenCalls(ownerId, uid)
+                }
+            }
+
+        // buda arayan kişinin ... bunuda aranan kişiye kaydedecek ...
+
+        val OwndisplayName = currentUser?.displayName
+        val OwnphotoUrl = currentUser?.photoUrl.toString()
+
+        val Ownercalls = Calls(
+            displayName = OwndisplayName ,
+            photoUrl = OwnphotoUrl ,
+            uid = ownerId ,
+            type = "out" , // out algıla gelen arama ...
+            time = System.currentTimeMillis() ,
+            act = false // kabul edildi mi ...
+            )
+
+        W.child("calls")
+            .child(uid)
+
+            .setValue(Ownercalls)
+
+
+    }
+
+    lateinit var callsQuery:Query
+    lateinit var voiceCallsViewModel: VoiceCallsViewModel
+    private val callsValueListener = object : ValueEventListener{
+        override fun onDataChange(snapshot: DataSnapshot) {
+            //TODO: arama dinleyici ...
+
+            val call = snapshot.getValue(Calls::class.java)
+            if (call != null){
+                voiceCallsViewModel.updateCalls(call)
+            }
+        }
+
+        override fun onCancelled(error: DatabaseError) {
+            TODO("Not yet implemented")
+        }
+
+    }
+    @SuppressLint("SuspiciousIndentation")
+    fun listenCalls(ownerId:String, uid: String){
+      callsQuery = W.child("calls")
+            .child(ownerId)
+            .child(uid)
+
+        callsQuery.addValueEventListener(callsValueListener)
+    }
+
+    fun detachCallsListener(){
+        if (::callsQuery.isInitialized){
+            callsQuery.removeEventListener(callsValueListener)
+        }
+    }
+
+    fun calling(ownerId: String , uid: String , voiceCallsViewModel: VoiceCallsViewModel){
+        usersRef.document(uid)
+            .update("call" , true)
+
+    }
+
+    fun declineCall(ownerId: String , uid: String , voiceCallsViewModel: VoiceCallsViewModel){
+        usersRef.document(ownerId)
+            .update("call" , false)
+        usersRef.document(uid)
+            .update("call" , false)
+
+        // kabul etmedin ... arayan kişinin arama geçmişindeki arama kabul durumunu false ayarla ...
+        W.child("calls")
+            .child(ownerId)
+            .child(uid)
+            .setValue("act" , false)
+
+        W.child("calls")
+            .child(uid)
+            .child(ownerId)
+            .setValue("act" , false)
+
+    }
+
 }
 
 
@@ -1551,6 +1703,8 @@ class SessionService:Service() {
     override fun onBind(intent: Intent?): IBinder? {
         TODO("Not yet implemented")
     }
+
+
 
 }
 

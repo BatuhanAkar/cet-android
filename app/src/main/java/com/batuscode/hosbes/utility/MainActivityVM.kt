@@ -397,4 +397,13 @@ class MainActivityVM:ViewModel() {
     fun updateLoadMoreChat(state: Boolean){
         _loadMoreChat.value = state
     }
+
+    private val _call = MutableStateFlow<Boolean?>(false)
+    val call:StateFlow<Boolean?> get() = _call
+
+    fun updateCall(state: Boolean){
+        _call.value = state
+    }
+
+
 }

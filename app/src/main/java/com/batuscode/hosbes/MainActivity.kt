@@ -51,6 +51,7 @@ import com.batuscode.hosbes.views.PrivateRoomChat
 import com.batuscode.hosbes.views.PrivateRooms
 import com.batuscode.hosbes.views.SelectUsername
 import com.batuscode.hosbes.views.SplashScreen
+import com.batuscode.hosbes.views.VoiceCalls
 import com.batuscode.hosbes.views.Whisper
 import com.batuscode.hosbes.views.WhisperChat
 import com.batuscode.hosbes.views._WhisperChat
@@ -72,6 +73,7 @@ class MainActivity : ComponentActivity() {
         var navigate:NavController? = null
         var PreferenceManager:PreferenceManager? = null
         lateinit var permissionLauncher:ManagedActivityResultLauncher<String,Boolean>
+        lateinit var mMainActivityVM: MainActivityVM
     }
 
 
@@ -98,6 +100,7 @@ class MainActivity : ComponentActivity() {
             FirebaseManager.auth.removeAuthStateListener(authStateListener)
         }
 
+        fm.detachListenerICC()
     }
 
     override fun onRequestPermissionsResult(
@@ -127,12 +130,13 @@ class MainActivity : ComponentActivity() {
                 JitsiMeet.setDefaultConferenceOptions(defaultOptions)
                 fm.loadMoreChat = false
 
-                context = LocalContext.current
+                context = this
 
 
                 permissionLauncher= rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission()) {
 
             }
+
                 PreferenceManager = PreferenceManager(context)
 
                 var session = PreferenceManager?.getSession("session")
@@ -149,6 +153,10 @@ class MainActivity : ComponentActivity() {
                 val mainActivityVM: MainActivityVM by viewModels()
                 val chatViewModel:ChatViewModel by viewModels()
                 val whisperViewModel:WhisperViewModel by viewModels()
+
+                mMainActivityVM = mainActivityVM
+
+                val call by mainActivityVM.call.collectAsState()
 
                 val participantsViewModel:ParticipantsViewModel by viewModels()
                 fm.whisperViewModel = whisperViewModel
@@ -173,6 +181,7 @@ class MainActivity : ComponentActivity() {
                     if (session == true){
                         mainActivityVM.connectChannel("C1")
                         mainActivityVM.updateSelectedChannel("Hoşbeş")
+
 
                         authStateListener = FirebaseAuth.AuthStateListener { firebaseAuth ->
                             run {
@@ -207,6 +216,7 @@ class MainActivity : ComponentActivity() {
 
                                         })
                                     fm.updateSessionStatus()
+                                    fm.listenICC(it.uid , mainActivityVM)
 
 
 
@@ -228,7 +238,6 @@ class MainActivity : ComponentActivity() {
                                     },5000)
 
                 if (!splash){
-
 
 
                     NavHost(navController = navController, startDestination = if (currentUser != null) "chat" else "selectUsername") {
@@ -272,9 +281,16 @@ class MainActivity : ComponentActivity() {
                         composable("deleteaccount"){
                             DeleteAccount()
                         }
+                        composable("ICC"){
+                            com.batuscode.hosbes.views.ICC()
+                        }
 
                     }
 
+                    if (call == true){
+
+                        navigate?.navigate("ICC")
+                    }
                 } else {
 
                     SplashScreen()
