@@ -47,6 +47,7 @@ fun startCall(context: Context , uid:String , displayName:String , photoUrl:Stri
     intent.putExtra("uid" , uid)
     intent.putExtra("displayName" , displayName)
     intent.putExtra("photoUrl" , photoUrl)
+    intent.putExtra("type" , "calling")
     context.startActivity(intent)
 }
 
@@ -172,6 +173,9 @@ fun WhisperChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
                         val photoUrl = whisperItem?.wphotoUrl
                         val displayName = whisperItem?.wdisplayName
 
+                        /**
+                         * Arama yapılmak istendi ... VoiceCall aktivitesi başlat ... Aranan kişinin bilgilerini geçir ...
+                         * */
                         startCall(MainActivity.context , uid!! , photoUrl!! , displayName!!)
 
                     }) {

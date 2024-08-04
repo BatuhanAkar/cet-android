@@ -1515,10 +1515,10 @@ class FirebaseManager {
             snapshot , e ->
 
             if (snapshot != null && snapshot.exists()){
-                var call = snapshot.getBoolean("call")
-                if (call != null){
-                    mainActivityVM.updateCall(call)
-                    Log.d("ICC" , "gelen arama " + call)
+                var ICC = snapshot.getBoolean("ICC")
+                if (ICC != null){
+                    mainActivityVM.updateCall(ICC)
+                    Log.d("ICC" , "gelen arama " + ICC)
 
                 }
             }
@@ -1540,11 +1540,15 @@ class FirebaseManager {
         usersRef.document(ownerId)
             .update("call" , true)
 
+        /**
+         *  aranan kişi herhangi bir aramada mı bak ...
+         * */
+
         usersRef.document(uid)
             .get()
             .addOnCompleteListener {
 
-               var call = it.result.getBoolean("call")
+               var call = it.result.getBoolean("call") // aranan kişinin arama durumu burda ...
 
                 voiceCallsViewModel.updateRequestCall(call!!)
 
@@ -1552,10 +1556,16 @@ class FirebaseManager {
             }
 
         /**
-         * arama isteği yapıldığında arama geçmişine kaydet ...
+         * arama isteği atıldığında aranan kişi koridora düşsede düşmesede cevap versede vermesede arama geçmişine kaydet ...
          * */
 
         // bilgiler aranan kişinin ... arayan kendine kaydedecek arayan ...
+
+
+        /**
+         * Arama geçmişine kaydederken arayan kişi zaten aramada olmak istediği için arama durumunu true ayarla ki dışardan arama gelmesin ...
+         * arayan kişinin geçmişine aranan kişi bilgileri yazılacak ...
+         * */
         val Wcalls = Calls(
             displayName = displayName ,
             photoUrl = photoUrl ,
@@ -1573,11 +1583,22 @@ class FirebaseManager {
             .addOnCompleteListener {
                 if (it.isSuccessful){
                     // arama yapan kişinin arama geçmişine arama kaydedildi ise arama durumunu dinlemeye başla ...
+                    /**
+                     * arama yapan kişinin arama geçmişini dinleme sebebi ise ... karşı tarafın cevabına göre
+                     * gelen arama durumunun dinlenmesi ve koridorun akışının şekillenmesi ...
+                     * */
                     listenCalls(ownerId, uid)
                 }
             }
 
         // buda arayan kişinin ... bunuda aranan kişiye kaydedecek ...
+
+        /**
+         * bu arama geçmişi aranan kişinin geçmişi ... arayan kişiyi buraya alacaz ...
+         * aranan kişinin geçmişi olduğu için arama durumunu yanıta göre güncelleyecez ...
+         *
+         * */
+
 
         val OwndisplayName = currentUser?.displayName
         val OwnphotoUrl = currentUser?.photoUrl.toString()
@@ -1593,14 +1614,53 @@ class FirebaseManager {
 
         W.child("calls")
             .child(uid)
+            .child(ownerId)
 
             .setValue(Ownercalls)
+            .addOnCompleteListener {
+                if (it.isSuccessful){
+                    listenWCalls(ownerId, uid)
+                }
+            }
 
 
     }
 
     lateinit var callsQuery:Query
+    lateinit var WcallsQuery:Query
+
     lateinit var voiceCallsViewModel: VoiceCallsViewModel
+
+
+    /**
+     * arama geçmişinde arayan kişinin aranan kişinin arama geçmişinin dinleyicisi ...
+     * */
+    private val WcallsValueListener = object : ValueEventListener{
+        override fun onDataChange(snapshot: DataSnapshot) {
+            //TODO: arama dinleyici ...
+
+            val call = snapshot.getValue(Calls::class.java)
+            if (call != null){
+                voiceCallsViewModel.updateWCalls(call)
+            }
+        }
+
+        override fun onCancelled(error: DatabaseError) {
+            TODO("Not yet implemented")
+        }
+
+    }
+    @SuppressLint("SuspiciousIndentation")
+    fun listenWCalls(ownerId:String, uid: String){
+        WcallsQuery = W.child("calls")
+            .child(uid)
+            .child(ownerId)
+
+        WcallsQuery.addValueEventListener(WcallsValueListener)
+    }
+    /**
+     * arama geçmişinde arayan kişinin kendi arama bilgilerinin dinleyicisi
+     * */
     private val callsValueListener = object : ValueEventListener{
         override fun onDataChange(snapshot: DataSnapshot) {
             //TODO: arama dinleyici ...
@@ -1632,28 +1692,78 @@ class FirebaseManager {
     }
 
     fun calling(ownerId: String , uid: String , voiceCallsViewModel: VoiceCallsViewModel){
+        /**
+         * aranan kişi aramada olmadığı için arayabiliriz ... önce karşı tarafın aramayı kabul veya red onayı vermesi için
+         * karşı tarafın ICC (incomingcall) field'ını güncelle ...
+         * */
+
+        Log.d("calling" , "calling çalıştı ... ")
         usersRef.document(uid)
-            .update("call" , true)
+            .update("ICC" , true) // karşı taraf artık bir aramanın geldiğini görebilecek ...
 
     }
 
-    fun declineCall(ownerId: String , uid: String , voiceCallsViewModel: VoiceCallsViewModel){
+    fun acceptCall(ownerId: String , uid: String){
+        usersRef.document(ownerId)
+            .update("call" , true)
+        usersRef.document(uid)
+            .update("call" , true)
+
+        usersRef.document(uid)
+            .update("ICC" , true)
+
+        // kabul etti ... arayan kişinin arama geçmişindeki arama kabul durumunu true ayarla ...
+        W.child("calls")
+            .child(ownerId)
+            .child(uid)
+            .child("act")
+            .setValue(true)
+
+        W.child("calls")
+            .child(uid)
+            .child(ownerId)
+            .child("act")
+            .setValue(true)
+    }
+
+    fun declineCall(ownerId: String , uid: String){
         usersRef.document(ownerId)
             .update("call" , false)
         usersRef.document(uid)
             .update("call" , false)
 
+        usersRef.document(uid)
+            .update("ICC" , false)
+
         // kabul etmedin ... arayan kişinin arama geçmişindeki arama kabul durumunu false ayarla ...
         W.child("calls")
             .child(ownerId)
             .child(uid)
-            .setValue("act" , false)
+            .child("act")
+            .setValue(false)
 
         W.child("calls")
             .child(uid)
             .child(ownerId)
-            .setValue("act" , false)
+            .child("act")
+            .setValue(false)
 
+    }
+
+    /**
+     * arama geldiğinde geçmişten en sonuncusunu getir ...
+     * */
+
+    fun getLastCallHistory( uid: String , mainActivityVM: MainActivityVM){
+        W.child("calls")
+            .child(uid)
+            .get()
+            .addOnCompleteListener {
+                if (it.isSuccessful){
+                   val calls = it.result.children.last().getValue(Calls::class.java)
+                    mainActivityVM.updateCalls(calls!!)
+                }
+            }
     }
 
 }

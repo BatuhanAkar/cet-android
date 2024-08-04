@@ -115,19 +115,9 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        val serverURL:URL
-        serverURL = URL("https://92.112.193.179")
         setContent {
             HoşbeşTheme {
 
-
-
-                var defaultOptions = JitsiMeetConferenceOptions.Builder()
-                    .setServerURL(serverURL)
-                    .setFeatureFlag("welcomepage.enabled" , false)
-                    .build()
-
-                JitsiMeet.setDefaultConferenceOptions(defaultOptions)
                 fm.loadMoreChat = false
 
                 context = this
@@ -282,12 +272,18 @@ class MainActivity : ComponentActivity() {
                             DeleteAccount()
                         }
                         composable("ICC"){
-                            com.batuscode.hosbes.views.ICC()
+                            com.batuscode.hosbes.views.ICC(mainActivityVM = mainActivityVM)
                         }
 
                     }
 
                     if (call == true){
+
+                        /**
+                         * arama geldiği zaman arama geçmişinin en son öğesini getir ...
+                         * */
+
+                        fm.getLastCallHistory(uid!! , mainActivityVM)
 
                         navigate?.navigate("ICC")
                     }

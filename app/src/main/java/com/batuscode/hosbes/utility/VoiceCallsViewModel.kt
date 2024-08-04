@@ -14,6 +14,10 @@ class VoiceCallsViewModel:ViewModel() {
         _requestCall.value = state
     }
 
+
+    /**
+     * aranan kişinin aramada oolup olmadığını tutan stateflow ...
+     * */
     private val _call = MutableStateFlow<Boolean?>(false)
     val call:StateFlow<Boolean?> get() = _call
 
@@ -26,5 +30,12 @@ class VoiceCallsViewModel:ViewModel() {
 
     fun updateCalls(calls: Calls){
         _calls.value = calls
+    }
+
+    private val _Wcalls = MutableStateFlow<Calls?>(null)
+    val Wcalls:StateFlow<Calls?> get() = _Wcalls
+
+    fun updateWCalls(calls: Calls){
+        _Wcalls.value = calls
     }
 }

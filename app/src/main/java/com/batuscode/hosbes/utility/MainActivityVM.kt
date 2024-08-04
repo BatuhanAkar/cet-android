@@ -7,6 +7,7 @@ import android.net.Uri
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
+import com.batuscode.hosbes.models.Calls
 import com.batuscode.hosbes.models.Message
 import com.batuscode.hosbes.models.PrivateRoom
 import com.batuscode.hosbes.models.User
@@ -403,6 +404,13 @@ class MainActivityVM:ViewModel() {
 
     fun updateCall(state: Boolean){
         _call.value = state
+    }
+
+    private val _calls = MutableStateFlow<Calls?>(null)
+    val calls:StateFlow<Calls?> get() = _calls
+
+    fun updateCalls(calls: Calls){
+        _calls.value = calls
     }
 
 
