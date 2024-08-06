@@ -1,5 +1,6 @@
 package com.batuscode.hosbes
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
@@ -29,6 +30,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.app.ActivityCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
@@ -117,6 +119,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             HoşbeşTheme {
+
+                ActivityCompat.requestPermissions(this , arrayOf(Manifest.permission.RECORD_AUDIO) , 1)
 
                 fm.loadMoreChat = false
 

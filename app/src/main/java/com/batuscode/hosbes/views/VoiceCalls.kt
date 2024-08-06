@@ -1,8 +1,10 @@
 package com.batuscode.hosbes.views
 
 import android.annotation.SuppressLint
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.os.Bundle
@@ -43,6 +45,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.fragment.app.FragmentActivity
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.batuscode.hosbes.MainActivity
 import com.batuscode.hosbes.R
 import com.batuscode.hosbes.ui.theme.HoşbeşTheme
@@ -56,12 +59,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.jitsi.meet.sdk.BroadcastEvent
 import org.jitsi.meet.sdk.JitsiMeet
 import org.jitsi.meet.sdk.JitsiMeetActivity
 import org.jitsi.meet.sdk.JitsiMeetActivityDelegate
 import org.jitsi.meet.sdk.JitsiMeetActivityInterface
 import org.jitsi.meet.sdk.JitsiMeetConferenceOptions
 import org.jitsi.meet.sdk.JitsiMeetView
+import timber.log.Timber
 import java.net.URL
 import kotlin.properties.Delegates
 
@@ -80,12 +85,42 @@ class VoiceCalls:FragmentActivity(), JitsiMeetActivityInterface{
     lateinit var photoUrl:String
     lateinit var displayName:String
     lateinit var type:String
+    lateinit var roomId:String
     var answered by mutableStateOf(false)
 
 
 
     companion object{
         lateinit var VoiceCallsContext:Context
+    }
+
+    private fun onBroadcastReceived(intent: Intent?){
+        if (intent != null){
+            val event = BroadcastEvent(intent)
+            when(event.type){
+                BroadcastEvent.Type.CONFERENCE_JOINED -> Timber.i("Conference joined with url%s" , event.data.get("url"))
+                BroadcastEvent.Type.PARTICIPANT_JOINED -> Timber.i("Participant joined%s" , event.data.get("name"))
+                else -> Timber.i("Received event: %s" , event.type)
+            }
+        }
+    }
+
+    private val broadcastReceiver = object : BroadcastReceiver(){
+        override fun onReceive(p0: Context?, p1: Intent?) {
+            onBroadcastReceived(intent)
+        }
+
+    }
+
+
+
+    private fun registerForBroadcastMessages(){
+        val intentFilter = IntentFilter()
+
+        intentFilter.addAction(BroadcastEvent.Type.CONFERENCE_TERMINATED.action)
+        intentFilter.addAction(BroadcastEvent.Type.AUDIO_MUTED_CHANGED.action)
+
+        LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver , intentFilter)
     }
 
     @SuppressLint("MissingSuperCall")
@@ -109,6 +144,8 @@ class VoiceCalls:FragmentActivity(), JitsiMeetActivityInterface{
 
     override fun onDestroy() {
         super.onDestroy()
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver)
+        JitsiMeetActivityDelegate.onHostDestroy(this)
         MainActivity.fm.detachCallsListener()
 
     }
@@ -129,6 +166,7 @@ class VoiceCalls:FragmentActivity(), JitsiMeetActivityInterface{
         photoUrl = VoiceCallsIntent.getStringExtra("photoUrl").toString()
         displayName = VoiceCallsIntent.getStringExtra("displayName").toString()
         type = VoiceCallsIntent.getStringExtra("type").toString()
+        roomId = VoiceCallsIntent.getStringExtra("roomId").toString()
         MainActivity.fm.voiceCallsViewModel = voiceCallsViewModel
 
 
@@ -173,9 +211,12 @@ class VoiceCalls:FragmentActivity(), JitsiMeetActivityInterface{
 
 
 
-                        var options = JitsiMeetConferenceOptions.Builder()
+                        val options = JitsiMeetConferenceOptions.Builder()
+                            .setServerURL(URL("https://recommyz.com"))
                             .setRoom(ownerId)
                             .setAudioOnly(true)
+                            .setAudioMuted(false)
+                            .setVideoMuted(true)
                             .build()
 
                         AndroidView(factory = {
@@ -194,12 +235,13 @@ class VoiceCalls:FragmentActivity(), JitsiMeetActivityInterface{
 
             }
 
-        } else if (type.equals("answered")){
+        }
+        else if (type.equals("answered")){
 
             view = JitsiMeetView(this)
             setContentView(view)
             val roomName: String
-            roomName = "https://recommyz.com/$ownerId"
+            roomName = "https://recommyz.com/$roomId"
 
 
             var options = JitsiMeetConferenceOptions.Builder()

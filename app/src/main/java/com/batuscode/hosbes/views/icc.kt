@@ -37,15 +37,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.batuscode.hosbes.MainActivity
 import com.batuscode.hosbes.R
+import com.batuscode.hosbes.models.Calls
 import com.batuscode.hosbes.ui.theme.HoşbeşTheme
 import com.batuscode.hosbes.utility.GlideApp
 import com.batuscode.hosbes.utility.MainActivityVM
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 
-fun answerCall(context: Context){
+fun answerCall(context: Context , calls:Calls){
     val intent = Intent(context , VoiceCalls::class.java)
     intent.putExtra("type" , "answered")
+    intent.putExtra("roomId" , calls.uid!!)
+
     context.startActivity(intent)
 }
 @Composable
@@ -143,7 +146,7 @@ fun ICC(mainActivityVM: MainActivityVM){
                 IconButton(onClick = {
                     //TODO: aramayi cevapla butonu ...
                     MainActivity.fm.acceptCall(ownerId = calls?.uid!! , uid = uid!!)
-                    answerCall(MainActivity.context)
+                    answerCall(MainActivity.context , calls = calls!!)
 
                 } ,
                     modifier = Modifier
