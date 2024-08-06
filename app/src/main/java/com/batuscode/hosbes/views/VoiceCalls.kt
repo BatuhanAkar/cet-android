@@ -95,7 +95,7 @@ class VoiceCalls:FragmentActivity(), JitsiMeetActivityInterface{
     }
 
     override fun requestPermissions(p0: Array<out String>?, p1: Int, p2: PermissionListener?) {
-        TODO("Not yet implemented")
+        JitsiMeetActivityDelegate.requestPermissions(this , p0 , p1 , p2)
     }
 
     @SuppressLint("MissingSuperCall")
@@ -133,7 +133,7 @@ class VoiceCalls:FragmentActivity(), JitsiMeetActivityInterface{
 
 
         val serverURL: URL
-        serverURL = URL("https://92.112.193.179")
+        serverURL = URL("https://recommyz.com")
         var defaultOptions = JitsiMeetConferenceOptions.Builder()
             .setServerURL(serverURL)
             .setFeatureFlag("welcomepage.enabled" , false)
@@ -199,7 +199,7 @@ class VoiceCalls:FragmentActivity(), JitsiMeetActivityInterface{
             view = JitsiMeetView(this)
             setContentView(view)
             val roomName: String
-            roomName = "https://92.112.193.179/$ownerId"
+            roomName = "https://recommyz.com/$ownerId"
 
 
             var options = JitsiMeetConferenceOptions.Builder()
