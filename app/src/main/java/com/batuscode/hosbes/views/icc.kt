@@ -63,11 +63,14 @@ fun ICC(mainActivityVM: MainActivityVM){
 
     val calls by mainActivityVM.calls.collectAsState()
 
+
     var image by remember{
         mutableStateOf<ImageBitmap?>(null)
     }
 
     if (calls != null){
+        MainActivity.PreferenceManager?.saveuid("callOwnerName" , calls?.displayName!!)
+
         GlideApp.with(context)
             .asBitmap()
             .load(calls?.photoUrl)

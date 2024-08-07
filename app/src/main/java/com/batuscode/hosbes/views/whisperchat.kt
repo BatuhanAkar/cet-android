@@ -13,18 +13,25 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.lifecycle.Lifecycle
@@ -36,6 +43,7 @@ import com.batuscode.hosbes.ui.theme.HoşbeşTheme
 import com.batuscode.hosbes.utility.ChatViewModel
 import com.batuscode.hosbes.utility.MainActivityVM
 import com.batuscode.hosbes.views.ui.MessageTextField
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
@@ -62,7 +70,12 @@ fun WhisperChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
     val Cscope = CoroutineScope(Dispatchers.Default)
     val context = LocalContext.current
 
+    val _isOnline by mainActivityVM.isOnline.collectAsState()
 
+    val snackBarHostState = remember{
+        SnackbarHostState()
+    }
+    val scope = rememberCoroutineScope()
 
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver{_,event ->
@@ -71,7 +84,7 @@ fun WhisperChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
                 Lifecycle.Event.ON_CREATE -> {
 
                     Cscope.launch {
-                        delay(6000)
+                        delay(900000)
                         chatViewModel.refreshChat() // sohbeti sıfırla ...
 
                         mainActivityVM.updateInWhisper(true) // fısıltıda mesaj seçeneklerinin kontrolü için ...
@@ -141,9 +154,8 @@ fun WhisperChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
             lifecycleOwner.lifecycle.removeObserver(observer)
         }
     }
-
     Scaffold(
-
+        snackbarHost = { SnackbarHost(hostState = snackBarHostState)},
         modifier = Modifier
             .fillMaxSize()
             .padding(8.dp)
@@ -168,22 +180,42 @@ fun WhisperChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
                 } ,
 
                 actions = {
-                    OutlinedIconButton(onClick = {
+                    OutlinedIconButton( border = null , onClick = {
                         val uid = whisperItem?.wuid
                         val photoUrl = whisperItem?.wphotoUrl
                         val displayName = whisperItem?.wdisplayName
-
                         /**
-                         * Arama yapılmak istendi ... VoiceCall aktivitesi başlat ... Aranan kişinin bilgilerini geçir ...
+                         * çevrimiçi ise ara ...
                          * */
-                        startCall(MainActivity.context , uid!! , photoUrl!! , displayName!!)
 
-                    }) {
+                        MainActivity.fm.checkSession(uid!! , mainActivityVM)
+
+                        if (_isOnline == true){
+                            /**
+                             * Arama yapılmak istendi ... VoiceCall aktivitesi başlat ... Aranan kişinin bilgilerini geçir ...
+                             * */
+                            startCall(MainActivity.context , uid!! , photoUrl!! , displayName!!)
+                        } else {
+                            Log.d("kllnci" , "çevrim dışı ...")
+                            scope.launch {
+
+                                snackBarHostState.showSnackbar(
+                                    message = "kullanici çevrimdışı" ,
+                                    duration = SnackbarDuration.Short ,
+                                    withDismissAction = false
+                                )
+                            }
+                        }
+
+
+                    }
+                        ) {
                         Icon(painter = painterResource(id = R.drawable.call_24px), contentDescription = "")
                     }
                 }
             )
         }
+
     )
     { innerPadding ->
         ConstraintLayout (modifier = Modifier

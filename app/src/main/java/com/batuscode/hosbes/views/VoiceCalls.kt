@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -48,6 +49,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.batuscode.hosbes.MainActivity
 import com.batuscode.hosbes.R
+import com.batuscode.hosbes.models.Calls
 import com.batuscode.hosbes.ui.theme.HoşbeşTheme
 import com.batuscode.hosbes.utility.GlideApp
 import com.batuscode.hosbes.utility.VoiceCallsViewModel
@@ -60,17 +62,25 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jitsi.meet.sdk.BroadcastEvent
+import org.jitsi.meet.sdk.BroadcastIntentHelper
 import org.jitsi.meet.sdk.JitsiMeet
 import org.jitsi.meet.sdk.JitsiMeetActivity
 import org.jitsi.meet.sdk.JitsiMeetActivityDelegate
 import org.jitsi.meet.sdk.JitsiMeetActivityInterface
 import org.jitsi.meet.sdk.JitsiMeetConferenceOptions
+import org.jitsi.meet.sdk.JitsiMeetUserInfo
 import org.jitsi.meet.sdk.JitsiMeetView
 import timber.log.Timber
 import java.net.URL
 import kotlin.properties.Delegates
 
 class VoiceCalls:FragmentActivity(), JitsiMeetActivityInterface{
+
+    private fun hangUp(){
+        val hangUpBroadcastIntent: Intent = BroadcastIntentHelper.buildHangUpIntent()
+        LocalBroadcastManager.getInstance(this.applicationContext).sendBroadcast(hangUpBroadcastIntent)
+    }
+
 
     var view:JitsiMeetView? = null
 
@@ -83,10 +93,11 @@ class VoiceCalls:FragmentActivity(), JitsiMeetActivityInterface{
     val ownerId = MainActivity.PreferenceManager?.getuidShared("uid")
     lateinit var uid:String // karşı tarafın id'si
     lateinit var photoUrl:String
-    lateinit var displayName:String
+    lateinit var WdisplayName:String
     lateinit var type:String
     lateinit var roomId:String
     var answered by mutableStateOf(false)
+    lateinit var wcalls:Calls
 
 
 
@@ -164,7 +175,7 @@ class VoiceCalls:FragmentActivity(), JitsiMeetActivityInterface{
         val VoiceCallsIntent = intent
         uid = VoiceCallsIntent.getStringExtra("uid").toString()
         photoUrl = VoiceCallsIntent.getStringExtra("photoUrl").toString()
-        displayName = VoiceCallsIntent.getStringExtra("displayName").toString()
+        WdisplayName = VoiceCallsIntent.getStringExtra("displayName").toString()
         type = VoiceCallsIntent.getStringExtra("type").toString()
         roomId = VoiceCallsIntent.getStringExtra("roomId").toString()
         MainActivity.fm.voiceCallsViewModel = voiceCallsViewModel
@@ -178,6 +189,8 @@ class VoiceCalls:FragmentActivity(), JitsiMeetActivityInterface{
             .build()
 
         JitsiMeet.setDefaultConferenceOptions(defaultOptions)
+
+        registerForBroadcastMessages()
 
         /***
          * arama yapan kişi kendi aramalarını dinleyecek ... arama durumu önemlisi ... bide kişi bilgiler çekilecek ...
@@ -204,19 +217,63 @@ class VoiceCalls:FragmentActivity(), JitsiMeetActivityInterface{
                          * */
 
                         handler.postDelayed({
-                            MainActivity.fm.callrequest(ownerId = ownerId!! , uid = uid!! , displayName = displayName!! , photoUrl = photoUrl!!, voiceCallsViewModel = voiceCallsViewModel)
+                            MainActivity.fm.callrequest(ownerId = ownerId!! , uid = uid!! , displayName = WdisplayName!! , photoUrl = photoUrl!!, voiceCallsViewModel = voiceCallsViewModel)
 
                         } , 500)
-                    } else if (answered == true){
+                    }
 
+                    else if (answered == true){
 
+                        val WuserInfo = JitsiMeetUserInfo().apply {
+                            displayName = photoUrl
+                        }
 
                         val options = JitsiMeetConferenceOptions.Builder()
+                            .setUserInfo(WuserInfo)
                             .setServerURL(URL("https://recommyz.com"))
                             .setRoom(ownerId)
                             .setAudioOnly(true)
                             .setAudioMuted(false)
                             .setVideoMuted(true)
+                            .setFeatureFlag("prejoinpage.enabled" , false)
+
+                            .setFeatureFlag("invite.enabled" , false)
+                            .setFeatureFlag("chat.enabled" , false)
+                            .setFeatureFlag("add-people.enabled" , false)
+                            .setFeatureFlag("car-mode.enabled" , false)
+                            .setFeatureFlag("close-captions.enabled" , false)
+                            .setFeatureFlag("help.enabled" , false)
+                            .setFeatureFlag("ios.screensharing.enabled" , false)
+                            .setFeatureFlag("ios.recording.enabled" , false)
+                            .setFeatureFlag("android.screensharing.enabled" , false)
+                            .setFeatureFlag("video-mute.enabled" , false)
+                            .setFeatureFlag("video-share.enabled" , false)
+                            .setFeatureFlag("overflow-menu.enabled" , false)
+                            .setFeatureFlag("participants.enabled" , false)
+                            .setFeatureFlag("pip.enabled" , false)
+                            .setFeatureFlag("notifications.enabled" , false)
+                            .setFeatureFlag("pip-while-screensharing.enabled" , false)
+                            .setFeatureFlag("meeting-password.enabled" , false)
+                            .setFeatureFlag("kick-out.enabled" , false)
+
+                            .setFeatureFlag("meeting-name.enabled" , false)
+                            .setFeatureFlag("lobby-mode.enabled" , false)
+                            .setFeatureFlag("replace.participant" , false)
+                            .setFeatureFlag("settings.enabled" , false)
+                            .setFeatureFlag("title-view.enabled" , false)
+
+
+                            .setFeatureFlag("filmstrip.enabled" , false)
+                            .setFeatureFlag("call-integration.enabled" , false)
+                            .setFeatureFlag("invite-dial-in.enabled" , false)
+                            .setFeatureFlag("server-url-change.enabled" , false)
+                            .setFeatureFlag("security-options.enabled" , false)
+
+                            .setFeatureFlag("call-integration.enabled" , false)
+                            .setFeatureFlag("toolbox.enabled" , false)
+
+                            .setFeatureFlag("welcomepage.enabled" , false)
+
                             .build()
 
                         AndroidView(factory = {
@@ -238,15 +295,62 @@ class VoiceCalls:FragmentActivity(), JitsiMeetActivityInterface{
         }
         else if (type.equals("answered")){
 
+            val callOwnerName = MainActivity.PreferenceManager?.getuidShared("callOwnerName")
             view = JitsiMeetView(this)
             setContentView(view)
             val roomName: String
             roomName = "https://recommyz.com/$roomId"
 
+            val OwuserInfo = JitsiMeetUserInfo().apply {
+                displayName = callOwnerName
+            }
 
             var options = JitsiMeetConferenceOptions.Builder()
+                .setUserInfo(OwuserInfo)
                 .setRoom(roomName)
                 .setAudioOnly(true)
+                .setAudioMuted(false)
+                .setVideoMuted(true)
+                .setFeatureFlag("prejoinpage.enabled" , false)
+                .setFeatureFlag("welcomepage.enabled" , false)
+
+
+                .setFeatureFlag("invite.enabled" , false)
+                .setFeatureFlag("chat.enabled" , false)
+                .setFeatureFlag("add-people.enabled" , false)
+                .setFeatureFlag("car-mode.enabled" , false)
+                .setFeatureFlag("close-captions.enabled" , false)
+                .setFeatureFlag("help.enabled" , false)
+                .setFeatureFlag("ios.screensharing.enabled" , false)
+                .setFeatureFlag("ios.recording.enabled" , false)
+                .setFeatureFlag("android.screensharing.enabled" , false)
+                .setFeatureFlag("video-mute.enabled" , false)
+                .setFeatureFlag("video-share.enabled" , false)
+                .setFeatureFlag("overflow-menu.enabled" , false)
+                .setFeatureFlag("participants.enabled" , false)
+                .setFeatureFlag("pip.enabled" , false)
+                .setFeatureFlag("notifications.enabled" , false)
+                .setFeatureFlag("pip-while-screensharing.enabled" , false)
+                .setFeatureFlag("meeting-password.enabled" , false)
+                .setFeatureFlag("kick-out.enabled" , false)
+
+
+                .setFeatureFlag("meeting-name.enabled" , false)
+                .setFeatureFlag("lobby-mode.enabled" , false)
+                .setFeatureFlag("replace.participant" , false)
+                .setFeatureFlag("settings.enabled" , false)
+                .setFeatureFlag("title-view.enabled" , false)
+
+                .setFeatureFlag("filmstrip.enabled" , false)
+                .setFeatureFlag("call-integration.enabled" , false)
+                .setFeatureFlag("invite-dial-in.enabled" , false)
+                .setFeatureFlag("server-url-change.enabled" , false)
+                .setFeatureFlag("security-options.enabled" , false)
+
+                .setFeatureFlag("call-integration.enabled" , false)
+                .setFeatureFlag("toolbox.enabled" , false)
+
+
                 .build()
 
             view!!.join(options)
@@ -283,6 +387,7 @@ class VoiceCalls:FragmentActivity(), JitsiMeetActivityInterface{
 
         if (Wcalls != null){
             Log.d("answeredcall" , "değeri == " + Wcalls?.act)
+            wcalls = Wcalls!!
             answered = Wcalls?.act == true
         }
 
@@ -388,6 +493,7 @@ class VoiceCalls:FragmentActivity(), JitsiMeetActivityInterface{
                         } , 400)
                     }else if (_requestCall == false) {
                         Text(text = "Çalıyor...")
+                        Log.d("ikinci" , "kullanici kapattı... ve bu yine çalişti ...")
 
                         /**
                          * aranan kişi bir aramada değilmiş ... kişiyi ara ...

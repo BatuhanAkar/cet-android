@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.net.Uri
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
@@ -413,5 +414,11 @@ class MainActivityVM:ViewModel() {
         _calls.value = calls
     }
 
+    private val _isOnline = MutableStateFlow<Boolean?>(null)
+    val isOnline:StateFlow<Boolean?> get() = _isOnline
+
+    fun updateIsOnline(status: Boolean){
+        _isOnline.value = status
+    }
 
 }

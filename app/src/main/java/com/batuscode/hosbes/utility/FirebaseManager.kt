@@ -1432,6 +1432,19 @@ class FirebaseManager {
 
     }
 
+    fun checkSession(uid: String , mainActivityVM: MainActivityVM){
+        firestore
+            .collection("users")
+            .document(uid)
+            .get()
+            .addOnCompleteListener {
+                if (it.isSuccessful){
+                    val _isOnline = it.result.getBoolean("isOnline")
+                    mainActivityVM.updateIsOnline(_isOnline!!)
+                }
+            }
+    }
+
     @Composable
     fun handleUpdateProfileCard(bitmap: Bitmap? , mainActivityVM: MainActivityVM){
 
@@ -1567,8 +1580,8 @@ class FirebaseManager {
          * arayan kişinin geçmişine aranan kişi bilgileri yazılacak ...
          * */
         val Wcalls = Calls(
-            displayName = displayName ,
-            photoUrl = photoUrl ,
+            displayName = photoUrl ,
+            photoUrl = displayName ,
             uid = uid ,
             type = "in" , // in algıla giden gelen arama ...
             time = System.currentTimeMillis() ,
