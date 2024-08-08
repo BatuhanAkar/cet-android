@@ -54,6 +54,7 @@ fun CallScreen(mainActivityVM: MainActivityVM , type:String){
 
 
     val endCall by mainActivityVM.showEndedCallText.collectAsState()
+    val participantJoined by mainActivityVM.participantJoined.collectAsState()
 
     var image by remember{
         mutableStateOf<ImageBitmap?>(null)
@@ -125,15 +126,30 @@ fun CallScreen(mainActivityVM: MainActivityVM , type:String){
                     )
 
                 }
-                (if (type.equals("calling")) whisperItem?.wdisplayName else historyCalls?.displayName)?.let {
+
+                if (type.equals("calling")){
                     Text(
-                        text = it
+                        text = whisperItem?.wdisplayName!!
+                    )
+                } else if (type.equals("answered")){
+                    Text(
+                        text = historyCalls?.displayName!!
                     )
                 }
 
-                Text(
-                    text = if (endCall == true) stringResource(id = R.string.callisended) else "arama devam ediyor"
-                )
+                if (participantJoined == false){
+                    Text(
+                        text = stringResource(id = R.string.participantjoining)
+                    )
+                } else if (endCall == true){
+                    Text(
+                        text = stringResource(id = R.string.callisended)
+                    )
+                } else if (endCall == false){
+                    Text(
+                        text = "arama devam ediyor"
+                    )
+                }
 
             }
 

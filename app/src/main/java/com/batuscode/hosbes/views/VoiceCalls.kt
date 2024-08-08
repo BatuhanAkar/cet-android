@@ -88,6 +88,7 @@ class VoiceCalls:JitsiMeetActivity(), JitsiMeetActivityInterface{
 
     override fun onConferenceJoined(extraData: HashMap<String, Any>?) {
         super.onConferenceJoined(extraData)
+        mainActivityVM.updateParticipantJoined(true)
     }
 
     override fun onConferenceTerminated(extraData: HashMap<String, Any>?) {
@@ -206,7 +207,7 @@ class VoiceCalls:JitsiMeetActivity(), JitsiMeetActivityInterface{
                 mainActivityVM.updateShowEndedCallText(true)
                 handler.postDelayed({
                     finish()
-                } , 500)
+                } , 600)
             } else {
 
             }

@@ -455,4 +455,11 @@ class MainActivityVM:ViewModel() {
         _showEndedCallText.value = state
     }
 
+    private val _participantJoined = MutableStateFlow<Boolean?>(false)
+    val participantJoined:StateFlow<Boolean?> get() = _participantJoined
+
+    fun updateParticipantJoined(state: Boolean){
+        _participantJoined.value = state
+    }
+
 }
