@@ -1,15 +1,12 @@
 package com.batuscode.hosbes.views
 
-import android.content.Context
-import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -33,60 +30,61 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.batuscode.hosbes.MainActivity
 import com.batuscode.hosbes.R
-import com.batuscode.hosbes.models.Calls
 import com.batuscode.hosbes.ui.theme.HoşbeşTheme
 import com.batuscode.hosbes.utility.GlideApp
 import com.batuscode.hosbes.utility.MainActivityVM
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 
-fun answerCall(context: Context , calls:Calls){
-    val intent = Intent(context , VoiceCalls::class.java)
-    intent.putExtra("type" , "answered")
-    intent.putExtra("roomId" , calls.uid!!)
-
-    context.startActivity(intent)
-}
 @Composable
-fun ICC(mainActivityVM: MainActivityVM){
-    val context = LocalContext.current
-
-    val uid = MainActivity?.PreferenceManager?.getuidShared("uid")
+fun CallScreen(mainActivityVM: MainActivityVM , type:String){
 
     /**
-     * gelen arama ile birlikte getirilen arama geçmişindeki son arama ...
+     * Jitsi aktivitesinin görünümüne eklenecek olan ekran bu ... bu ekranda
+     * görünecek olan şey kullanıcı resmi , ismi , ve arama sonlandırma butonu ...
      * */
+    val context = LocalContext.current
+    val historyCalls by mainActivityVM.Historycalls.collectAsState()
+    val whisperItem by mainActivityVM.whisperItem.collectAsState()
 
-    val Historycalls by mainActivityVM.Historycalls.collectAsState()
 
+    val endCall by mainActivityVM.showEndedCallText.collectAsState()
 
     var image by remember{
         mutableStateOf<ImageBitmap?>(null)
     }
 
-    if (Historycalls != null){
-        MainActivity.PreferenceManager?.saveuid("callOwnerName" , Historycalls?.displayName!!)
+    GlideApp.with(context)
+        .asBitmap()
+        .load(
 
-        GlideApp.with(context)
-            .asBitmap()
-            .load(Historycalls?.photoUrl)
-            .into(object : CustomTarget<Bitmap>(){
-                override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
-                    image = resource.asImageBitmap()
-                }
+            if (type.equals("calling")){
+                whisperItem?.wphotoUrl
+            } else if (type.equals("answered")){
+                historyCalls?.photoUrl
 
-                override fun onLoadCleared(placeholder: Drawable?) {
-                    TODO("Not yet implemented")
-                }
+            } else {}
+        )
+        .into(object : CustomTarget<Bitmap>(){
+            override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+                image = resource.asImageBitmap()
+            }
+
+            override fun onLoadCleared(placeholder: Drawable?) {
+            }
 
 
-            })
-    }
-    Scaffold {innerPadding ->
+        })
+    Scaffold(
+        modifier = Modifier
+            .fillMaxSize()
+    ) { innerPadding ->
+
         Column (
             verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.CenterHorizontally ,
@@ -95,12 +93,13 @@ fun ICC(mainActivityVM: MainActivityVM){
                 .fillMaxSize()
         ) {
 
-            Column (
+            Column ( verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
                     .padding(top = 100.dp)
                     .wrapContentSize()
             ){
+
                 if (image != null) {
                     Image(
                         bitmap = image!!,
@@ -126,57 +125,37 @@ fun ICC(mainActivityVM: MainActivityVM){
                     )
 
                 }
-
-
-                if (Historycalls != null){
+                (if (type.equals("calling")) whisperItem?.wdisplayName else historyCalls?.displayName)?.let {
                     Text(
-                        text = Historycalls?.displayName!!
+                        text = it
                     )
                 }
 
-                Text(text = "Gelen sesli arama...")
-
+                Text(
+                    text = if (endCall == true) stringResource(id = R.string.callisended) else "arama devam ediyor"
+                )
 
             }
 
 
-            Row (
-                horizontalArrangement = Arrangement.Center,
+
+            IconButton(onClick = {
+                mainActivityVM.updateEndCall(true)
+            } ,
                 modifier = Modifier
-                    .fillMaxWidth()
             ) {
-
-                IconButton(onClick = {
-                    //TODO: aramayi cevapla butonu ...
-                    MainActivity.fm.acceptCall(ownerId = Historycalls?.uid!! , uid = uid!!)
-                    answerCall(MainActivity.context , calls = Historycalls!!)
-                    MainActivity.navigate?.popBackStack()
-
-                } ,
-                    modifier = Modifier
-                ) {
-                    Icon(painter = painterResource(id = R.drawable.call_24px), contentDescription = "")
-                }
-
-                IconButton(onClick = {
-                    //TODO: aramayi reddet butonu ...
-                    MainActivity.fm.declineCall(Historycalls?.uid!! , uid!!)
-                    MainActivity.navigate?.popBackStack()
-                } ,
-                    modifier = Modifier
-                ) {
-                    Icon(painter = painterResource(id = R.drawable.call_end_24px), contentDescription = "")
-                }
+                Icon(painter = painterResource(id = R.drawable.call_end_24px), contentDescription = "")
             }
         }
+
     }
 
 }
 
 @Preview(showBackground = true , showSystemUi = true)
 @Composable
-fun ICCPreview(){
+fun CallScreenPreview(){
     HoşbeşTheme {
-        ICC(mainActivityVM = MainActivityVM())
+        CallScreen(MainActivityVM() , "")
     }
 }

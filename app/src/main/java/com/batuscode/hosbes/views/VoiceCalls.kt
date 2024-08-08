@@ -29,6 +29,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Composer
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -41,11 +42,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.Observer
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.batuscode.hosbes.MainActivity
 import com.batuscode.hosbes.R
@@ -58,6 +61,7 @@ import com.bumptech.glide.request.transition.Transition
 import com.facebook.react.modules.core.PermissionListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -72,17 +76,29 @@ import org.jitsi.meet.sdk.JitsiMeetUserInfo
 import org.jitsi.meet.sdk.JitsiMeetView
 import timber.log.Timber
 import java.net.URL
+import java.util.HashMap
 import kotlin.properties.Delegates
 
-class VoiceCalls:FragmentActivity(), JitsiMeetActivityInterface{
+class VoiceCalls:JitsiMeetActivity(), JitsiMeetActivityInterface{
 
     private fun hangUp(){
         val hangUpBroadcastIntent: Intent = BroadcastIntentHelper.buildHangUpIntent()
         LocalBroadcastManager.getInstance(this.applicationContext).sendBroadcast(hangUpBroadcastIntent)
     }
 
+    override fun onConferenceJoined(extraData: HashMap<String, Any>?) {
+        super.onConferenceJoined(extraData)
+    }
 
-    var view:JitsiMeetView? = null
+    override fun onConferenceTerminated(extraData: HashMap<String, Any>?) {
+        super.onConferenceTerminated(extraData)
+        finish()
+    }
+
+    override fun onParticipantLeft(extraData: HashMap<String, Any>?) {
+        super.onParticipantLeft(extraData)
+        hangUp()
+    }
 
 
     val mainActivityVM = MainActivity.mMainActivityVM
@@ -97,9 +113,8 @@ class VoiceCalls:FragmentActivity(), JitsiMeetActivityInterface{
     lateinit var type:String
     lateinit var roomId:String
     var answered by mutableStateOf(false)
-    lateinit var wcalls:Calls
 
-
+    lateinit var view:JitsiMeetView
 
     companion object{
         lateinit var VoiceCallsContext:Context
@@ -122,6 +137,7 @@ class VoiceCalls:FragmentActivity(), JitsiMeetActivityInterface{
         }
 
     }
+
 
 
 
@@ -155,6 +171,7 @@ class VoiceCalls:FragmentActivity(), JitsiMeetActivityInterface{
 
     override fun onDestroy() {
         super.onDestroy()
+        MainActivity.fm.declineCall(ownerId!! , uid)
         LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver)
         JitsiMeetActivityDelegate.onHostDestroy(this)
         MainActivity.fm.detachCallsListener()
@@ -163,6 +180,8 @@ class VoiceCalls:FragmentActivity(), JitsiMeetActivityInterface{
 
     override fun onStop() {
         super.onStop()
+        MainActivity.fm.declineCall(ownerId!! , uid)
+        JitsiMeetActivityDelegate.onHostDestroy(this)
         MainActivity.fm.detachCallsListener()
     }
 
@@ -171,6 +190,9 @@ class VoiceCalls:FragmentActivity(), JitsiMeetActivityInterface{
     @SuppressLint("CoroutineCreationDuringComposition")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+
+        view = jitsiView // jitsi aktivitesinin görünümünü al ...
         VoiceCallsContext = this
         val VoiceCallsIntent = intent
         uid = VoiceCallsIntent.getStringExtra("uid").toString()
@@ -178,8 +200,17 @@ class VoiceCalls:FragmentActivity(), JitsiMeetActivityInterface{
         WdisplayName = VoiceCallsIntent.getStringExtra("displayName").toString()
         type = VoiceCallsIntent.getStringExtra("type").toString()
         roomId = VoiceCallsIntent.getStringExtra("roomId").toString()
-        MainActivity.fm.voiceCallsViewModel = voiceCallsViewModel
 
+        mainActivityVM.endCall.observe(this , Observer { endCall ->
+            if (endCall == true){
+                mainActivityVM.updateShowEndedCallText(true)
+                handler.postDelayed({
+                    finish()
+                } , 500)
+            } else {
+
+            }
+        })
 
         val serverURL: URL
         serverURL = URL("https://recommyz.com")
@@ -199,105 +230,75 @@ class VoiceCalls:FragmentActivity(), JitsiMeetActivityInterface{
 
         enableEdgeToEdge()
 
+
+
         if (type.equals("calling")){
-            setContent {
-                HoşbeşTheme {
-                    if (answered == false){
-
-                        /**
-                         * arama yapılmadan önce bir istek atılır .... fısıldamada arama yapılmak istendiğinde arama yapan kişi
-                         * kabul veya red cevabını beklemeli ... bunun için bir bekleme ekranı olmalı ...
-                         * aranan kişinin resmi , adı ve çağrı durumu , iptal butonu görünmeli ...
-                         * */
-
-                        CallsCorridor(voiceCallsViewModel = voiceCallsViewModel)
-
-                        /**
-                         * arama koridoruna girildikten sonra 5 salise sonra aranan kişinin aramada olup olmadığına bak ve buna göre ICC yolla ...
-                         * */
-
-                        handler.postDelayed({
-                            MainActivity.fm.callrequest(ownerId = ownerId!! , uid = uid!! , displayName = WdisplayName!! , photoUrl = photoUrl!!, voiceCallsViewModel = voiceCallsViewModel)
-
-                        } , 500)
-                    }
-
-                    else if (answered == true){
-
-                        val WuserInfo = JitsiMeetUserInfo().apply {
-                            displayName = photoUrl
-                        }
-
-                        val options = JitsiMeetConferenceOptions.Builder()
-                            .setUserInfo(WuserInfo)
-                            .setServerURL(URL("https://recommyz.com"))
-                            .setRoom(ownerId)
-                            .setAudioOnly(true)
-                            .setAudioMuted(false)
-                            .setVideoMuted(true)
-                            .setFeatureFlag("prejoinpage.enabled" , false)
-
-                            .setFeatureFlag("invite.enabled" , false)
-                            .setFeatureFlag("chat.enabled" , false)
-                            .setFeatureFlag("add-people.enabled" , false)
-                            .setFeatureFlag("car-mode.enabled" , false)
-                            .setFeatureFlag("close-captions.enabled" , false)
-                            .setFeatureFlag("help.enabled" , false)
-                            .setFeatureFlag("ios.screensharing.enabled" , false)
-                            .setFeatureFlag("ios.recording.enabled" , false)
-                            .setFeatureFlag("android.screensharing.enabled" , false)
-                            .setFeatureFlag("video-mute.enabled" , false)
-                            .setFeatureFlag("video-share.enabled" , false)
-                            .setFeatureFlag("overflow-menu.enabled" , false)
-                            .setFeatureFlag("participants.enabled" , false)
-                            .setFeatureFlag("pip.enabled" , false)
-                            .setFeatureFlag("notifications.enabled" , false)
-                            .setFeatureFlag("pip-while-screensharing.enabled" , false)
-                            .setFeatureFlag("meeting-password.enabled" , false)
-                            .setFeatureFlag("kick-out.enabled" , false)
-
-                            .setFeatureFlag("meeting-name.enabled" , false)
-                            .setFeatureFlag("lobby-mode.enabled" , false)
-                            .setFeatureFlag("replace.participant" , false)
-                            .setFeatureFlag("settings.enabled" , false)
-                            .setFeatureFlag("title-view.enabled" , false)
-
-
-                            .setFeatureFlag("filmstrip.enabled" , false)
-                            .setFeatureFlag("call-integration.enabled" , false)
-                            .setFeatureFlag("invite-dial-in.enabled" , false)
-                            .setFeatureFlag("server-url-change.enabled" , false)
-                            .setFeatureFlag("security-options.enabled" , false)
-
-                            .setFeatureFlag("call-integration.enabled" , false)
-                            .setFeatureFlag("toolbox.enabled" , false)
-
-                            .setFeatureFlag("welcomepage.enabled" , false)
-
-                            .build()
-
-                        AndroidView(factory = {
-                                ctx ->
-                            JitsiMeetView(ctx).apply {
-                                join(options)
-                            }
-                        } ,
-
-                            modifier = Modifier
-                                .fillMaxSize()
-                            )
-
-                    }
-                }
-
+            val WuserInfo = JitsiMeetUserInfo().apply {
+                displayName = photoUrl
             }
+
+            val options = JitsiMeetConferenceOptions.Builder()
+                .setUserInfo(WuserInfo)
+                .setServerURL(URL("https://recommyz.com"))
+                .setRoom(ownerId)
+                .setAudioOnly(true)
+                .setAudioMuted(false)
+                .setVideoMuted(true)
+                .setFeatureFlag("prejoinpage.enabled" , false)
+
+                .setFeatureFlag("invite.enabled" , false)
+                .setFeatureFlag("chat.enabled" , false)
+                .setFeatureFlag("add-people.enabled" , false)
+                .setFeatureFlag("car-mode.enabled" , false)
+                .setFeatureFlag("close-captions.enabled" , false)
+                .setFeatureFlag("help.enabled" , false)
+                .setFeatureFlag("ios.screensharing.enabled" , false)
+                .setFeatureFlag("ios.recording.enabled" , false)
+                .setFeatureFlag("android.screensharing.enabled" , false)
+                .setFeatureFlag("video-mute.enabled" , false)
+                .setFeatureFlag("video-share.enabled" , false)
+                .setFeatureFlag("overflow-menu.enabled" , false)
+                .setFeatureFlag("participants.enabled" , false)
+                .setFeatureFlag("pip.enabled" , false)
+                .setFeatureFlag("notifications.enabled" , false)
+                .setFeatureFlag("pip-while-screensharing.enabled" , false)
+                .setFeatureFlag("meeting-password.enabled" , false)
+                .setFeatureFlag("kick-out.enabled" , false)
+
+                .setFeatureFlag("meeting-name.enabled" , false)
+                .setFeatureFlag("lobby-mode.enabled" , false)
+                .setFeatureFlag("replace.participant" , false)
+                .setFeatureFlag("settings.enabled" , false)
+                .setFeatureFlag("title-view.enabled" , false)
+
+
+                .setFeatureFlag("filmstrip.enabled" , false)
+                .setFeatureFlag("call-integration.enabled" , false)
+                .setFeatureFlag("invite-dial-in.enabled" , false)
+                .setFeatureFlag("server-url-change.enabled" , false)
+                .setFeatureFlag("security-options.enabled" , false)
+
+
+                .setFeatureFlag("welcomepage.enabled" , false)
+
+                .build()
+
+            join(options)
+
+            val composeView = ComposeView(this).apply {
+                setContent {
+                    CallScreen(mainActivityVM , "calling")
+                }
+            }
+
+            view!!.addView(composeView)
+
 
         }
         else if (type.equals("answered")){
 
             val callOwnerName = MainActivity.PreferenceManager?.getuidShared("callOwnerName")
-            view = JitsiMeetView(this)
-            setContentView(view)
+
             val roomName: String
             roomName = "https://recommyz.com/$roomId"
 
@@ -347,13 +348,19 @@ class VoiceCalls:FragmentActivity(), JitsiMeetActivityInterface{
                 .setFeatureFlag("server-url-change.enabled" , false)
                 .setFeatureFlag("security-options.enabled" , false)
 
-                .setFeatureFlag("call-integration.enabled" , false)
-                .setFeatureFlag("toolbox.enabled" , false)
 
 
                 .build()
 
-            view!!.join(options)
+            join(options)
+
+            val composeView = ComposeView(this).apply {
+                setContent {
+                    CallScreen(mainActivityVM , "answered")
+                }
+            }
+
+            view!!.addView(composeView)
 
         }
 
@@ -361,12 +368,8 @@ class VoiceCalls:FragmentActivity(), JitsiMeetActivityInterface{
 
     override fun onBackPressed() {
         super.onBackPressed()
-
-        if (answered == true){
-            JitsiMeetActivityDelegate.onBackPressed()
-        } else {
-            finish()
-        }
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver)
+        JitsiMeetActivityDelegate.onBackPressed()
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -375,147 +378,6 @@ class VoiceCalls:FragmentActivity(), JitsiMeetActivityInterface{
     }
 
 
-    @Composable
-    fun CallsCorridor(voiceCallsViewModel: VoiceCallsViewModel){
-        val context = LocalContext.current
-        val _requestCall by voiceCallsViewModel.requestCall.collectAsState()
 
-        /**
-         * karşı tarafın arama geçmişindeki arama durumu ...
-         * */
-        val Wcalls by voiceCallsViewModel.Wcalls.collectAsState()
-
-        if (Wcalls != null){
-            Log.d("answeredcall" , "değeri == " + Wcalls?.act)
-            wcalls = Wcalls!!
-            answered = Wcalls?.act == true
-        }
-
-        /**
-         * aranan kişinin arama durumu ... koridorda arama durumu buna göre şekillencek ...
-         * */
-        val call by voiceCallsViewModel.call.collectAsState()
-        val calls by voiceCallsViewModel.calls.collectAsState()
-
-        var image by remember{
-            mutableStateOf<ImageBitmap?>(null)
-        }
-
-        GlideApp.with(context)
-            .asBitmap()
-            .load(calls?.photoUrl)
-            .into(object : CustomTarget<Bitmap>(){
-                override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
-                    image = resource.asImageBitmap()
-                }
-
-                override fun onLoadCleared(placeholder: Drawable?) {
-                }
-
-
-            })
-
-
-
-        if ( calls != null && calls?.act == false){
-
-            finish()
-        }
-        Scaffold {innerPadding ->
-            Column (
-                verticalArrangement = Arrangement.SpaceBetween,
-                horizontalAlignment = Alignment.CenterHorizontally ,
-                modifier = Modifier
-                    .padding(innerPadding)
-                    .fillMaxSize()
-            ) {
-
-                Column (
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier
-                        .padding(top = 100.dp)
-                        .wrapContentSize()
-                ){
-
-                    if (image != null) {
-                        Image(
-                            bitmap = image!!,
-                            contentDescription = "",
-                            modifier = Modifier
-                                .padding(bottom = 20.dp)
-                                .clip(RoundedCornerShape(10.dp))
-                                .width(80.dp)
-                                .height(80.dp),
-                            contentScale = ContentScale.FillBounds
-                        )
-                    } else {
-
-                        Image(
-                            painter = painterResource(id = R.drawable.istockphoto_517188688_612x612),
-                            contentDescription = "",
-                            modifier = Modifier
-                                .padding(bottom = 20.dp)
-                                .clip(RoundedCornerShape(10.dp))
-                                .width(80.dp)
-                                .height(80.dp),
-                            contentScale = ContentScale.FillBounds
-                        )
-
-                    }
-
-
-                    if (calls != null){
-
-                        Text(
-                            text = calls?.displayName!!
-                        )
-                    }
-
-                    /**
-                     * aranan kişinin arama durumuna göre akışı düzenle ...
-                     * */
-
-                    if (_requestCall == null){
-                        Text(text = "Bağlanıyor...")
-
-                    } else if (_requestCall == true) {
-                        Text(text = "Meşgul...")
-                        handler.postDelayed({
-                            finish()
-
-                        } , 400)
-                    }
-                    else if (calls?.act == false){ // bu karşı tarafın arama geçmişindeki act durumu olmalı ...
-                        Text(text = "Meşgul...")
-                        handler.postDelayed({
-                            finish()
-
-                        } , 400)
-                    }else if (_requestCall == false) {
-                        Text(text = "Çalıyor...")
-                        Log.d("ikinci" , "kullanici kapattı... ve bu yine çalişti ...")
-
-                        /**
-                         * aranan kişi bir aramada değilmiş ... kişiyi ara ...
-                         * */
-                        MainActivity.fm.calling(ownerId = ownerId!! , uid = uid , voiceCallsViewModel = voiceCallsViewModel)
-                    }
-
-                }
-
-
-
-                IconButton(onClick = {
-                    MainActivity.fm.declineCall(ownerId!! , uid)
-                    finish()
-                } ,
-                    modifier = Modifier
-                ) {
-                    Icon(painter = painterResource(id = R.drawable.call_end_24px), contentDescription = "")
-                }
-            }
-        }
-
-    }
 
 }

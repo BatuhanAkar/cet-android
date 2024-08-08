@@ -7,6 +7,8 @@ import android.net.Uri
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.batuscode.hosbes.models.Calls
 import com.batuscode.hosbes.models.Message
@@ -399,12 +401,24 @@ class MainActivityVM:ViewModel() {
     fun updateLoadMoreChat(state: Boolean){
         _loadMoreChat.value = state
     }
+    private val _requestCall = MutableStateFlow<Boolean?>(null)
+    val requestCall: StateFlow<Boolean?> get() = _requestCall
 
+    fun updateRequestCall(state: Boolean){
+        _requestCall.value = state
+    }
     private val _call = MutableStateFlow<Boolean?>(false)
     val call:StateFlow<Boolean?> get() = _call
 
     fun updateCall(state: Boolean){
         _call.value = state
+    }
+
+    private val _Historycalls = MutableStateFlow<Calls?>(null)
+    val Historycalls:StateFlow<Calls?> get() = _Historycalls
+
+    fun updateHistoryCalls(calls: Calls){
+        _Historycalls.value = calls
     }
 
     private val _calls = MutableStateFlow<Calls?>(null)
@@ -413,12 +427,32 @@ class MainActivityVM:ViewModel() {
     fun updateCalls(calls: Calls){
         _calls.value = calls
     }
+    private val _Wcalls = MutableStateFlow<Calls?>(null)
+    val Wcalls:StateFlow<Calls?> get() = _Wcalls
+
+    fun updateWCalls(calls: Calls){
+        _Wcalls.value = calls
+    }
 
     private val _isOnline = MutableStateFlow<Boolean?>(null)
     val isOnline:StateFlow<Boolean?> get() = _isOnline
 
     fun updateIsOnline(status: Boolean){
         _isOnline.value = status
+    }
+
+    private val _endCall = MutableLiveData<Boolean?>(false)
+    val endCall:LiveData<Boolean?> get() = _endCall
+
+    fun updateEndCall(status: Boolean){
+        _endCall.value = status
+    }
+
+    private val _showEndedCallText = MutableStateFlow<Boolean?>(false)
+    val showEndedCallText:StateFlow<Boolean?> get() = _showEndedCallText
+
+    fun updateShowEndedCallText(state: Boolean){
+        _showEndedCallText.value = state
     }
 
 }

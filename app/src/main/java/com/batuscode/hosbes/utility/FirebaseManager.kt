@@ -1547,11 +1547,11 @@ class FirebaseManager {
 
     /** arama isteği gönder ...*/
 
-    fun callrequest( ownerId: String , uid: String , displayName:String , photoUrl:String , voiceCallsViewModel: VoiceCallsViewModel){
+    fun callrequest( ownerId: String , uid: String , displayName:String , photoUrl:String , mainActivityVM: MainActivityVM){
 
 
         usersRef.document(ownerId)
-            .update("call" , true)
+            .update("inCall" , true)
 
         /**
          *  aranan kişi herhangi bir aramada mı bak ...
@@ -1561,10 +1561,12 @@ class FirebaseManager {
             .get()
             .addOnCompleteListener {
 
-               var call = it.result.getBoolean("call") // aranan kişinin arama durumu burda ...
+               var call = it.result.getBoolean("inCall") // aranan kişinin arama durumu burda ...
 
-                voiceCallsViewModel.updateRequestCall(call!!)
-
+                /**
+                 * arama isteği sonucunu karşı tarafın aramada olup olmamasına göre dönder ...
+                 * */
+                mainActivityVM.updateRequestCall(call!!)
 
             }
 
@@ -1572,7 +1574,6 @@ class FirebaseManager {
          * arama isteği atıldığında aranan kişi koridora düşsede düşmesede cevap versede vermesede arama geçmişine kaydet ...
          * */
 
-        // bilgiler aranan kişinin ... arayan kendine kaydedecek arayan ...
 
 
         /**
@@ -1642,7 +1643,7 @@ class FirebaseManager {
     lateinit var callsQuery:Query
     lateinit var WcallsQuery:Query
 
-    lateinit var voiceCallsViewModel: VoiceCallsViewModel
+    lateinit var mainActivityVM: MainActivityVM
 
 
     /**
@@ -1654,7 +1655,7 @@ class FirebaseManager {
 
             val call = snapshot.getValue(Calls::class.java)
             if (call != null){
-                voiceCallsViewModel.updateWCalls(call)
+                mainActivityVM.updateWCalls(call)
             }
         }
 
@@ -1680,7 +1681,7 @@ class FirebaseManager {
 
             val call = snapshot.getValue(Calls::class.java)
             if (call != null){
-                voiceCallsViewModel.updateCalls(call)
+                mainActivityVM.updateCalls(call)
             }
         }
 
@@ -1704,7 +1705,7 @@ class FirebaseManager {
         }
     }
 
-    fun calling(ownerId: String , uid: String , voiceCallsViewModel: VoiceCallsViewModel){
+    fun calling(uid: String ){
         /**
          * aranan kişi aramada olmadığı için arayabiliriz ... önce karşı tarafın aramayı kabul veya red onayı vermesi için
          * karşı tarafın ICC (incomingcall) field'ını güncelle ...
@@ -1718,9 +1719,9 @@ class FirebaseManager {
 
     fun acceptCall(ownerId: String , uid: String){
         usersRef.document(ownerId)
-            .update("call" , true)
+            .update("inCall" , true)
         usersRef.document(uid)
-            .update("call" , true)
+            .update("inCall" , true)
 
         usersRef.document(uid)
             .update("ICC" , true)
@@ -1741,9 +1742,9 @@ class FirebaseManager {
 
     fun declineCall(ownerId: String , uid: String){
         usersRef.document(ownerId)
-            .update("call" , false)
+            .update("inCall" , false)
         usersRef.document(uid)
-            .update("call" , false)
+            .update("inCall" , false)
 
         usersRef.document(uid)
             .update("ICC" , false)
@@ -1774,7 +1775,7 @@ class FirebaseManager {
             .addOnCompleteListener {
                 if (it.isSuccessful){
                    val calls = it.result.children.last().getValue(Calls::class.java)
-                    mainActivityVM.updateCalls(calls!!)
+                    mainActivityVM.updateHistoryCalls(calls!!)
                 }
             }
     }

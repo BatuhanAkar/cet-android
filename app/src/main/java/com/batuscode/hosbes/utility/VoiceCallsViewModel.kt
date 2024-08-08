@@ -7,12 +7,7 @@ import kotlinx.coroutines.flow.StateFlow
 
 class VoiceCallsViewModel:ViewModel() {
 
-    private val _requestCall = MutableStateFlow<Boolean?>(null)
-    val requestCall: StateFlow<Boolean?> get() = _requestCall
 
-    fun updateRequestCall(state: Boolean){
-        _requestCall.value = state
-    }
 
 
     /**
@@ -25,17 +20,5 @@ class VoiceCallsViewModel:ViewModel() {
         _call.value = state
     }
 
-    private val _calls = MutableStateFlow<Calls?>(null)
-    val calls:StateFlow<Calls?> get() = _calls
 
-    fun updateCalls(calls: Calls){
-        _calls.value = calls
-    }
-
-    private val _Wcalls = MutableStateFlow<Calls?>(null)
-    val Wcalls:StateFlow<Calls?> get() = _Wcalls
-
-    fun updateWCalls(calls: Calls){
-        _Wcalls.value = calls
-    }
 }

@@ -36,6 +36,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.batuscode.hosbes.models.Whisper
 import com.batuscode.hosbes.ui.theme.HoşbeşTheme
 import com.batuscode.hosbes.utility.AuthViewModel
 import com.batuscode.hosbes.utility.ChatViewModel
@@ -47,6 +48,7 @@ import com.batuscode.hosbes.utility.PreferenceManager
 import com.batuscode.hosbes.utility.SessionService
 import com.batuscode.hosbes.utility.WhisperViewModel
 import com.batuscode.hosbes.views.Authentication
+import com.batuscode.hosbes.views.CallsCorridor
 import com.batuscode.hosbes.views.Chat
 import com.batuscode.hosbes.views.DeleteAccount
 import com.batuscode.hosbes.views.PrivateRoomChat
@@ -147,6 +149,8 @@ class MainActivity : ComponentActivity() {
                 val mainActivityVM: MainActivityVM by viewModels()
                 val chatViewModel:ChatViewModel by viewModels()
                 val whisperViewModel:WhisperViewModel by viewModels()
+
+                val whisperItem by mainActivityVM.whisperItem.collectAsState()
 
                 mMainActivityVM = mainActivityVM
 
@@ -277,6 +281,9 @@ class MainActivity : ComponentActivity() {
                         }
                         composable("ICC"){
                             com.batuscode.hosbes.views.ICC(mainActivityVM = mainActivityVM)
+                        }
+                        composable("callscorridor"){
+                            CallsCorridor(mainActivityVM = mainActivityVM , whisperItem = whisperItem!!)
                         }
 
                     }

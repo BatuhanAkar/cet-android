@@ -1,5 +1,6 @@
 package com.batuscode.hosbes.views
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.util.Log
@@ -50,20 +51,12 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-fun startCall(context: Context , uid:String , displayName:String , photoUrl:String){
-    val intent = Intent(context , VoiceCalls::class.java)
-    intent.putExtra("uid" , uid)
-    intent.putExtra("displayName" , displayName)
-    intent.putExtra("photoUrl" , photoUrl)
-    intent.putExtra("type" , "calling")
-    context.startActivity(intent)
-}
 
+@SuppressLint("CoroutineCreationDuringComposition")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WhisperChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
     val lifecycleOwner = LocalLifecycleOwner.current
-    val user by mainActivityVM.user.collectAsState()
     val whisperItem by mainActivityVM.whisperItem.collectAsState()
     val showMessageOption by mainActivityVM.showMessageOption.collectAsState()
     val loadMoreChat by mainActivityVM.loadMoreChat.collectAsState()
@@ -182,8 +175,7 @@ fun WhisperChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
                 actions = {
                     OutlinedIconButton( border = null , onClick = {
                         val uid = whisperItem?.wuid
-                        val photoUrl = whisperItem?.wphotoUrl
-                        val displayName = whisperItem?.wdisplayName
+
                         /**
                          * çevrimiçi ise ara ...
                          * */
@@ -194,7 +186,9 @@ fun WhisperChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
                             /**
                              * Arama yapılmak istendi ... VoiceCall aktivitesi başlat ... Aranan kişinin bilgilerini geçir ...
                              * */
-                            startCall(MainActivity.context , uid!! , photoUrl!! , displayName!!)
+                            //  startCall(MainActivity.context , uid!! , photoUrl!! , displayName!!)
+                            MainActivity.navigate?.navigate("callscorridor")
+
                         } else {
                             Log.d("kllnci" , "çevrim dışı ...")
                             scope.launch {
@@ -206,8 +200,6 @@ fun WhisperChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
                                 )
                             }
                         }
-
-
                     }
                         ) {
                         Icon(painter = painterResource(id = R.drawable.call_24px), contentDescription = "")
@@ -218,6 +210,8 @@ fun WhisperChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
 
     )
     { innerPadding ->
+
+
         ConstraintLayout (modifier = Modifier
             .fillMaxSize()
             .padding(innerPadding)

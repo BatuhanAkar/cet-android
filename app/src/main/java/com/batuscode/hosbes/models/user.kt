@@ -5,7 +5,7 @@ data class User(
     val photoUrl:String? = null ,
     val uid:String? = null ,
     @field:JvmField val isOnline:Boolean? = null ,
-    @field:JvmField val ICC:Boolean? = null
-
+    @field:JvmField val ICC:Boolean? = null ,
+    @field:JvmField val inCall:Boolean? = null
 
 )
