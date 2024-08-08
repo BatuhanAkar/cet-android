@@ -68,7 +68,7 @@ fun ChannelMenu( mainActivityVM: MainActivityVM ,chatViewModel: ChatViewModel ,
     
     val scope = rememberCoroutineScope()
 
-    val channels = listOf("Hoşbeş" , "Mavi Boncuk")
+    val channels = listOf("Hoşbeş" , "Mavi boncuk" , "Goygoycu" , "Şuna bak")
     var SelectedChannel by remember {
         mutableStateOf(selectedChannel)
     }
