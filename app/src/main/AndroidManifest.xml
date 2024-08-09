@@ -33,6 +33,11 @@
             android:theme="@style/JitsiMeetActivityStyle"
             android:exported="false" />
 
+        <activity
+            android:name=".views.VideoChannel"
+            android:theme="@style/JitsiMeetActivityStyle"
+            android:exported="false" />
+
         <service android:name=".utility.SessionService" />
 
         <activity

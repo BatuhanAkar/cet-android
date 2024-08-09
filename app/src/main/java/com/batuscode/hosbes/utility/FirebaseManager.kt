@@ -466,6 +466,7 @@ class FirebaseManager {
         }
         else {
 
+            Log.d("pullChat" , "ilk seferini çalışıyor...")
             chatQuery = channel.limitToLast(10)
             chatQuery.addChildEventListener(chatEventListener)
 

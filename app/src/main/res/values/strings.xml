@@ -49,4 +49,9 @@
     <string name="cantcallisoffline">Kullanıcı çevrimdışı.</string>
     <string name="callisended">Arama sonlandı</string>
     <string name="participantjoining">Bağlanıyor</string>
+    <string name="connectvoicechannel">Sesli sohbet kanalına bağlanmak üzeresin.</string>
+    <string name="connect">Bağlan</string>
+    <string name="connectvideochannel">Görüntülü sohbet kanalına bağlanmak üzeresin.</string>
+    <string name="connectingvideochannel">görüntülü sohbet kanalına bağlanıyorsun.</string>
+    <string name="connectingvoicechannel">sesli sohbet kanalına bağlanıyorsun.</string>
 </resources>

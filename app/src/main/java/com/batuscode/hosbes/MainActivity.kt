@@ -122,7 +122,6 @@ class MainActivity : ComponentActivity() {
         setContent {
             HoşbeşTheme {
 
-                ActivityCompat.requestPermissions(this , arrayOf(Manifest.permission.RECORD_AUDIO) , 1)
 
                 fm.loadMoreChat = false
 
@@ -288,6 +287,10 @@ class MainActivity : ComponentActivity() {
 
                     }
 
+
+
+
+
                     if (call == true){
 
                         /**
@@ -298,13 +301,11 @@ class MainActivity : ComponentActivity() {
 
                         navigate?.navigate("ICC")
                     }
+
                 } else {
 
                     SplashScreen()
                 }
-
-
-
 
 
 

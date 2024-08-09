@@ -462,4 +462,25 @@ class MainActivityVM:ViewModel() {
         _participantJoined.value = state
     }
 
+    private val _inVoiceChannel = MutableStateFlow<Boolean?>(false)
+    val inVoiceChannel:StateFlow<Boolean?> get() = _inVoiceChannel
+
+    fun updateInVoiceChannel(state: Boolean){
+        _inVoiceChannel.value = state
+    }
+
+    private val _streamChannelType = MutableStateFlow<String?>(null)
+    val streamChannelType:StateFlow<String?> get() = _streamChannelType
+
+    fun updateStreamChannelType(type:String){
+        _streamChannelType.value = type
+    }
+
+    private val _channelName = MutableLiveData<String?>(null)
+    val channelName:LiveData<String?> get() = _channelName
+
+    fun updateChannelName(name:String){
+        _channelName.value = name
+    }
+
 }

@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.absolutePadding
 import androidx.compose.foundation.layout.fillMaxSize
@@ -103,20 +104,14 @@ fun Chat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
 
     val context:Context = LocalContext.current
     lateinit var delete:String
-    val showMore by mainActivityVM.showMore.collectAsState()
 
-    var message by remember {
-        mutableStateOf("")
-    }
 
 
     val channelId by mainActivityVM.channelId.collectAsState()
 
-    val loadingChat by mainActivityVM.loadingChat.collectAsState()
 
     val imageBitmap by mainActivityVM.photo.collectAsState()
 
-    val messageSended by mainActivityVM.messageSended.collectAsState()
 
 
     MainActivity.fm.chatViewModel = chatViewModel
@@ -124,12 +119,15 @@ fun Chat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
     val lifecycle = LocalLifecycleOwner.current
 
     val selectedChannel by mainActivityVM.selectedChannel.collectAsState()
-    val showMessageOption by mainActivityVM.showMessageOption.collectAsState()
+
+
     val loadMoreChat by mainActivityVM.loadMoreChat.collectAsState()
 
     val wid by mainActivityVM.whisperId.collectAsState()
 
     val Cscope = CoroutineScope(Dispatchers.Default)
+
+    val inVoiceChannel by mainActivityVM.inVoiceChannel.collectAsState()
 
     DisposableEffect(lifecycle) {
         val observe = LifecycleEventObserver { _, event ->
@@ -385,101 +383,118 @@ fun Chat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
         }
 
     ){innerPadding ->
-
-        ConstraintLayout (modifier = Modifier
-            .fillMaxSize()
-            .padding(innerPadding)
-        ) {
-
-
-            if (showMessageOption == true){
-                MessageOption(mainActivityVM = mainActivityVM , chatViewModel = chatViewModel)
-            }
-
-            if (showMore == true){
-                More(mainActivityVM)
-            }
-
-            val (messageRecyclerView , messageTextField) = createRefs()
-
-            if (loadingChat == true){
-
-                Log.d("chatFlow" , "created again...")
-
-                ChatFlow( mainActivityVM ,
-                    chatViewModel = chatViewModel ,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .imePadding()
-                        .constrainAs(
-                            messageRecyclerView
-                        ) {
-                            start.linkTo(parent.start)
-                            end.linkTo(parent.end)
-                            top.linkTo(parent.top)
-                            bottom.linkTo(messageTextField.top)
-                            height = Dimension.fillToConstraints
-
-                        } ,
-
-                )
-
-            } else {
-
-                Column (
-                    verticalArrangement = Arrangement.Center ,
-                    horizontalAlignment = Alignment.CenterHorizontally ,
-                    modifier = Modifier.fillMaxSize()
-                ) {
-
-
-
-                    CircularProgressIndicator(
-                        color = Color.Blue ,
-                        strokeWidth = 5.dp ,
-                        strokeCap = StrokeCap.Round
-                    )
-
-                    Text(
-                        text = stringResource(id = R.string.youareconnectingChat) ,
-                        style = TextStyle(
-                            fontFamily = FontFamily(Font(R.font.pacifico_regular)),
-                            fontSize = 20.sp
-                        )
-                    )
-
-                }
-
-            }
-
-
-            MessageTextField ( chatViewModel , mainActivityVM = mainActivityVM ,
-                modifier = Modifier
-                    .constrainAs(
-                        messageTextField
-                    )
-                    {
-                        top.linkTo(messageRecyclerView.bottom)
-                        bottom.linkTo(parent.bottom)
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                    }
-            ) {
-                if (!it.isEmpty()){
-                    message = it
-                    if (messageSended == true){
-
-                    }
-                }
-            }
-
+        
+        if (inVoiceChannel == false){
+            ChatUI(chatViewModel = chatViewModel, mainActivityVM = mainActivityVM, innerPadding = innerPadding)
+        } else if (inVoiceChannel == true){
+            ConnectStremChannels(mainActivityVM = mainActivityVM)
         }
 
     }
 
     }
 
+@RequiresApi(Build.VERSION_CODES.R)
+@Composable
+fun ChatUI(chatViewModel: ChatViewModel , mainActivityVM: MainActivityVM , innerPadding:PaddingValues){
 
+    val showMessageOption by mainActivityVM.showMessageOption.collectAsState()
+    val loadingChat by mainActivityVM.loadingChat.collectAsState()
+    val showMore by mainActivityVM.showMore.collectAsState()
+
+    var message by remember {
+        mutableStateOf("")
+    }
+    val messageSended by mainActivityVM.messageSended.collectAsState()
+    ConstraintLayout (modifier = Modifier
+        .fillMaxSize()
+        .padding(innerPadding)
+    ) {
+
+
+        if (showMessageOption == true){
+            MessageOption(mainActivityVM = mainActivityVM , chatViewModel = chatViewModel)
+        }
+
+        if (showMore == true){
+            More(mainActivityVM)
+        }
+
+        val (messageRecyclerView , messageTextField) = createRefs()
+
+        if (loadingChat == true){
+
+            Log.d("chatFlow" , "created again...")
+
+            ChatFlow( mainActivityVM ,
+                chatViewModel = chatViewModel ,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .imePadding()
+                    .constrainAs(
+                        messageRecyclerView
+                    ) {
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                        top.linkTo(parent.top)
+                        bottom.linkTo(messageTextField.top)
+                        height = Dimension.fillToConstraints
+
+                    } ,
+
+                )
+
+        } else {
+
+            Column (
+                verticalArrangement = Arrangement.Center ,
+                horizontalAlignment = Alignment.CenterHorizontally ,
+                modifier = Modifier.fillMaxSize()
+            ) {
+
+
+
+                CircularProgressIndicator(
+                    color = Color.Blue ,
+                    strokeWidth = 5.dp ,
+                    strokeCap = StrokeCap.Round
+                )
+
+                Text(
+                    text = stringResource(id = R.string.youareconnectingChat) ,
+                    style = TextStyle(
+                        fontFamily = FontFamily(Font(R.font.pacifico_regular)),
+                        fontSize = 20.sp
+                    )
+                )
+
+            }
+
+        }
+
+
+        MessageTextField ( chatViewModel , mainActivityVM = mainActivityVM ,
+            modifier = Modifier
+                .constrainAs(
+                    messageTextField
+                )
+                {
+                    top.linkTo(messageRecyclerView.bottom)
+                    bottom.linkTo(parent.bottom)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                }
+        ) {
+            if (!it.isEmpty()){
+                message = it
+                if (messageSended == true){
+
+                }
+            }
+        }
+
+    }
+}
 
 
 

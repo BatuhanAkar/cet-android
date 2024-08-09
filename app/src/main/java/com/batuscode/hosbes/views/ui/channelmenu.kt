@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -24,6 +25,7 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -42,6 +44,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -68,7 +71,7 @@ fun ChannelMenu( mainActivityVM: MainActivityVM ,chatViewModel: ChatViewModel ,
     
     val scope = rememberCoroutineScope()
 
-    val channels = listOf("Hoşbeş" , "Mavi boncuk" , "Goygoycu" , "Şuna bak")
+    val channels = listOf("Mavi Boncuk" , "Hoşbeş" , "Goygoy" , "Dırdır")
     var SelectedChannel by remember {
         mutableStateOf(selectedChannel)
     }
@@ -173,9 +176,30 @@ fun ChannelMenu( mainActivityVM: MainActivityVM ,chatViewModel: ChatViewModel ,
 
 
                                 )
-                                Spacer(modifier = Modifier.padding(10.dp))
 
-                                (if (channel == SelectedChannel) Icons.Filled.Check else null)?.let { Image(imageVector = it, contentDescription = null) }
+
+                                if (channel == "Goygoy"){
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.videocam_48px) ,
+                                        contentDescription = "" ,
+                                        modifier = Modifier
+                                            .padding(start = 15.dp)
+                                            .size(24.dp)
+                                    )
+                                } else if (channel == "Dırdır"){
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.mic_24px) ,
+                                        contentDescription = "" ,
+                                        modifier = Modifier
+                                            .padding(start = 20.dp)
+                                            .size(24.dp)
+                                        )
+
+                                }
+//
+//                                Spacer(modifier = Modifier.padding(10.dp))
+//
+//                                (if (channel == SelectedChannel) Icons.Filled.Check else null)?.let { Image(imageVector = it, contentDescription = null) }
 
 
 
@@ -196,6 +220,7 @@ fun changeChannel(selectedChannelId:String , chatViewModel: ChatViewModel , main
     var handler = Handler(Looper.getMainLooper())
 
     if (selectedChannelId.equals("Mavi Boncuk")){
+        mainActivityVM.updateInVoiceChannel(false)
 
         MainActivity.fm.removeChatEventListener(FirebaseManager.C1)
         MainActivity.fm.removeChatEventListener(FirebaseManager.C1)
@@ -221,6 +246,7 @@ fun changeChannel(selectedChannelId:String , chatViewModel: ChatViewModel , main
         } , 2000)
 
     } else if (selectedChannelId.equals("Hoşbeş")) {
+        mainActivityVM.updateInVoiceChannel(false)
 
         MainActivity.fm.removeChatEventListener(FirebaseManager.C2)
 
@@ -241,6 +267,18 @@ fun changeChannel(selectedChannelId:String , chatViewModel: ChatViewModel , main
 
         } , 5000)
 
+
+    } else if (selectedChannelId.equals("Goygoy")){
+        mainActivityVM.updateInVoiceChannel(true)
+        mainActivityVM.updateSelectedChannel("Goygoy")
+        mainActivityVM.updateStreamChannelType("video")
+        mainActivityVM.updateChannelName("Goygoy")
+
+    } else if (selectedChannelId.equals("Dırdır")){
+        mainActivityVM.updateInVoiceChannel(true)
+        mainActivityVM.updateSelectedChannel("Dırdır")
+        mainActivityVM.updateStreamChannelType("voice")
+        mainActivityVM.updateChannelName("Dırdır")
 
     }
 
