@@ -483,4 +483,11 @@ class MainActivityVM:ViewModel() {
         _channelName.value = name
     }
 
+    private val _profileUpdating = MutableStateFlow<Boolean?>(false)
+    val profileUpdating:StateFlow<Boolean?> get() = _profileUpdating
+
+    fun updateProfileUpdating(state: Boolean){
+        _profileUpdating.value = state
+    }
+
 }

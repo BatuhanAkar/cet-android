@@ -28,6 +28,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
@@ -38,19 +39,23 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.ModalBottomSheetDefaults
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedIconButton
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -63,6 +68,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
@@ -98,6 +104,7 @@ import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.security.AccessController.getContext
 
@@ -106,9 +113,10 @@ import java.security.AccessController.getContext
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditProfileCard(mainActivityVM: MainActivityVM){
+    val profileUpdating by mainActivityVM.profileUpdating.collectAsState()
 
-
-    val sheetState = rememberModalBottomSheetState()
+    val sheetState = rememberModalBottomSheetState(confirmValueChange = {
+        if (profileUpdating == true) it != SheetValue.Hidden else true} )
     val scope = rememberCoroutineScope()
 
     ModalBottomSheet(
@@ -133,11 +141,11 @@ fun EditProfileCard(mainActivityVM: MainActivityVM){
 
 
 
-@SuppressLint("ResourceAsColor")
 @RequiresApi(Build.VERSION_CODES.R)
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
 fun Content(mainActivityVM: MainActivityVM){
+    val profileUpdating by mainActivityVM.profileUpdating.collectAsState()
 
     var context = LocalContext.current
 
@@ -172,6 +180,27 @@ fun Content(mainActivityVM: MainActivityVM){
 
     var updateButtonEnable by remember {
         mutableStateOf(false)
+    }
+
+    var dot1offset by remember{ mutableStateOf(0.dp) }
+    var dot2offset by remember{ mutableStateOf(0.dp) }
+    var dot3offset by remember{ mutableStateOf(0.dp) }
+
+    LaunchedEffect(profileUpdating == true) {
+        dot1offset = 0.dp
+        delay(100)
+        dot1offset = -5.dp
+
+        delay(100)
+        dot1offset = 0.dp
+        dot2offset = -5.dp
+
+        delay(100)
+        dot2offset = 0.dp
+        dot3offset = -5.dp
+
+        delay(100)
+        dot3offset = 0.dp
     }
 
     if (!newUsername.isEmpty()){
@@ -234,7 +263,6 @@ fun Content(mainActivityVM: MainActivityVM){
                         }
 
                         override fun onLoadCleared(placeholder: Drawable?) {
-                            TODO("Not yet implemented")
                         }
 
 
@@ -245,10 +273,6 @@ fun Content(mainActivityVM: MainActivityVM){
         }
 
     }
-
-
-
-
 
     if (showPermissionDialog == true){
 
@@ -302,30 +326,11 @@ fun Content(mainActivityVM: MainActivityVM){
             .padding(8.5.dp)
     ) {
 
-        val (updateButton , profileCard) = createRefs()
+        val (updateButton , profileCard , progress) = createRefs()
 
-
-        /*Row ( verticalAlignment = Alignment.CenterVertically ,
-            modifier = Modifier
-                .constrainAs(profileCard)
-                {
-                    top.linkTo(parent.top)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                    height = Dimension.fillToConstraints
-                }
-        ) {
-
-
-
-
-
-
-
-
-
-        }*/
-
+        if (profileUpdating == false){
+            updateButtonEnable = true
+        }
 
         // profile card layout ...
 
@@ -355,9 +360,7 @@ fun Content(mainActivityVM: MainActivityVM){
                     }
             ) {
                 Image(
-                    /*bitmap = if (changeImage) newPP!!  else currentPP!!*/ painter = painterResource(
-                        id = R.drawable.istockphoto_517188688_612x612
-                    ) ,
+                    bitmap = if (changeImage) newPP!!  else currentPP!!,
                     contentDescription = "",
                     modifier = Modifier
                         .clip(CircleShape)
@@ -365,7 +368,8 @@ fun Content(mainActivityVM: MainActivityVM){
                         .height(80.dp)
                     ,
                     contentScale = ContentScale.FillBounds
-                )
+                    )
+
 
             }
 
@@ -412,7 +416,7 @@ fun Content(mainActivityVM: MainActivityVM){
 
             TextField(
 
-                value = /*if (newUsername.isEmpty() && !run) displayName!! else newUsername*/ newUsername
+                value = if (newUsername.isEmpty() && !run) displayName!! else newUsername
                 ,
                 onValueChange = {newText ->
                     if (newText.length == 0){
@@ -441,12 +445,13 @@ fun Content(mainActivityVM: MainActivityVM){
         }
 
 
+        // update button
+
         Button(
             onClick = {
-                      
-
                       mainActivityVM.updateStartUpdate(true)
-
+                      mainActivityVM.updateProfileUpdating(true)
+                      updateButtonEnable = false
                       } ,
             enabled = updateButtonEnable,
             modifier = Modifier
@@ -461,7 +466,23 @@ fun Content(mainActivityVM: MainActivityVM){
                 }
         )
         {
-            Text(text = stringResource(id = R.string.update))
+            if (profileUpdating == false){
+                Text(text =  stringResource(id = R.string.update))
+            } else{
+                Row {
+                    Text(text = stringResource(id = R.string.updating))
+                    Text(text = "." , modifier = Modifier
+                        .padding(start = 4.dp)
+                        .offset(y = dot1offset))
+                    Text(text = "." , modifier = Modifier
+                                .padding(start = 4.dp)
+                                .offset(y = dot2offset))
+                    Text(text = "." , modifier = Modifier
+                                .padding(start = 4.dp)
+                                .offset(y = dot3offset))
+                }
+            }
+
         }
 
     }

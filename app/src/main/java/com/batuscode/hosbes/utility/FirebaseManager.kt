@@ -1504,6 +1504,7 @@ class FirebaseManager {
                 if (it.isSuccessful){
                     Log.d("updatedbuserinfo" , "successfully")
                     mainActivityVM.uploadComlated(false)
+                    mainActivityVM.updateProfileUpdating(false)
                 }
             }
     }

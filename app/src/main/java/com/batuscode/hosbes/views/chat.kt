@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imeNestedScroll
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -402,6 +403,26 @@ fun ChatUI(chatViewModel: ChatViewModel , mainActivityVM: MainActivityVM , inner
     val loadingChat by mainActivityVM.loadingChat.collectAsState()
     val showMore by mainActivityVM.showMore.collectAsState()
 
+    var dot1offset by remember{ mutableStateOf(0.dp) }
+    var dot2offset by remember{ mutableStateOf(0.dp) }
+    var dot3offset by remember{ mutableStateOf(0.dp) }
+    LaunchedEffect(loadingChat == false) {
+        dot1offset = 0.dp
+        delay(1)
+        dot1offset = -5.dp
+
+        delay(1)
+        dot1offset = 0.dp
+        dot2offset = -5.dp
+
+        delay(1)
+        dot2offset = 0.dp
+        dot3offset = -5.dp
+
+        delay(1)
+        dot3offset = 0.dp
+    }
+
     var message by remember {
         mutableStateOf("")
     }
@@ -452,21 +473,37 @@ fun ChatUI(chatViewModel: ChatViewModel , mainActivityVM: MainActivityVM , inner
                 modifier = Modifier.fillMaxSize()
             ) {
 
-
-
-                CircularProgressIndicator(
-                    color = Color.Blue ,
-                    strokeWidth = 5.dp ,
-                    strokeCap = StrokeCap.Round
-                )
-
-                Text(
-                    text = stringResource(id = R.string.youareconnectingChat) ,
-                    style = TextStyle(
-                        fontFamily = FontFamily(Font(R.font.pacifico_regular)),
-                        fontSize = 20.sp
+                Row {
+                    Text(
+                        text = stringResource(id = R.string.youareconnectingChat) ,
+                        style = TextStyle(
+                            fontFamily = FontFamily(Font(R.font.pacifico_regular)),
+                            fontSize = 20.sp
+                        )
                     )
-                )
+                    Text(text = "." , modifier = Modifier
+                        .padding(start = 4.dp)
+                        .offset(y = dot1offset) ,
+                        style = TextStyle(
+                            fontFamily = FontFamily(Font(R.font.pacifico_regular)),
+                            fontSize = 20.sp
+                        ))
+                    Text(text = "." , modifier = Modifier
+                        .padding(start = 4.dp)
+                        .offset(y = dot2offset) ,
+                        style = TextStyle(
+                            fontFamily = FontFamily(Font(R.font.pacifico_regular)),
+                            fontSize = 20.sp
+                        ))
+                    Text(text = "." , modifier = Modifier
+                        .padding(start = 4.dp)
+                        .offset(y = dot3offset) ,
+                        style = TextStyle(
+                            fontFamily = FontFamily(Font(R.font.pacifico_regular)),
+                            fontSize = 20.sp
+                        ))
+                }
+
 
             }
 

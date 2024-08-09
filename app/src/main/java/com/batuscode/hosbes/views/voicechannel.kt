@@ -140,6 +140,8 @@ class VoiceChannel:JitsiMeetActivity() , JitsiMeetActivityInterface{
                 .setFeatureFlag("prejoinpage.enabled" , false)
                 .setFeatureFlag("invite.enabled" , false)
                 .setFeatureFlag("add-people.enabled" , false)
+                .setFeatureFlag("video-mute.enabled" , false)
+                .setFeatureFlag("video-share.enabled" , false)
                 .setFeatureFlag("car-mode.enabled" , false)
                 .setFeatureFlag("close-captions.enabled" , false)
                 .setFeatureFlag("help.enabled" , false)

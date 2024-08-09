@@ -19,7 +19,7 @@
     <string name="signout">Hesapdan çık</string>
     <string name="deleteaccount">Hesabı sil</string>
     <string name="blackbox">Kara kutum</string>
-    <string name="youareconnectingChat">Sohbet kanalına bağlanıyorsun...</string>
+    <string name="youareconnectingChat">Sohbet kanalına bağlanıyorsun</string>
     <string name="update">Güncelle</string>
     <string name="permissiontext">" Hoşbeş cihazınızdaki fotoğraflara ,
         medyaya ve dosyalara erişmek istiyor
@@ -54,4 +54,5 @@
     <string name="connectvideochannel">Görüntülü sohbet kanalına bağlanmak üzeresin.</string>
     <string name="connectingvideochannel">görüntülü sohbet kanalına bağlanıyorsun.</string>
     <string name="connectingvoicechannel">sesli sohbet kanalına bağlanıyorsun.</string>
+    <string name="updating">Güncelleniyor</string>
 </resources>
