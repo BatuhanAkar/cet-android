@@ -40,6 +40,14 @@
 
         <service android:name=".utility.SessionService" />
 
+
+        <activity
+            android:name=".views.VoiceChannel"
+            android:theme="@style/JitsiMeetActivityStyle"
+            android:exported="false" />
+
+        <service android:name=".utility.SessionService" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

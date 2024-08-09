@@ -36,6 +36,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.batuscode.hosbes.models.User
 import com.batuscode.hosbes.models.Whisper
 import com.batuscode.hosbes.ui.theme.HoşbeşTheme
 import com.batuscode.hosbes.utility.AuthViewModel
@@ -191,6 +192,11 @@ class MainActivity : ComponentActivity() {
                                     FirebaseManager.currentUser = firebaseAuth.currentUser
 
                                     var displayName = FirebaseManager.currentUser?.displayName
+                                    var photo = FirebaseManager.currentUser?.photoUrl.toString()
+
+                                    PreferenceManager?.saveString("displayName" , displayName!!)
+                                    PreferenceManager?.saveString("photoUrl" , photo!!)
+
                                     mainActivityVM.updateDisplayName(displayName!!)
                                     var Pphoto = FirebaseManager.currentUser?.photoUrl.toString()
 

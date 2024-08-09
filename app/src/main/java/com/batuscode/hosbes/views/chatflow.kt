@@ -132,7 +132,9 @@ fun ChatFlow( mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel , mo
 
             if (keypadHeight > screenHeight * 0.15){
                 scope.launch {
-                    state.animateScrollToItem((chats.value.size) - 1) // son ogeye kaydır ...
+                    if (-1 != (chats.value.size) -1){
+                        state.animateScrollToItem((chats.value.size) - 1) // son ogeye kaydır ...
+                    }
                 }
             }
         }
@@ -150,28 +152,32 @@ fun ChatFlow( mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel , mo
         }
 
         delay(2000)
-        snapshotFlow { state.firstVisibleItemIndex }
-            .collect { index ->
-                if (index == 0){
-                    if (inWhisper == true){
-                        mainActivityVM.updateLoadMoreChat(true)
-                        MainActivity.fm.loadMoreChat = true
 
-                        if (inPrivateRoom!!){
-                            MainActivity.fm.pullPRChat(FirebaseManager.P1 , room!! , true , false)
+        if (loadMoreChat == true){
+            snapshotFlow { state.firstVisibleItemIndex }
+                .collect { index ->
+                    if (index == 0){
+                        if (inWhisper == true){
+                            mainActivityVM.updateLoadMoreChat(true)
+                            MainActivity.fm.loadMoreChat = true
 
-                        } else {
-                            MainActivity.fm.pullWhisperChat(whisperItem?.wid!! , true , false)
+                            if (inPrivateRoom!!){
+                                MainActivity.fm.pullPRChat(FirebaseManager.P1 , room!! , true , false)
+
+                            } else {
+                                MainActivity.fm.pullWhisperChat(whisperItem?.wid!! , true , false)
+
+                            }
 
                         }
 
+                        Log.d("swipeTop" , "en üstte...")
                     }
-
-                    Log.d("swipeTop" , "en üstte...")
+                    isAtBottom =
+                        state.layoutInfo.visibleItemsInfo.lastOrNull()?.index == state.layoutInfo.totalItemsCount - 1
                 }
-                isAtBottom =
-                    state.layoutInfo.visibleItemsInfo.lastOrNull()?.index == state.layoutInfo.totalItemsCount - 1
-            }
+        }
+
     }
 
     if (isAtBottom){

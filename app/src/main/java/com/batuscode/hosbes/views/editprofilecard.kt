@@ -1,6 +1,7 @@
 package com.batuscode.hosbes.views
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -39,6 +40,8 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButtonColors
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedIconButton
@@ -64,6 +67,7 @@ import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -82,6 +86,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.batuscode.hosbes.MainActivity
 import com.batuscode.hosbes.R
+import com.batuscode.hosbes.R.color.blue
 import com.batuscode.hosbes.ui.theme.HoşbeşTheme
 import com.batuscode.hosbes.utility.FirebaseManager
 import com.batuscode.hosbes.utility.MainActivityVM
@@ -128,6 +133,7 @@ fun EditProfileCard(mainActivityVM: MainActivityVM){
 
 
 
+@SuppressLint("ResourceAsColor")
 @RequiresApi(Build.VERSION_CODES.R)
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
@@ -338,13 +344,14 @@ fun Content(mainActivityVM: MainActivityVM){
             Box (
                 modifier = Modifier
                     .wrapContentWidth(align = Alignment.CenterHorizontally)
-                    .padding(end = 8.5.dp)
                     .width(80.dp)
+                    .height(80.dp)
                     .constrainAs(imageBox)
                     {
-                        start.linkTo(parent.start)
+                        start.linkTo(usernameTextfield.start)
+                        end.linkTo(usernameTextfield.end)
                         top.linkTo(parent.top)
-                        bottom.linkTo(parent.bottom)
+                        bottom.linkTo(usernameTextfield.top)
                     }
             ) {
                 Image(
@@ -385,14 +392,20 @@ fun Content(mainActivityVM: MainActivityVM){
 
                 } ,
                 border = null ,
+                colors = IconButtonDefaults.iconButtonColors(
+                    contentColor = colorResource(id = R.color.blue)
+                ),
                 modifier = Modifier
-                    .absoluteOffset(-35.dp)
+                    .absoluteOffset(y = 10.dp, x = 5.dp)
                     .padding(0.dp)
+                    .constrainAs(selectButton) {
+                        end.linkTo(imageBox.end)
+                        bottom.linkTo(imageBox.bottom)
+                    }
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.add_circle_24px) ,
+                    painter = painterResource(id = R.drawable.change_circle_24px) ,
                     contentDescription = "" ,
-                    tint = Color.White
                 )
             }
 
@@ -415,13 +428,14 @@ fun Content(mainActivityVM: MainActivityVM){
                 ) ,
 
                 modifier = Modifier
+                    .padding(top = 5.dp)
                     .constrainAs(usernameTextfield)
                     {
                         end.linkTo(parent.end)
-                        top.linkTo(imageBox.top)
-                        bottom.linkTo(imageBox.bottom)
-                        start.linkTo(imageBox.end)
-                        width = Dimension.fillToConstraints
+                        top.linkTo(imageBox.bottom)
+                        bottom.linkTo(updateButton.top)
+                        start.linkTo(parent.start)
+
                     }
             )
         }

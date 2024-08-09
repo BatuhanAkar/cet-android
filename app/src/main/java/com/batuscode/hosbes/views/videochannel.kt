@@ -22,6 +22,7 @@ import org.jitsi.meet.sdk.JitsiMeetActivity
 import org.jitsi.meet.sdk.JitsiMeetActivityDelegate
 import org.jitsi.meet.sdk.JitsiMeetActivityInterface
 import org.jitsi.meet.sdk.JitsiMeetConferenceOptions
+import org.jitsi.meet.sdk.JitsiMeetUserInfo
 import org.jitsi.meet.sdk.JitsiMeetView
 import timber.log.Timber
 import java.net.URL
@@ -84,6 +85,7 @@ class VideoChannel:JitsiMeetActivity() , JitsiMeetActivityInterface{
     }
     override fun onConferenceJoined(extraData: HashMap<String, Any>?) {
         super.onConferenceJoined(extraData)
+        view!!.removeView(corridorView!!)
     }
     override fun onParticipantLeft(extraData: HashMap<String, Any>?) {
         super.onParticipantLeft(extraData)
@@ -100,10 +102,8 @@ class VideoChannel:JitsiMeetActivity() , JitsiMeetActivityInterface{
                 ConnectionCorridor(mainActivityVM = mainActivityVM)
             }
         }
-        mainActivityVM.channelName.observe(this , Observer {
-            name ->
-            roomName = name!!
-        })
+
+        view!!.addView(corridorView)
 
         val serverURL: URL
         serverURL = URL("https://recommyz.com")
@@ -116,41 +116,53 @@ class VideoChannel:JitsiMeetActivity() , JitsiMeetActivityInterface{
 
         registerForBroadcastMessages()
 
+        var name = MainActivity.PreferenceManager?.getString("displayName")
+        var photo = MainActivity.PreferenceManager?.getString("photoUrl")
+
+        val userinfo = JitsiMeetUserInfo().apply {
+            displayName = name
+            avatar = URL(photo)
+        }
+
+        mainActivityVM.channelName.observe(this , Observer {
+                name ->
 
 
-        var options = JitsiMeetConferenceOptions.Builder()
-            .setRoom("https://recommyz.com/Goygoy")
-            .setFeatureFlag("prejoinpage.enabled" , false)
-            .setFeatureFlag("invite.enabled" , false)
-            .setFeatureFlag("add-people.enabled" , false)
-            .setFeatureFlag("car-mode.enabled" , false)
-            .setFeatureFlag("close-captions.enabled" , false)
-            .setFeatureFlag("help.enabled" , false)
-            .setFeatureFlag("ios.screensharing.enabled" , false)
-            .setFeatureFlag("ios.recording.enabled" , false)
-            .setFeatureFlag("android.screensharing.enabled" , false)
-            .setFeatureFlag("overflow-menu.enabled" , false)
-            .setFeatureFlag("pip.enabled" , false)
-            .setFeatureFlag("notifications.enabled" , false)
-            .setFeatureFlag("pip-while-screensharing.enabled" , false)
-            .setFeatureFlag("meeting-password.enabled" , false)
-            .setFeatureFlag("kick-out.enabled" , false)
 
-            .setFeatureFlag("meeting-name.enabled" , false)
-            .setFeatureFlag("lobby-mode.enabled" , false)
-            .setFeatureFlag("settings.enabled" , false)
+            var options = JitsiMeetConferenceOptions.Builder()
+                .setRoom("https://recommyz.com/$name")
+                .setUserInfo(userinfo)
+                .setFeatureFlag("tile-view.enabled" , true)
+                .setFeatureFlag("prejoinpage.enabled" , false)
+                .setFeatureFlag("invite.enabled" , false)
+                .setFeatureFlag("add-people.enabled" , false)
+                .setFeatureFlag("car-mode.enabled" , false)
+                .setFeatureFlag("close-captions.enabled" , false)
+                .setFeatureFlag("help.enabled" , false)
+                .setFeatureFlag("ios.screensharing.enabled" , false)
+                .setFeatureFlag("ios.recording.enabled" , false)
+                .setFeatureFlag("android.screensharing.enabled" , false)
+                .setFeatureFlag("overflow-menu.enabled" , false)
+                .setFeatureFlag("pip-while-screensharing.enabled" , false)
+                .setFeatureFlag("meeting-password.enabled" , false)
+                .setFeatureFlag("kick-out.enabled" , false)
 
-
-            .setFeatureFlag("filmstrip.enabled" , false)
-            .setFeatureFlag("invite-dial-in.enabled" , false)
-            .setFeatureFlag("server-url-change.enabled" , false)
-            .setFeatureFlag("security-options.enabled" , false)
+                .setFeatureFlag("meeting-name.enabled" , false)
+                .setFeatureFlag("settings.enabled" , false)
 
 
-            .setFeatureFlag("welcomepage.enabled" , false)
-            .build()
+                .setFeatureFlag("invite-dial-in.enabled" , false)
+                .setFeatureFlag("server-url-change.enabled" , false)
+                .setFeatureFlag("security-options.enabled" , false)
 
-        join(options)
+
+                .setFeatureFlag("welcomepage.enabled" , false)
+                .build()
+
+            join(options)
+
+        })
+
 
     }
     override fun onBackPressed() {

@@ -120,7 +120,7 @@ fun PrivateRoomChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewMode
                     Cscope.launch {
                         while (isActive){
 
-                            delay(6000)
+                            delay(900000)
 
                             chatViewModel.refreshChat()
                             mainActivityVM.connectChannel("P1")

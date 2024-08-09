@@ -29,6 +29,16 @@ class PreferenceManager(context: Context) {
         return sharedPreference(key).getString(key , null).toString()
     }
 
+    fun saveString(key: String,value: String){
+        val editor = sharedPreference(key).edit()
+        editor.putString(key , value)
+        editor.apply()
+    }
+
+    fun getString(key: String):String{
+        return sharedPreference(key).getString(key , null).toString()
+    }
+
     fun saveLastChatTime(key:String , value:Long){
         val editor = sharedPreference(key).edit()
         editor.putLong(key , value)
