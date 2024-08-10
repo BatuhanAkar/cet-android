@@ -2,6 +2,7 @@ package com.batuscode.hosbes.views
 
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -51,6 +52,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 /**
  * random'a girildiğinde ve rastgele butonuna bastığında bağlantı koridoruna it ...
@@ -93,6 +95,9 @@ fun Random(mainActivityVM: MainActivityVM){
     val scope = CoroutineScope(Dispatchers.Default)
     val lifecycle = LocalLifecycleOwner.current
 
+    val updatedOutId by mainActivityVM.updatedOutId.collectAsState()
+    val x by mainActivityVM.x.collectAsState()
+
     DisposableEffect(lifecycle) {
         val observer = LifecycleEventObserver{
                 _,event ->
@@ -101,27 +106,13 @@ fun Random(mainActivityVM: MainActivityVM){
                 Lifecycle.Event.ON_CREATE -> {
                     MainActivity.fm.addRandomParticipant(uid = uid!! , displayName = displayName!! , photoUrl = photoUrl!!) // önce random a kaydet ...
                     MainActivity.fm.ListenMatch(uid!! , mainActivityVM) // sonra random'ı dinle ...
-
-
-
-
                 }
                 Lifecycle.Event.ON_START -> {}
                 Lifecycle.Event.ON_RESUME -> {}
                 Lifecycle.Event.ON_PAUSE -> {}
                 Lifecycle.Event.ON_STOP -> {
-                    scope.cancel()
-                    if (matched == false){
-                        MainActivity.fm.removeRandomParticipant(uid = uid!!)
-                        MainActivity.fm.detachListenMatch()
-                    }
                 }
                 Lifecycle.Event.ON_DESTROY -> {
-                    scope.cancel()
-                    if (matched == false){
-                        MainActivity.fm.removeRandomParticipant(uid = uid!!)
-                        MainActivity.fm.detachListenMatch()
-                    }
                 }
                 Lifecycle.Event.ON_ANY -> {}
             }
@@ -133,38 +124,35 @@ fun Random(mainActivityVM: MainActivityVM){
             lifecycle.lifecycle.removeObserver(observer)
         }
     }
-
-    LaunchedEffect(key1 = matched) {
-        when(matched){
-            true -> {
-                mainActivityVM.updateliveRandomParticipant(randomParticipant!!)
-                MainActivity.navigate?.navigate("matchconnectcorridor")
-            }
-            false -> {
-                if (outId?.isNotEmpty() == true){
-                    /**
-                     * kişi kendi yakalamadan yakalandı ve karşılaşma true RandomParticipant bilgilerini çek ... neyle ??? dinlediğimiz veriyle ... outId ile ...
-                     * */
-                    /**
-                     * kişi kendi yakalamadan yakalandı ve karşılaşma true RandomParticipant bilgilerini çek ... neyle ??? dinlediğimiz veriyle ... outId ile ...
-                     * */
-                    MainActivity.fm.getRandomParticipant(outId!! , mainActivityVM)
-
-                    if (randomParticipant != null){
-
-                        mainActivityVM.updateliveRandomParticipant(randomParticipant!!)
-
-                        MainActivity.navigate?.navigate("matchconnectcorridor")
-
-                    }
-                }
-            }
-            null -> {}
-        }
+    if (x == true){
+        mainActivityVM.update_x(false)
+        mainActivityVM.updateliveRandomParticipant(randomParticipant!!)
+        mainActivityVM.updatedOutIdSatus(false)
+        MainActivity.navigate?.navigate("matchconnectcorridor")
     }
 
+    if (matched == true){
+        if (updatedOutId == true){
+            Log.d("karsii" , "karsi taraf yakaladi ve karsinin id si geldi ... ")
+            MainActivity.fm.getRandomParticipant(outId!! , mainActivityVM)
 
+        }
+    } else if (matched == false) {
 
+        if (outId?.isNotEmpty() == true){
+            /**
+             * kişi kendi yakalamadan yakalandı ve karşılaşma true RandomParticipant bilgilerini çek ... neyle ??? dinlediğimiz veriyle ... outId ile ...
+             * */
+            /**
+             * kişi kendi yakalamadan yakalandı ve karşılaşma true RandomParticipant bilgilerini çek ... neyle ??? dinlediğimiz veriyle ... outId ile ...
+             * */
+
+            mainActivityVM.updateliveRandomParticipant(randomParticipant!!)
+
+            MainActivity.navigate?.navigate("matchconnectcorridor")
+        }
+
+    }
 
     Scaffold( modifier = Modifier.fillMaxSize() ,
         topBar = {

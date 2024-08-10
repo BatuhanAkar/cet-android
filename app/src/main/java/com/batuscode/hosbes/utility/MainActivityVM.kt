@@ -519,4 +519,18 @@ class MainActivityVM:ViewModel() {
         _randomParticipantUid.value = uid
     }
 
+    private val _updatedOutId = MutableStateFlow<Boolean?>(false)
+    val updatedOutId:StateFlow<Boolean?> get() = _updatedOutId
+
+    fun updatedOutIdSatus(status: Boolean){
+        _updatedOutId.value = status
+    }
+
+    private val _x = MutableStateFlow<Boolean?>(false)
+    val x:StateFlow<Boolean?> get() = _x
+
+    fun update_x(status: Boolean){
+        _x.value = status
+    }
+
 }

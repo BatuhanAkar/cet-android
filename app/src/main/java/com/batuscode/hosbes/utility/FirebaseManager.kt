@@ -1811,7 +1811,7 @@ class FirebaseManager {
             .update("match" , state)
     }
 
-    fun updateMatched(state: Boolean , uid:String){
+    fun updateMatched(state: Boolean , uid:String , roomName: String?){
         val selfUid = MainActivity.PreferenceManager?.getuidShared("uid")
         random
             .document(uid)
@@ -1833,28 +1833,53 @@ class FirebaseManager {
         random
             .document(selfUid!!)
             .update("outId" , uid)
+
+
+        random
+            .document(selfUid!!)
+            .update("rm" , roomName)
+
+        random
+            .document(uid)
+            .update("rm" , roomName)
     }
 
-    fun ListenMatch(uid: String , mainActivityVM: MainActivityVM){
+
+
+    fun ListenMatch(Ouid: String , mainActivityVM: MainActivityVM){
        listenMatch = random
-            .document(uid)
-            .addSnapshotListener(){
+            .addSnapshotListener{
                 snapshot , e ->
 
-                var matched = snapshot?.getBoolean("matched")
+                for (dc in snapshot?.documentChanges!!){
 
-                if (matched == true){ // karşılaşma olmuş ise ...
+                    when(dc.type){
+                        DocumentChange.Type.ADDED -> {}
+                        DocumentChange.Type.MODIFIED -> {
 
-                    mainActivityVM.updateMatched(matched!!) // ana aktivitedeki karşılaşma durumunuda güncelle ...
+                            var uid = dc.document.getString("uid")
 
-                    if (snapshot?.getString("outId")?.isNotEmpty() == true){
+                            if (uid?.equals(Ouid!!) == true){
+                                var matched = dc.document.getBoolean("matched")
+                                mainActivityVM.updateMatched(matched!!) // ana aktivitedeki karşılaşma durumunuda güncelle ...
+                                if (dc.document.getString("outId")?.isNotEmpty() == true){
 
-                        var outId = snapshot?.getString("outId")!!
+                                    var outId = dc.document.getString("outId")!!
 
-                        mainActivityVM.updateRandomParticipantUid(outId!!) // ana aktivitedeki karşılaşılan kişinin id sini güncelle ...
+                                    Log.d("outId" , outId)
+                                    mainActivityVM.updateRandomParticipantUid(outId!!) // ana aktivitedeki karşılaşılan kişinin id sini güncelle ...
+                                    mainActivityVM.updatedOutIdSatus(true)
+                                }
+                            }
+
+                        }
+                        DocumentChange.Type.REMOVED -> {}
                     }
 
+
                 }
+
+
 
 
 
@@ -1877,6 +1902,7 @@ class FirebaseManager {
                     var randomParticipant = it.result.toObject(RandomParticipant::class.java)
                     if (randomParticipant != null){
                         mainActivityVM.updateRandomParticipant(randomParticipant!!)
+                        mainActivityVM.update_x(true)
                     }
                 }
             }
@@ -1913,7 +1939,12 @@ class FirebaseManager {
 
                             val randomParticipant = ds.toObject(RandomParticipant::class.java)
 
-                            updateMatched(true , randomParticipant?.uid!!)
+                            var uid = randomParticipant?.uid!!
+                            var parname = randomParticipant?.displayName
+                            var name = MainActivity.PreferenceManager?.getString("displayName")
+
+                            var roomName = "$name & $parname"
+                            updateMatched(true , uid , roomName)
 
                             mainActivityVM.updateRandomParticipant(randomParticipant!!)
 

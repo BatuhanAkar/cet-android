@@ -108,7 +108,7 @@ class MatchStream:JitsiMeetActivity() , JitsiMeetActivityInterface {
         mainActivityVM.liverandomParticipant.observe(this , Observer {
             randomParticipant ->
 
-            var roomName = name + " & " + randomParticipant?.displayName
+            var roomName = randomParticipant?.rm
 
             if (randomParticipant != null){
 
@@ -150,6 +150,7 @@ class MatchStream:JitsiMeetActivity() , JitsiMeetActivityInterface {
 
     override fun onBackPressed() {
         super.onBackPressed()
+        mainActivityVM.updateMatched(false)
         LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver)
         JitsiMeetActivityDelegate.onBackPressed()
     }
@@ -161,6 +162,7 @@ class MatchStream:JitsiMeetActivity() , JitsiMeetActivityInterface {
 
     override fun onDestroy() {
         super.onDestroy()
+        mainActivityVM.updateMatched(false)
         LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver)
         JitsiMeetActivityDelegate.onHostDestroy(this)
 
@@ -168,6 +170,7 @@ class MatchStream:JitsiMeetActivity() , JitsiMeetActivityInterface {
 
     override fun onStop() {
         super.onStop()
+        mainActivityVM.updateMatched(false)
         JitsiMeetActivityDelegate.onHostDestroy(this)
     }
 }

@@ -98,14 +98,14 @@ fun MatchConnectCorridor(mainActivityVM: MainActivityVM){
     val displayName = MainActivity.PreferenceManager?.getString("displayName")
     val photoUrl = MainActivity.PreferenceManager?.getString("photoUrl")
 
-    LaunchedEffect(Unit){
-        delay(5000)
-
-        startMeeting(uid = uid!! , name = displayName!! , photoUrl = photoUrl!! ,
-            Ruid = Ruid!! , Rname = Rname!! , RphotoUrl = RphotoUrl!! , context = context)
-
-        MainActivity.navigate?.popBackStack() // random a iter tekrardan ...
-    }
+//    LaunchedEffect(Unit){
+//        delay(5000)
+//
+//        startMeeting(uid = uid!! , name = displayName!! , photoUrl = photoUrl!! ,
+//            Ruid = Ruid!! , Rname = Rname!! , RphotoUrl = RphotoUrl!! , context = context)
+//
+//        MainActivity.navigate?.popBackStack() // random a iter tekrardan ...
+//    }
 
 
 
@@ -173,6 +173,7 @@ fun MatchConnectCorridor(mainActivityVM: MainActivityVM){
                 Text(text = stringResource(id = R.string.random))
             }
             OutlinedButton(onClick = {
+                mainActivityVM.updateMatched(false)
                 MainActivity.navigate?.popBackStack()
             }) {
                 Text(text = stringResource(id = R.string.cancel))
