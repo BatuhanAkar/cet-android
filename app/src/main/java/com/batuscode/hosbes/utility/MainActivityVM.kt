@@ -519,10 +519,4 @@ class MainActivityVM:ViewModel() {
         _randomParticipantUid.value = uid
     }
 
-    private val _outOfMatching = MutableStateFlow<Boolean?>(false)
-    val outOfMatching:StateFlow<Boolean?> get() = _outOfMatching
-
-    fun updateOutOfMatching(state: Boolean){
-        _outOfMatching.value = state
-    }
 }

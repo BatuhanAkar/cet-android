@@ -1825,8 +1825,7 @@ class FirebaseManager {
             .update("matched" , state)
         random
             .document(selfUid!!)
-            .update("matched" , state)
-
+            .update("matched" , false)
 
         random
             .document(uid)
@@ -1841,15 +1840,25 @@ class FirebaseManager {
             .document(uid)
             .addSnapshotListener(){
                 snapshot , e ->
-                var uid:String
 
-                if (snapshot?.getString("outId")?.isNotEmpty() == true){
-                    uid = snapshot?.getString("outId")!!
+                var matched = snapshot?.getBoolean("matched")
 
-                    var matched = snapshot?.getBoolean("matched")
-                    mainActivityVM.updateMatched(matched!!)
-                    mainActivityVM.updateRandomParticipantUid(uid!!)
+                if (matched == true){ // karşılaşma olmuş ise ...
+
+                    mainActivityVM.updateMatched(matched!!) // ana aktivitedeki karşılaşma durumunuda güncelle ...
+
+                    if (snapshot?.getString("outId")?.isNotEmpty() == true){
+
+                        var outId = snapshot?.getString("outId")!!
+
+                        mainActivityVM.updateRandomParticipantUid(outId!!) // ana aktivitedeki karşılaşılan kişinin id sini güncelle ...
+                    }
+
                 }
+
+
+
+
 
 
             }
@@ -1873,10 +1882,22 @@ class FirebaseManager {
             }
     }
 
-    fun matchParticipants(uid: String , mainActivityVM: MainActivityVM){
+    fun updateRandomOwnerMatchedStatus(uid: String , state: Boolean){
+
         random
-            .whereEqualTo("match" , true)
-            .whereNotEqualTo("uid" , uid)
+            .document(uid)
+            .update("matched" , state)
+    }
+
+    fun matchParticipants(uid: String , mainActivityVM: MainActivityVM){
+        /**
+         * eşleme isteği true olan ve kişinin kendi id sine eşit olmayan rastgele kişiyi getir ...
+         * */
+        random
+            .whereEqualTo("match" , true) // karşılaşma isteği olan ...
+            .whereEqualTo("matched" , false) // karşılaşmamış olan ...
+            .whereEqualTo("outId" , null) // karşı taraf id'si boş olan ...
+            .whereNotEqualTo("uid" , uid) // ve kendisi olmayan ...
             .get()
             .addOnCompleteListener {
 
@@ -1886,19 +1907,19 @@ class FirebaseManager {
 
                     if (documents.isNotEmpty()){
                         Log.d("matchlist" , "not empty ... size ... " + documents.size)
-                        if (documents.size > 1){
 
-                            val randomIndex = (0 until documents.size).random()
-                            val randomParticipant = documents[randomIndex].toObject(RandomParticipant::class.java)
-                            mainActivityVM.updateRandomParticipant(randomParticipant!!)
-                        } else {
-                            val randomParticipant = documents.get(0).toObject(RandomParticipant::class.java)
+
+                        for (ds in documents){
+
+                            val randomParticipant = ds.toObject(RandomParticipant::class.java)
 
                             updateMatched(true , randomParticipant?.uid!!)
 
                             mainActivityVM.updateRandomParticipant(randomParticipant!!)
 
+                            break ;
                         }
+
                     } else {
                         Log.d("matchlist" , "empty ... ")
 

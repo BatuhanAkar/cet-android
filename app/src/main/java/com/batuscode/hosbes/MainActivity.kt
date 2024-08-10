@@ -1,6 +1,5 @@
 package com.batuscode.hosbes
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
@@ -28,16 +27,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.core.app.ActivityCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.batuscode.hosbes.models.User
-import com.batuscode.hosbes.models.Whisper
 import com.batuscode.hosbes.ui.theme.HoşbeşTheme
 import com.batuscode.hosbes.utility.AuthViewModel
 import com.batuscode.hosbes.utility.ChatViewModel
@@ -58,16 +53,12 @@ import com.batuscode.hosbes.views.PrivateRooms
 import com.batuscode.hosbes.views.Random
 import com.batuscode.hosbes.views.SelectUsername
 import com.batuscode.hosbes.views.SplashScreen
-import com.batuscode.hosbes.views.VoiceCalls
 import com.batuscode.hosbes.views.Whisper
 import com.batuscode.hosbes.views.WhisperChat
 import com.batuscode.hosbes.views._WhisperChat
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.google.firebase.auth.FirebaseAuth
-import org.jitsi.meet.sdk.JitsiMeet
-import org.jitsi.meet.sdk.JitsiMeetConferenceOptions
-import java.net.URL
 
 class MainActivity : ComponentActivity() {
 

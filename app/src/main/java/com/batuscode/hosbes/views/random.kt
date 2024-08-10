@@ -24,6 +24,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -46,55 +47,78 @@ import com.batuscode.hosbes.MainActivity
 import com.batuscode.hosbes.R
 import com.batuscode.hosbes.ui.theme.HoşbeşTheme
 import com.batuscode.hosbes.utility.MainActivityVM
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
 
 /**
- * random'a girildiğinde ve rastgele butonuna bastığında önce database kullanıcıyı random'a kaydet ...
+ * random'a girildiğinde ve rastgele butonuna bastığında bağlantı koridoruna it ...
  * */
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Random(mainActivityVM: MainActivityVM){
+
     val context = LocalContext.current
-    val lifecycle = LocalLifecycleOwner.current
+
+    /**
+     * Olaki karşıda karşılaşma isteği başlatan biri düşerse buraya outId'den RandomParticipant getirebilmektir ...
+     *
+     * Bunun içinde esas olan şey ... kendi random bilgilerini dinleyip karşılaşma oldumu bakmak ... çünkü karşının güncelleyeceği şeylerden ilki karşılaşma durumu ...
+     * */
+
+    val matched by mainActivityVM.matched.collectAsState() // karşılaşma durumu ana aktiviteden gelir ... sebebi karşılaşma isteği başlatan kişiyi biri yakalarsa işleyelim diye ...
+    val outId by mainActivityVM.randomParticipantUid.collectAsState() // kişinin kendi random dinlemesi sonucu gelen outId ...
+
+    /**
+     * Bunlar tamamen kişinin kendi bilgileri ...
+     * */
+
     val uid = MainActivity.PreferenceManager?.getuidShared("uid")
     val displayName = MainActivity.PreferenceManager?.getString("displayName")
     val photoUrl = MainActivity.PreferenceManager?.getString("photoUrl")
 
+    /**
+     *
+     * RandomParticipant belli olan işlemlerin hepsi karşılaşmayı başlatan kişi birini yakalarda düşer diye ...
+     *
+     * */
     val randomParticipant by mainActivityVM.randomParticipant.collectAsState()
-    val randomParticipantUid by mainActivityVM.randomParticipantUid.collectAsState()
 
-    val matched by mainActivityVM.matched.collectAsState()
+    val Ruid = randomParticipant?.uid
+    val Rname = randomParticipant?.displayName
+    val RphotoUrl = randomParticipant?.photoUrl
 
-    val outOfMatching by mainActivityVM.outOfMatching.collectAsState()
-
-
-    if (randomParticipant != null){
-        mainActivityVM.updateOutOfMatching(true)
-        mainActivityVM.updateliveRandomParticipant(randomParticipant!!)
-        MainActivity.navigate?.navigate("matchconnectcorridor")
-        MainActivity.navigate?.popBackStack()
-    }
-
-    if (matched == true && randomParticipantUid != null){
-        MainActivity.fm.getRandomParticipant(randomParticipantUid!! , mainActivityVM)
-    }
+    val scope = CoroutineScope(Dispatchers.Default)
+    val lifecycle = LocalLifecycleOwner.current
 
     DisposableEffect(lifecycle) {
         val observer = LifecycleEventObserver{
-            _,event ->
+                _,event ->
+
             when(event){
                 Lifecycle.Event.ON_CREATE -> {
-                    MainActivity.fm.addRandomParticipant(uid = uid!! , displayName = displayName!! , photoUrl = photoUrl!!)
+                    MainActivity.fm.addRandomParticipant(uid = uid!! , displayName = displayName!! , photoUrl = photoUrl!!) // önce random a kaydet ...
+                    MainActivity.fm.ListenMatch(uid!! , mainActivityVM) // sonra random'ı dinle ...
+
+
+
+
                 }
                 Lifecycle.Event.ON_START -> {}
                 Lifecycle.Event.ON_RESUME -> {}
                 Lifecycle.Event.ON_PAUSE -> {}
                 Lifecycle.Event.ON_STOP -> {
-
+                    scope.cancel()
+                    if (matched == false){
+                        MainActivity.fm.removeRandomParticipant(uid = uid!!)
+                        MainActivity.fm.detachListenMatch()
+                    }
                 }
                 Lifecycle.Event.ON_DESTROY -> {
-
-                    if (outOfMatching == false){
+                    scope.cancel()
+                    if (matched == false){
                         MainActivity.fm.removeRandomParticipant(uid = uid!!)
                         MainActivity.fm.detachListenMatch()
                     }
@@ -109,6 +133,38 @@ fun Random(mainActivityVM: MainActivityVM){
             lifecycle.lifecycle.removeObserver(observer)
         }
     }
+
+    LaunchedEffect(key1 = matched) {
+        when(matched){
+            true -> {
+                mainActivityVM.updateliveRandomParticipant(randomParticipant!!)
+                MainActivity.navigate?.navigate("matchconnectcorridor")
+            }
+            false -> {
+                if (outId?.isNotEmpty() == true){
+                    /**
+                     * kişi kendi yakalamadan yakalandı ve karşılaşma true RandomParticipant bilgilerini çek ... neyle ??? dinlediğimiz veriyle ... outId ile ...
+                     * */
+                    /**
+                     * kişi kendi yakalamadan yakalandı ve karşılaşma true RandomParticipant bilgilerini çek ... neyle ??? dinlediğimiz veriyle ... outId ile ...
+                     * */
+                    MainActivity.fm.getRandomParticipant(outId!! , mainActivityVM)
+
+                    if (randomParticipant != null){
+
+                        mainActivityVM.updateliveRandomParticipant(randomParticipant!!)
+
+                        MainActivity.navigate?.navigate("matchconnectcorridor")
+
+                    }
+                }
+            }
+            null -> {}
+        }
+    }
+
+
+
 
     Scaffold( modifier = Modifier.fillMaxSize() ,
         topBar = {
@@ -169,9 +225,8 @@ fun Random(mainActivityVM: MainActivityVM){
 
                 //TODO: eşleş butonu ...
                 OutlinedButton(onClick = {
-                    MainActivity.fm.ListenMatch(uid!! , mainActivityVM)
-                    MainActivity.fm.updateMatchRequest(true , uid = uid!!)
-                    MainActivity.fm.matchParticipants(uid = uid , mainActivityVM = mainActivityVM)
+                    MainActivity.fm.updateMatchRequest(true , uid = uid!!) // karşılaşma isteği olduğunu belirt ...
+                    MainActivity.fm.matchParticipants(uid = uid , mainActivityVM = mainActivityVM) // karşılaştır bakalım ...
                 }  ,
                     modifier = Modifier
                         .clip(CircleShape)

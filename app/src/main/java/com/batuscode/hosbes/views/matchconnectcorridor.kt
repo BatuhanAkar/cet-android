@@ -17,6 +17,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -49,6 +50,15 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+
+/**
+ * amaç karşılaşma başlatmak ... bir kullanıcı karşılaşma başlattığı zaman randomdaki match true olur ... ve diğer truları arar ... bir eşleşme yakalandığı zaman
+ * match false'a dönmek zorundaki başka karşılaşmaya kaymasın ...
+ *
+ * olayın seyrini değiştiren en önemli işlem karşılaşmayı dinleme işlemi ...
+ *
+ * */
+
 fun startMeeting(uid:String,name:String,photoUrl:String,
                  Ruid:String,Rname:String,RphotoUrl:String , context: Context
 ){
@@ -72,58 +82,36 @@ fun MatchConnectCorridor(mainActivityVM: MainActivityVM){
 
     val randomParticipant by mainActivityVM.randomParticipant.collectAsState()
 
-    val uid = MainActivity.PreferenceManager?.getuidShared("uid")
-    val displayName = MainActivity.PreferenceManager?.getString("displayName")
-    val photoUrl = MainActivity.PreferenceManager?.getString("photoUrl")
-
     val Ruid = randomParticipant?.uid
     val Rname = randomParticipant?.displayName
     val RphotoUrl = randomParticipant?.photoUrl
 
-    val scope = CoroutineScope(Dispatchers.Default)
-    val lifecycle = LocalLifecycleOwner.current
-
-    DisposableEffect(lifecycle) {
-        val observer = LifecycleEventObserver{
-                _,event ->
-
-            when(event){
-                Lifecycle.Event.ON_CREATE -> {
-                    scope.launch {
-                        delay(8000)
-
-                        startMeeting(uid = uid!! , name = displayName!! , photoUrl = photoUrl!! ,
-                            Ruid = Ruid!! , Rname = Rname!! , RphotoUrl = RphotoUrl!! , context = context)
-
-                        MainActivity.navigate?.popBackStack()
-                    }
-                }
-                Lifecycle.Event.ON_START -> {}
-                Lifecycle.Event.ON_RESUME -> {}
-                Lifecycle.Event.ON_PAUSE -> {}
-                Lifecycle.Event.ON_STOP -> {
-                    scope.cancel()
-                }
-                Lifecycle.Event.ON_DESTROY -> {
-                    scope.cancel()
-                }
-                Lifecycle.Event.ON_ANY -> {}
-            }
-        }
-
-        lifecycle.lifecycle.addObserver(observer)
-
-        onDispose {
-            lifecycle.lifecycle.removeObserver(observer)
-        }
-    }
-
     var image by remember{
         mutableStateOf<ImageBitmap?>(null)
     }
+
+    /**
+     * Bunlar tamamen kişinin kendi bilgileri ...
+     * */
+
+    val uid = MainActivity.PreferenceManager?.getuidShared("uid")
+    val displayName = MainActivity.PreferenceManager?.getString("displayName")
+    val photoUrl = MainActivity.PreferenceManager?.getString("photoUrl")
+
+    LaunchedEffect(Unit){
+        delay(5000)
+
+        startMeeting(uid = uid!! , name = displayName!! , photoUrl = photoUrl!! ,
+            Ruid = Ruid!! , Rname = Rname!! , RphotoUrl = RphotoUrl!! , context = context)
+
+        MainActivity.navigate?.popBackStack() // random a iter tekrardan ...
+    }
+
+
+
     GlideApp.with(context)
         .asBitmap()
-        .load(RphotoUrl)
+        .load(randomParticipant?.photoUrl)
         .into(object : CustomTarget<Bitmap>(){
             override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
                 image = resource.asImageBitmap()
@@ -173,9 +161,17 @@ fun MatchConnectCorridor(mainActivityVM: MainActivityVM){
 
             }
 
-            Text(text = Rname!!)
+            Text(text = randomParticipant?.displayName!!)
 
+            OutlinedButton(onClick = {
+                MainActivity.fm.updateRandomOwnerMatchedStatus(randomParticipant?.uid!! , true)
+                startMeeting(uid = uid!! , name = displayName!! , photoUrl = photoUrl!! ,
+                    Ruid = Ruid!! , Rname = Rname!! , RphotoUrl = RphotoUrl!! , context = context)
 
+                MainActivity.navigate?.popBackStack() // random a iter tekrardan ...
+            }) {
+                Text(text = stringResource(id = R.string.random))
+            }
             OutlinedButton(onClick = {
                 MainActivity.navigate?.popBackStack()
             }) {

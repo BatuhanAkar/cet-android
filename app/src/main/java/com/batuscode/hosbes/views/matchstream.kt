@@ -108,10 +108,12 @@ class MatchStream:JitsiMeetActivity() , JitsiMeetActivityInterface {
         mainActivityVM.liverandomParticipant.observe(this , Observer {
             randomParticipant ->
 
+            var roomName = name + " & " + randomParticipant?.displayName
+
             if (randomParticipant != null){
 
                 var options = JitsiMeetConferenceOptions.Builder()
-                    .setRoom("https://recommyz.com/${name} & ${randomParticipant.displayName}")
+                    .setRoom("https://recommyz.com/$roomName")
                     .setUserInfo(userinfo)
                     .setFeatureFlag("tile-view.enabled" , true)
                     .setFeatureFlag("prejoinpage.enabled" , false)
