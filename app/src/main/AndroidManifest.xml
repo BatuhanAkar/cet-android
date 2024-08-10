@@ -46,6 +46,11 @@
             android:theme="@style/JitsiMeetActivityStyle"
             android:exported="false" />
 
+        <activity
+            android:name=".views.MatchStream"
+            android:theme="@style/JitsiMeetActivityStyle"
+            android:exported="false" />
+
         <service android:name=".utility.SessionService" />
 
         <activity

@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModel
 import com.batuscode.hosbes.models.Calls
 import com.batuscode.hosbes.models.Message
 import com.batuscode.hosbes.models.PrivateRoom
+import com.batuscode.hosbes.models.RandomParticipant
 import com.batuscode.hosbes.models.User
 import com.batuscode.hosbes.models.Whisper
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -490,4 +491,38 @@ class MainActivityVM:ViewModel() {
         _profileUpdating.value = state
     }
 
+    private val _randomParticipant = MutableStateFlow<RandomParticipant?>(null)
+    val randomParticipant:StateFlow<RandomParticipant?> get() = _randomParticipant
+
+    fun updateRandomParticipant(randomParticipant: RandomParticipant){
+        _randomParticipant.value = randomParticipant
+    }
+
+    private val _liverandomParticipant = MutableLiveData<RandomParticipant?>(null)
+    val liverandomParticipant:LiveData<RandomParticipant?> get() = _liverandomParticipant
+
+    fun updateliveRandomParticipant(liverandomParticipant: RandomParticipant){
+        _liverandomParticipant.value = liverandomParticipant
+    }
+
+    private val _matched = MutableStateFlow<Boolean?>(false)
+    val matched:StateFlow<Boolean?> get() = _matched
+
+    fun updateMatched(state: Boolean){
+        _matched.value = state
+    }
+
+    private val _randomParticipantUid = MutableStateFlow<String?>(null)
+    val randomParticipantUid:StateFlow<String?> get() = _randomParticipantUid
+
+    fun updateRandomParticipantUid(uid: String){
+        _randomParticipantUid.value = uid
+    }
+
+    private val _outOfMatching = MutableStateFlow<Boolean?>(false)
+    val outOfMatching:StateFlow<Boolean?> get() = _outOfMatching
+
+    fun updateOutOfMatching(state: Boolean){
+        _outOfMatching.value = state
+    }
 }

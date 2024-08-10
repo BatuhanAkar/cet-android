@@ -52,8 +52,10 @@ import com.batuscode.hosbes.views.Authentication
 import com.batuscode.hosbes.views.CallsCorridor
 import com.batuscode.hosbes.views.Chat
 import com.batuscode.hosbes.views.DeleteAccount
+import com.batuscode.hosbes.views.MatchConnectCorridor
 import com.batuscode.hosbes.views.PrivateRoomChat
 import com.batuscode.hosbes.views.PrivateRooms
+import com.batuscode.hosbes.views.Random
 import com.batuscode.hosbes.views.SelectUsername
 import com.batuscode.hosbes.views.SplashScreen
 import com.batuscode.hosbes.views.VoiceCalls
@@ -289,6 +291,12 @@ class MainActivity : ComponentActivity() {
                         }
                         composable("callscorridor"){
                             CallsCorridor(mainActivityVM = mainActivityVM , whisperItem = whisperItem!!)
+                        }
+                        composable("random"){
+                            Random(mainActivityVM = mainActivityVM)
+                        }
+                        composable("matchconnectcorridor"){
+                            MatchConnectCorridor(mainActivityVM = mainActivityVM)
                         }
 
                     }

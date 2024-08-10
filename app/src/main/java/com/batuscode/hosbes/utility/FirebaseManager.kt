@@ -24,6 +24,7 @@ import com.batuscode.hosbes.models.Calls
 import com.batuscode.hosbes.models.Message
 import com.batuscode.hosbes.models.Participnat
 import com.batuscode.hosbes.models.PrivateRoom
+import com.batuscode.hosbes.models.RandomParticipant
 import com.batuscode.hosbes.models.User
 import com.batuscode.hosbes.models.Whisper
 import com.batuscode.hosbes.utility.FirebaseManager.Companion.P1
@@ -53,6 +54,7 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.storageMetadata
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
+import kotlin.random.Random
 
 
 class FirebaseManager {
@@ -80,10 +82,11 @@ class FirebaseManager {
 
         val W:DatabaseReference = Firebase.database("https://whispers-552e7.europe-west1.firebasedatabase.app/").getReference()
         val W_C:DatabaseReference = Firebase.database("https://whispers-chat.europe-west1.firebasedatabase.app/").getReference()
+        val random:CollectionReference = firestore.collection("random")
     }
 
 
-
+    lateinit var listenMatch:ListenerRegistration
 
     lateinit var chatQuery:Query
     lateinit var whisoerChatQuery:Query
@@ -423,6 +426,7 @@ class FirebaseManager {
         }
 
         else {
+            Log.d("whisperChatItems" , "firebasemanagerda privateroomda...")
 
 
             var lastChatTime = MainActivity.PreferenceManager?.getLastChatTime("firstChatTime")
@@ -1782,6 +1786,129 @@ class FirebaseManager {
             }
     }
 
+    /**
+     * TODO: rastgele katılımcısı ekle ...
+     * */
+
+    fun addRandomParticipant(uid:String , displayName:String , photoUrl:String){
+        val participant = RandomParticipant(
+            displayName, photoUrl, uid , false
+        )
+        random
+            .document(uid)
+            .set(participant)
+    }
+    fun removeRandomParticipant(uid:String){
+
+        random
+            .document(uid)
+            .delete()
+    }
+
+    fun updateMatchRequest(state:Boolean , uid: String){
+        random
+            .document(uid)
+            .update("match" , state)
+    }
+
+    fun updateMatched(state: Boolean , uid:String){
+        val selfUid = MainActivity.PreferenceManager?.getuidShared("uid")
+        random
+            .document(uid)
+            .update("match" , false)
+        random
+            .document(selfUid!!)
+            .update("match" , false)
+
+        random
+            .document(uid)
+            .update("matched" , state)
+        random
+            .document(selfUid!!)
+            .update("matched" , state)
+
+
+        random
+            .document(uid)
+            .update("outId" , selfUid)
+        random
+            .document(selfUid!!)
+            .update("outId" , uid)
+    }
+
+    fun ListenMatch(uid: String , mainActivityVM: MainActivityVM){
+       listenMatch = random
+            .document(uid)
+            .addSnapshotListener(){
+                snapshot , e ->
+                var uid:String
+
+                if (snapshot?.getString("outId")?.isNotEmpty() == true){
+                    uid = snapshot?.getString("outId")!!
+
+                    var matched = snapshot?.getBoolean("matched")
+                    mainActivityVM.updateMatched(matched!!)
+                    mainActivityVM.updateRandomParticipantUid(uid!!)
+                }
+
+
+            }
+    }
+
+    fun detachListenMatch(){
+        if (::listenMatch.isInitialized){
+            listenMatch.remove()
+        }
+    }
+
+    fun getRandomParticipant(uid: String , mainActivityVM: MainActivityVM){
+        random.document(uid)
+            .get().addOnCompleteListener {
+                if (it.isSuccessful){
+                    var randomParticipant = it.result.toObject(RandomParticipant::class.java)
+                    if (randomParticipant != null){
+                        mainActivityVM.updateRandomParticipant(randomParticipant!!)
+                    }
+                }
+            }
+    }
+
+    fun matchParticipants(uid: String , mainActivityVM: MainActivityVM){
+        random
+            .whereEqualTo("match" , true)
+            .whereNotEqualTo("uid" , uid)
+            .get()
+            .addOnCompleteListener {
+
+                if (it.isSuccessful){
+
+                    val documents = it.result.documents
+
+                    if (documents.isNotEmpty()){
+                        Log.d("matchlist" , "not empty ... size ... " + documents.size)
+                        if (documents.size > 1){
+
+                            val randomIndex = (0 until documents.size).random()
+                            val randomParticipant = documents[randomIndex].toObject(RandomParticipant::class.java)
+                            mainActivityVM.updateRandomParticipant(randomParticipant!!)
+                        } else {
+                            val randomParticipant = documents.get(0).toObject(RandomParticipant::class.java)
+
+                            updateMatched(true , randomParticipant?.uid!!)
+
+                            mainActivityVM.updateRandomParticipant(randomParticipant!!)
+
+                        }
+                    } else {
+                        Log.d("matchlist" , "empty ... ")
+
+
+                    }
+
+
+                }
+            }
+    }
 }
 
 

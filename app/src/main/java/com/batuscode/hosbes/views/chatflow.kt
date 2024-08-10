@@ -153,30 +153,29 @@ fun ChatFlow( mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel , mo
 
         delay(2000)
 
-        if (loadMoreChat == true){
-            snapshotFlow { state.firstVisibleItemIndex }
-                .collect { index ->
-                    if (index == 0){
-                        if (inWhisper == true){
-                            mainActivityVM.updateLoadMoreChat(true)
-                            MainActivity.fm.loadMoreChat = true
 
-                            if (inPrivateRoom!!){
-                                MainActivity.fm.pullPRChat(FirebaseManager.P1 , room!! , true , false)
+        snapshotFlow { state.firstVisibleItemIndex }
+            .collect { index ->
+                if (index == 0 && chats.value.size > 10){
+                    if (inWhisper == true){
+                        mainActivityVM.updateLoadMoreChat(true)
+                        MainActivity.fm.loadMoreChat = true
 
-                            } else {
-                                MainActivity.fm.pullWhisperChat(whisperItem?.wid!! , true , false)
+                        if (inPrivateRoom!!){
+                            Log.d("whisperChatItems" , "chatflowda privateroomda...")
+                            MainActivity.fm.pullPRChat(FirebaseManager.P1 , room!! , true , false)
 
-                            }
-
+                        } else {
+                            MainActivity.fm.pullWhisperChat(whisperItem?.wid!! , true , false)
                         }
 
-                        Log.d("swipeTop" , "en üstte...")
                     }
-                    isAtBottom =
-                        state.layoutInfo.visibleItemsInfo.lastOrNull()?.index == state.layoutInfo.totalItemsCount - 1
+
+                    Log.d("swipeTop" , "en üstte...")
                 }
-        }
+                isAtBottom =
+                    state.layoutInfo.visibleItemsInfo.lastOrNull()?.index == state.layoutInfo.totalItemsCount - 1
+            }
 
     }
 

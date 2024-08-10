@@ -55,4 +55,7 @@
     <string name="connectingvideochannel">görüntülü sohbet kanalına bağlanıyorsun.</string>
     <string name="connectingvoicechannel">sesli sohbet kanalına bağlanıyorsun.</string>
     <string name="updating">Güncelleniyor</string>
+    <string name="random">Rastgele</string>
+    <string name="match">Eşleş</string>
+    <string name="formatchclickbutton">En güzel dostluklar rastgele başlar...</string>
 </resources>

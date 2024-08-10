@@ -285,6 +285,32 @@ fun MoreContent(scope: CoroutineScope , sheetState: SheetState , mainActivityVM:
                 }
 
             }
+            TextButton(
+                onClick = {
+
+                    scope.launch {
+                        MainActivity.navigate?.navigate("random")
+                    }.invokeOnCompletion {
+                        if (!sheetState.isVisible) mainActivityVM.updateShowMore(false)
+                    }
+
+                } ,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+
+                Row ( modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween ) {
+                    Text(
+                        text = stringResource(id = R.string.random) ,
+                        style = TextStyle(
+                            fontSize = 20.sp ,
+                            fontFamily = FontFamily.SansSerif
+                        )
+                    )
+
+                    Image(imageVector = Icons.Filled.KeyboardArrowRight, contentDescription = "")
+                }
+
+            }
         }
         Column (
             modifier = Modifier
