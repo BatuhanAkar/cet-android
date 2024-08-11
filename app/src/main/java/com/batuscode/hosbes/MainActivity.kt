@@ -109,6 +109,10 @@ class MainActivity : ComponentActivity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
+    fun restartActivity(){
+        restartActivity()
+    }
+
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -116,15 +120,17 @@ class MainActivity : ComponentActivity() {
         setContent {
             HoşbeşTheme {
 
+                val authViewModel: AuthViewModel = viewModel()
+                val mainActivityVM: MainActivityVM by viewModels()
+                val chatViewModel:ChatViewModel by viewModels()
+                val whisperViewModel:WhisperViewModel by viewModels()
 
                 fm.loadMoreChat = false
 
                 context = this
 
 
-                permissionLauncher= rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission()) {
-
-            }
+                permissionLauncher= rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission()) {}
 
                 PreferenceManager = PreferenceManager(context)
 
@@ -138,10 +144,6 @@ class MainActivity : ComponentActivity() {
 
                 FirebaseManager.auth.firebaseAuthSettings.setAppVerificationDisabledForTesting(true)
 
-                val authViewModel: AuthViewModel = viewModel()
-                val mainActivityVM: MainActivityVM by viewModels()
-                val chatViewModel:ChatViewModel by viewModels()
-                val whisperViewModel:WhisperViewModel by viewModels()
 
                 val whisperItem by mainActivityVM.whisperItem.collectAsState()
 
@@ -275,7 +277,7 @@ class MainActivity : ComponentActivity() {
                         }
 
                         composable("deleteaccount"){
-                            DeleteAccount()
+                            DeleteAccount(mainActivityVM)
                         }
                         composable("ICC"){
                             com.batuscode.hosbes.views.ICC(mainActivityVM = mainActivityVM)

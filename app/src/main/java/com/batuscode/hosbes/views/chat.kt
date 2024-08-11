@@ -27,6 +27,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -343,7 +344,10 @@ fun Chat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
 
 
             TopAppBar(title = { Row {
-                ConstraintLayout () {
+                ConstraintLayout (
+                    modifier = Modifier
+                        .wrapContentSize()
+                ) {
                     val (title , channelMenu) = createRefs()
                     ChannelMenu( mainActivityVM = mainActivityVM ,chatViewModel = chatViewModel , selectedChannel = selectedChannel!!, modifier = Modifier
 
@@ -358,7 +362,8 @@ fun Chat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
                     )
                 }
 
-            }} ,
+                }
+                              } ,
 
                 actions = {
 

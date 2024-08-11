@@ -8,5 +8,6 @@ data class RandomParticipant(
     var match:Boolean? = false ,
     var matched:Boolean? = false ,
     var outId:String? = null ,
-    var rm:String? = null
+    var rm:String? = null ,
+    var meeting:Boolean? = false
 )

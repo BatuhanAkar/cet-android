@@ -19,12 +19,15 @@ import org.jitsi.meet.sdk.JitsiMeetActivityDelegate
 import org.jitsi.meet.sdk.JitsiMeetActivityInterface
 import org.jitsi.meet.sdk.JitsiMeetConferenceOptions
 import org.jitsi.meet.sdk.JitsiMeetUserInfo
+import org.jitsi.meet.sdk.JitsiMeetView
 import timber.log.Timber
 import java.net.URL
 import java.util.HashMap
 
 class MatchStream:JitsiMeetActivity() , JitsiMeetActivityInterface {
     lateinit var mainActivityVM: MainActivityVM
+    lateinit var view: JitsiMeetView
+
     private fun hangUp(){
         val hangUpBroadcastIntent: Intent = BroadcastIntentHelper.buildHangUpIntent()
         LocalBroadcastManager.getInstance(this.applicationContext).sendBroadcast(hangUpBroadcastIntent)
@@ -75,7 +78,6 @@ class MatchStream:JitsiMeetActivity() , JitsiMeetActivityInterface {
     }
     override fun onConferenceJoined(extraData: HashMap<String, Any>?) {
         super.onConferenceJoined(extraData)
-        //view!!.removeView(corridorView!!)
     }
     override fun onParticipantLeft(extraData: HashMap<String, Any>?) {
         super.onParticipantLeft(extraData)
@@ -87,6 +89,7 @@ class MatchStream:JitsiMeetActivity() , JitsiMeetActivityInterface {
         super.onCreate(savedInstanceState)
         registerForBroadcastMessages()
         mainActivityVM = MainActivity.mMainActivityVM
+
 
         val serverURL: URL
         serverURL = URL("https://recommyz.com")

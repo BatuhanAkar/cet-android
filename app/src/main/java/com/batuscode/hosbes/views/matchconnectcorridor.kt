@@ -98,6 +98,32 @@ fun MatchConnectCorridor(mainActivityVM: MainActivityVM){
     val displayName = MainActivity.PreferenceManager?.getString("displayName")
     val photoUrl = MainActivity.PreferenceManager?.getString("photoUrl")
 
+    val lifecycle = LocalLifecycleOwner.current
+
+    DisposableEffect(lifecycle) {
+        val observer = LifecycleEventObserver { _, event ->
+            when(event){
+                Lifecycle.Event.ON_CREATE -> {}
+                Lifecycle.Event.ON_START -> {}
+                Lifecycle.Event.ON_RESUME -> {}
+                Lifecycle.Event.ON_PAUSE -> {}
+                Lifecycle.Event.ON_STOP -> {
+                    mainActivityVM.update_d(false)
+                }
+                Lifecycle.Event.ON_DESTROY -> {
+                    mainActivityVM.update_d(false)
+                }
+                Lifecycle.Event.ON_ANY -> {}
+            }
+        }
+
+        lifecycle.lifecycle.addObserver(observer)
+
+        onDispose {
+            lifecycle.lifecycle.removeObserver(observer)
+        }
+    }
+
 //    LaunchedEffect(Unit){
 //        delay(5000)
 //
@@ -165,15 +191,17 @@ fun MatchConnectCorridor(mainActivityVM: MainActivityVM){
 
             OutlinedButton(onClick = {
                 MainActivity.fm.updateRandomOwnerMatchedStatus(randomParticipant?.uid!! , true)
+                MainActivity.navigate?.popBackStack()
                 startMeeting(uid = uid!! , name = displayName!! , photoUrl = photoUrl!! ,
                     Ruid = Ruid!! , Rname = Rname!! , RphotoUrl = RphotoUrl!! , context = context)
 
-                MainActivity.navigate?.popBackStack() // random a iter tekrardan ...
+
             }) {
                 Text(text = stringResource(id = R.string.random))
             }
             OutlinedButton(onClick = {
-                mainActivityVM.updateMatched(false)
+                mainActivityVM.updateRandomParticipantUid(null)
+                MainActivity.fm.declineMatch(false , randomParticipant?.uid!! , mainActivityVM)
                 MainActivity.navigate?.popBackStack()
             }) {
                 Text(text = stringResource(id = R.string.cancel))

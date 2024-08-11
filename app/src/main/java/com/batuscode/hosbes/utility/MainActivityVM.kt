@@ -508,14 +508,14 @@ class MainActivityVM:ViewModel() {
     private val _matched = MutableStateFlow<Boolean?>(false)
     val matched:StateFlow<Boolean?> get() = _matched
 
-    fun updateMatched(state: Boolean){
+    fun updateMatched(state: Boolean?){
         _matched.value = state
     }
 
     private val _randomParticipantUid = MutableStateFlow<String?>(null)
     val randomParticipantUid:StateFlow<String?> get() = _randomParticipantUid
 
-    fun updateRandomParticipantUid(uid: String){
+    fun updateRandomParticipantUid(uid: String?){
         _randomParticipantUid.value = uid
     }
 
@@ -532,5 +532,28 @@ class MainActivityVM:ViewModel() {
     fun update_x(status: Boolean){
         _x.value = status
     }
+
+
+    private val _c = MutableStateFlow<Boolean?>(false)
+    val c:StateFlow<Boolean?> get() = _c
+
+    fun update_c(status: Boolean){
+        _c.value = status
+    }
+
+    private val _d = MutableStateFlow<Boolean??>(false)
+    val d:StateFlow<Boolean?> get() = _d
+
+    fun update_d(status: Boolean?){
+        _d.value = status
+    }
+
+    private val _userVerified = MutableStateFlow<Boolean?>(false)
+    val userVerified:StateFlow<Boolean?> get() = _userVerified
+
+    fun updateUserVerified(status: Boolean){
+        _userVerified.value = status
+    }
+
 
 }

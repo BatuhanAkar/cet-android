@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
@@ -21,6 +22,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,6 +38,7 @@ import com.batuscode.hosbes.MainActivity
 import com.batuscode.hosbes.R
 import com.batuscode.hosbes.ui.theme.HoşbeşTheme
 import com.batuscode.hosbes.utility.FirebaseManager
+import com.batuscode.hosbes.utility.MainActivityVM
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthOptions
@@ -44,7 +47,23 @@ import java.util.concurrent.TimeUnit
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DeleteAccount(){
+fun DeleteAccount(mainActivityVM: MainActivityVM){
+
+    val userVerified by mainActivityVM.userVerified.collectAsState()
+
+    if (userVerified == false){
+        AuthenticationForm(mainActivityVM)
+    }
+    else {
+        DeleteScreen()
+    }
+
+
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AuthenticationForm(mainActivityVM: MainActivityVM){
     var phoneNumber by remember {
         mutableStateOf(TextFieldValue())
     }
@@ -97,7 +116,6 @@ fun DeleteAccount(){
         }
 
     }
-
     Scaffold (
         modifier = Modifier
             .fillMaxSize()
@@ -125,9 +143,11 @@ fun DeleteAccount(){
         }
     ) { inPadding ->
 
+
         Column ( modifier = Modifier
             .padding(inPadding)
-            .fillMaxSize(),horizontalAlignment = Alignment.CenterHorizontally){
+            .fillMaxSize(),horizontalAlignment = Alignment.CenterHorizontally)
+        {
             // phone textfield
             OutlinedTextField(value = phoneNumber, onValueChange = {newText ->
 
@@ -214,30 +234,31 @@ fun DeleteAccount(){
                         Text(text = stringResource(id = R.string.sendverificationcode))
                     }
 
-                } else {
+                }
+                else {
 
 
                     // kullanicinin hesabını kapatmak için son güncel girişi yaptır ...
-                    OutlinedButton(onClick = { /*TODO: go button authentication*/
+                    OutlinedButton(
+                        onClick = { /*TODO: go button authentication*/
 
-                        val credential = PhoneAuthProvider.getCredential(vId , verificationCode.text)
+                            val credential = PhoneAuthProvider.getCredential(vId, verificationCode.text)
 
-                        FirebaseManager.auth.signInWithCredential(credential)
-                            .addOnCompleteListener { task ->
-                                if (task.isSuccessful){
+                            FirebaseManager.auth.signInWithCredential(credential)
+                                .addOnCompleteListener { task ->
+                                    if (task.isSuccessful) {
 
+                                        mainActivityVM.updateUserVerified(true)
 
-
-
-                                } else {
-                                    Log.d("verifyphonenumber" , "verifcation not Successful...")
+                                    } else {
+                                        Log.d("verifyphonenumber", "verifcation not Successful...")
+                                    }
                                 }
-                            }
-                    } ,
+                        },
                         modifier = Modifier
                             .padding(top = 15.dp)
                             .width(200.dp),
-                        enabled = deleteAccountButtonEnable ,
+                        enabled = deleteAccountButtonEnable,
 
 
                         ) {
@@ -251,13 +272,58 @@ fun DeleteAccount(){
 
         }
     }
+}
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DeleteScreen(){
+
+    Scaffold (
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(8.dp)
+            .imePadding() ,
+        topBar = {
+            TopAppBar(
+                title = {
+
+                    Text(text = stringResource(id = R.string.deleteaccount)) // degistir ...
+
+                } ,
+                navigationIcon = {
+
+                    Icon(
+                        imageVector = Icons.Filled.ArrowBack ,
+                        contentDescription = "" ,
+                        modifier = Modifier
+                            .clickable {
+                                MainActivity.navigate?.popBackStack()
+                            }
+                    )
+                }
+            )
+        }
+    ) { inPadding ->
+
+        Column( horizontalAlignment = Alignment.CenterHorizontally , verticalArrangement = Arrangement.Top,
+            modifier = Modifier
+                .padding(inPadding)
+                .fillMaxSize()
+        ) {
+            OutlinedButton(onClick = {
+                // TODO: delete account with all user data ...
+                MainActivity.fm.deleteAccounWithAllUserData()
+            }) {
+                Text(text = stringResource(id = R.string.deleteaccount))
+            }
+        }
+    }
 }
 
 @Preview(showBackground = true , showSystemUi = true)
 @Composable
 fun DeleteAccountPreview(){
     HoşbeşTheme {
-        DeleteAccount()
+        DeleteScreen()
     }
 }

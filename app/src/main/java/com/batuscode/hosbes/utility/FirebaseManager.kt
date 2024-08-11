@@ -54,6 +54,7 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.storageMetadata
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
+import java.util.concurrent.CountDownLatch
 import kotlin.random.Random
 
 
@@ -87,6 +88,8 @@ class FirebaseManager {
 
 
     lateinit var listenMatch:ListenerRegistration
+    lateinit var RlistenMatch:ListenerRegistration
+
 
     lateinit var chatQuery:Query
     lateinit var whisoerChatQuery:Query
@@ -1811,6 +1814,44 @@ class FirebaseManager {
             .update("match" , state)
     }
 
+    fun declineMatch(status:Boolean? , ruid:String , mainActivityVM: MainActivityVM){
+        val selfUid = MainActivity.PreferenceManager?.getuidShared("uid")
+
+        random
+            .document(ruid)
+            .update("outId" , null)
+        random
+            .document(selfUid!!)
+            .update("outId" , null)
+        random
+            .document(ruid)
+            .update("match" , true)
+        random
+            .document(selfUid!!)
+            .update("match" , true)
+        random
+            .document(ruid)
+            .update("rm" , null)
+        random
+            .document(selfUid!!)
+            .update("rm" , null)
+
+        random
+            .document(ruid)
+            .update("matched" , status)
+        random
+            .document(selfUid!!)
+            .update("matched" , status)
+    }
+
+    fun updateOnMeeting(uid: String , status: Boolean?){
+        val selfUid = MainActivity.PreferenceManager?.getuidShared("uid")
+
+        random
+            .document(selfUid!!)
+            .update("meeting" , status)
+    }
+
     fun updateMatched(state: Boolean , uid:String , roomName: String?){
         val selfUid = MainActivity.PreferenceManager?.getuidShared("uid")
         random
@@ -1844,6 +1885,27 @@ class FirebaseManager {
             .update("rm" , roomName)
     }
 
+    /**
+     * kendi yakalayamadan başkası yakaladıysa kendi oda adını güncelle ...
+     * */
+
+    fun updateSelfRoomName(randomParticipant: RandomParticipant , mainActivityVM: MainActivityVM){
+        val selfUid = MainActivity.PreferenceManager?.getuidShared("uid")
+        var selfName = currentUser?.displayName
+        var parname = randomParticipant?.displayName
+
+        var roomName =  "$selfName-$parname"
+        random
+            .document(selfUid!!)
+            .update("rm" , roomName)
+            .addOnCompleteListener {
+                if (it.isSuccessful){
+                    mainActivityVM.update_c(true)
+                    randomParticipant?.rm = roomName
+                    mainActivityVM.updateliveRandomParticipant(randomParticipant)
+                }
+            }
+    }
 
 
     fun ListenMatch(Ouid: String , mainActivityVM: MainActivityVM){
@@ -1859,19 +1921,19 @@ class FirebaseManager {
 
                             var uid = dc.document.getString("uid")
 
-                            if (uid?.equals(Ouid!!) == true){
+                            if (uid?.equals(Ouid!!) == true) {
+
                                 var matched = dc.document.getBoolean("matched")
                                 mainActivityVM.updateMatched(matched!!) // ana aktivitedeki karşılaşma durumunuda güncelle ...
-                                if (dc.document.getString("outId")?.isNotEmpty() == true){
+                                if (dc.document.getString("outId")?.isNotEmpty() == true) {
 
                                     var outId = dc.document.getString("outId")!!
 
-                                    Log.d("outId" , outId)
+                                    Log.d("outId", outId)
                                     mainActivityVM.updateRandomParticipantUid(outId!!) // ana aktivitedeki karşılaşılan kişinin id sini güncelle ...
                                     mainActivityVM.updatedOutIdSatus(true)
                                 }
                             }
-
                         }
                         DocumentChange.Type.REMOVED -> {}
                     }
@@ -1943,7 +2005,7 @@ class FirebaseManager {
                             var parname = randomParticipant?.displayName
                             var name = MainActivity.PreferenceManager?.getString("displayName")
 
-                            var roomName = "$name & $parname"
+                            var roomName = "$name-$parname"
                             updateMatched(true , uid , roomName)
 
                             mainActivityVM.updateRandomParticipant(randomParticipant!!)
@@ -1960,6 +2022,78 @@ class FirebaseManager {
 
                 }
             }
+    }
+
+    lateinit var whisperChatlatch:CountDownLatch
+    var whisperLatch = CountDownLatch(1)
+    lateinit var privateRoomsChatLatch:CountDownLatch
+    fun deleteAccounWithAllUserData(){
+        val selfUid = MainActivity.PreferenceManager?.getuidShared("uid")
+        W.child(selfUid!!)
+            .get()
+            .addOnCompleteListener {
+                if (it.isSuccessful){
+                    var childCount = it.result.childrenCount
+                    whisperChatlatch = CountDownLatch(childCount.toInt())
+                    it.result.children.forEach { dataSnapshot ->
+                        val whisper = dataSnapshot.getValue(Whisper::class.java)
+
+                        val wid = whisper?.wid
+
+                        W_C.child(wid!!).removeValue().addOnCompleteListener {
+                            if (it.isSuccessful){
+                                whisperChatlatch.countDown()
+                            }
+                        }
+                    }
+                }
+            }
+
+        whisperChatlatch.await()
+        W.child(selfUid)
+            .removeValue().addOnCompleteListener {
+                if (it.isSuccessful){
+                    whisperLatch.countDown()
+                }
+            }
+        whisperLatch.await()
+
+        prvRoomRef
+            .whereEqualTo("ownerId" , selfUid)
+            .get()
+            .addOnCompleteListener {
+                if (it.isSuccessful){
+                    privateRoomsChatLatch = CountDownLatch(it.result.size())
+                    it.result.documents.forEach { documentSnapshot ->
+
+                        var roomId = documentSnapshot.getString("roomId")
+
+                        P1.child("participants")
+                            .child(roomId!!).removeValue()
+
+                        P1.child(roomId!!).removeValue().addOnCompleteListener {
+                            if (it.isSuccessful){
+                                privateRoomsChatLatch.countDown()
+                            }
+                        }
+
+
+                    }
+                }
+            }
+
+        privateRoomsChatLatch.await()
+
+        prvRoomRef
+            .whereEqualTo("ownerId" , selfUid)
+            .get().result.removeAll { queryDocumentSnapshot ->
+                queryDocumentSnapshot.exists()
+            }
+
+        usersRef.document(selfUid).delete()
+        auth.currentUser?.delete()?.addOnCompleteListener {
+            MainActivity.PreferenceManager?.clear()
+        }
     }
 }
 
