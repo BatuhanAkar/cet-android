@@ -889,6 +889,8 @@ class FirebaseManager {
         val owner = Whisper(displayName , photoUrl , uid , wid)
         val remote = Whisper(wdisplayName,wphotoUrl,wuid,wid)
 
+        //TODO: create first whisper item ...
+
         W.child(uid!!).child(user.uid!!).get().addOnCompleteListener {
 
             // fısıltısı yoksa ekle ...
@@ -903,6 +905,11 @@ class FirebaseManager {
                 W.updateChildren(childUpdate)
                     .addOnCompleteListener {
                         if (it.isSuccessful){
+
+                            val Wcount = MainActivity.PreferenceManager?.getLong("Wcount")
+
+                            MainActivity.PreferenceManager?.saveLong("Wcount" , Wcount!! + 1)
+
                             val messageId = W_C.push().key.toString()
                             val message = Message(uid,photoUrl,displayName,value,messageId,type,time)
 
@@ -1259,6 +1266,8 @@ class FirebaseManager {
             .addOnCompleteListener{
 
                 // TODO: özel oda veri tebabnına yazıldı ... shaiplik bilgilerine odayı ekle ...
+                val privRoomCount = MainActivity.PreferenceManager?.getLong("privRoomCount")
+                MainActivity.PreferenceManager?.saveLong("privRoomCount" , privRoomCount!! + 1)
 
                 mainActivityVM.updateCreatingPrivateRoom(false)
             }
@@ -2024,17 +2033,23 @@ class FirebaseManager {
             }
     }
 
-    lateinit var whisperChatlatch:CountDownLatch
+
     var whisperLatch = CountDownLatch(1)
-    lateinit var privateRoomsChatLatch:CountDownLatch
+
+
+
     fun deleteAccounWithAllUserData(){
         val selfUid = MainActivity.PreferenceManager?.getuidShared("uid")
+        val whisperChildCount = MainActivity?.PreferenceManager?.getLong("Wcount")
+        val whisperChilderenlatch = CountDownLatch(whisperChildCount?.toInt()!!)
+
+        val privRoomCount = MainActivity.PreferenceManager?.getLong("privRoomCount")
+        val privateRoomsSizeLatch = CountDownLatch(privRoomCount?.toInt()!!)
+
         W.child(selfUid!!)
             .get()
             .addOnCompleteListener {
                 if (it.isSuccessful){
-                    var childCount = it.result.childrenCount
-                    whisperChatlatch = CountDownLatch(childCount.toInt())
                     it.result.children.forEach { dataSnapshot ->
                         val whisper = dataSnapshot.getValue(Whisper::class.java)
 
@@ -2042,14 +2057,14 @@ class FirebaseManager {
 
                         W_C.child(wid!!).removeValue().addOnCompleteListener {
                             if (it.isSuccessful){
-                                whisperChatlatch.countDown()
+                                whisperChilderenlatch.countDown()
                             }
                         }
                     }
                 }
             }
 
-        whisperChatlatch.await()
+        whisperChilderenlatch.await()
         W.child(selfUid)
             .removeValue().addOnCompleteListener {
                 if (it.isSuccessful){
@@ -2063,7 +2078,7 @@ class FirebaseManager {
             .get()
             .addOnCompleteListener {
                 if (it.isSuccessful){
-                    privateRoomsChatLatch = CountDownLatch(it.result.size())
+
                     it.result.documents.forEach { documentSnapshot ->
 
                         var roomId = documentSnapshot.getString("roomId")
@@ -2073,7 +2088,8 @@ class FirebaseManager {
 
                         P1.child(roomId!!).removeValue().addOnCompleteListener {
                             if (it.isSuccessful){
-                                privateRoomsChatLatch.countDown()
+                                prvRoomRef.document(roomId).delete()
+                                privateRoomsSizeLatch.countDown()
                             }
                         }
 
@@ -2082,13 +2098,8 @@ class FirebaseManager {
                 }
             }
 
-        privateRoomsChatLatch.await()
+        privateRoomsSizeLatch.await()
 
-        prvRoomRef
-            .whereEqualTo("ownerId" , selfUid)
-            .get().result.removeAll { queryDocumentSnapshot ->
-                queryDocumentSnapshot.exists()
-            }
 
         usersRef.document(selfUid).delete()
         auth.currentUser?.delete()?.addOnCompleteListener {

@@ -124,6 +124,7 @@ class MainActivity : ComponentActivity() {
                 val mainActivityVM: MainActivityVM by viewModels()
                 val chatViewModel:ChatViewModel by viewModels()
                 val whisperViewModel:WhisperViewModel by viewModels()
+                mainActivityVM.updateSelectedChannel("Hoşbeş")
 
                 fm.loadMoreChat = false
 
@@ -173,7 +174,6 @@ class MainActivity : ComponentActivity() {
 
                     if (session == true){
                         mainActivityVM.connectChannel("C1")
-                        mainActivityVM.updateSelectedChannel("Hoşbeş")
 
 
                         authStateListener = FirebaseAuth.AuthStateListener { firebaseAuth ->

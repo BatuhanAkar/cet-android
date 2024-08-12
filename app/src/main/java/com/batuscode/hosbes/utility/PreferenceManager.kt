@@ -58,4 +58,14 @@ class PreferenceManager(context: Context) {
     fun getLastChatTime(key: String): Long {
         return sharedPreferences.getLong(key , 0L)
     }
+
+    fun saveLong(key:String , value:Long){
+        val editor = sharedPreferences.edit()
+        editor.putLong(key , value)
+        editor.apply()
+    }
+
+    fun getLong(key: String): Long {
+        return sharedPreferences.getLong(key , 0L)
+    }
 }

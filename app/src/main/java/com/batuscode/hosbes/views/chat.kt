@@ -343,28 +343,11 @@ fun Chat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
         topBar = {
 
 
-            TopAppBar(title = { Row {
-                ConstraintLayout (
-                    modifier = Modifier
-                        .wrapContentSize()
-                ) {
-                    val (title , channelMenu) = createRefs()
-                    ChannelMenu( mainActivityVM = mainActivityVM ,chatViewModel = chatViewModel , selectedChannel = selectedChannel!!, modifier = Modifier
-
-                        .constrainAs(
-                            channelMenu
-                        ){
-                            start.linkTo(title.end)
-                            end.linkTo(parent.end)
-                            top.linkTo(title.top)
-                            bottom.linkTo(title.bottom)
-                        }
-                    )
-                }
-
-                }
-                              } ,
-
+            TopAppBar(title = {},
+                navigationIcon = {
+                    ChannelMenu( mainActivityVM = mainActivityVM ,chatViewModel = chatViewModel ,
+                        selectedChannel = selectedChannel!!, modifier = Modifier)
+                },
                 actions = {
 
 
@@ -385,7 +368,8 @@ fun Chat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
                     }
 
 
-                })
+                }
+            )
         }
 
     ){innerPadding ->

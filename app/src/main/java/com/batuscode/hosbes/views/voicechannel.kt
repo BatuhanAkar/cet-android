@@ -107,7 +107,7 @@ class VoiceChannel:JitsiMeetActivity() , JitsiMeetActivityInterface{
         view!!.addView(corridorView)
 
         val serverURL: URL
-        serverURL = URL("https://recommyz.com")
+        serverURL = URL("https://meet.çet.com")
         var defaultOptions = JitsiMeetConferenceOptions.Builder()
             .setServerURL(serverURL)
 
@@ -131,7 +131,7 @@ class VoiceChannel:JitsiMeetActivity() , JitsiMeetActivityInterface{
 
 
             var options = JitsiMeetConferenceOptions.Builder()
-                .setRoom("https://recommyz.com/$name")
+                .setRoom("https://meet.çet.com/$name")
                 .setUserInfo(userinfo)
                 .setAudioOnly(true)
                 .setAudioMuted(false)

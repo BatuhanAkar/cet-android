@@ -92,7 +92,7 @@ class MatchStream:JitsiMeetActivity() , JitsiMeetActivityInterface {
 
 
         val serverURL: URL
-        serverURL = URL("https://recommyz.com")
+        serverURL = URL("https://meet.çet.com")
         var defaultOptions = JitsiMeetConferenceOptions.Builder()
             .setServerURL(serverURL)
 
@@ -116,7 +116,7 @@ class MatchStream:JitsiMeetActivity() , JitsiMeetActivityInterface {
             if (randomParticipant != null){
 
                 var options = JitsiMeetConferenceOptions.Builder()
-                    .setRoom("https://recommyz.com/$roomName")
+                    .setRoom("https://meet.çet.com/$roomName")
                     .setUserInfo(userinfo)
                     .setFeatureFlag("tile-view.enabled" , true)
                     .setFeatureFlag("prejoinpage.enabled" , false)
