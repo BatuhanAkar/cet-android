@@ -214,7 +214,7 @@ class VoiceCalls:JitsiMeetActivity(), JitsiMeetActivityInterface{
         })
 
         val serverURL: URL
-        serverURL = URL("https://meet.çet.com")
+        serverURL = URL("https://meet.recommyz.com")
         var defaultOptions = JitsiMeetConferenceOptions.Builder()
             .setServerURL(serverURL)
             .setFeatureFlag("welcomepage.enabled" , false)
@@ -240,7 +240,7 @@ class VoiceCalls:JitsiMeetActivity(), JitsiMeetActivityInterface{
 
             val options = JitsiMeetConferenceOptions.Builder()
                 .setUserInfo(WuserInfo)
-                .setServerURL(URL("https://meet.çet.com"))
+                .setServerURL(URL("https://meet.recommyz.com"))
                 .setRoom(ownerId)
                 .setAudioOnly(true)
                 .setAudioMuted(false)
@@ -301,7 +301,7 @@ class VoiceCalls:JitsiMeetActivity(), JitsiMeetActivityInterface{
             val callOwnerName = MainActivity.PreferenceManager?.getuidShared("callOwnerName")
 
             val roomName: String
-            roomName = "https://meet.çet.com/$roomId"
+            roomName = "https://meet.recommyz.com/$roomId"
 
             val OwuserInfo = JitsiMeetUserInfo().apply {
                 displayName = callOwnerName

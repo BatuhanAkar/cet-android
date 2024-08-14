@@ -106,7 +106,7 @@ class VideoChannel:JitsiMeetActivity() , JitsiMeetActivityInterface{
         view!!.addView(corridorView)
 
         val serverURL: URL
-        serverURL = URL("https://çet.com")
+        serverURL = URL("https://meet.recommyz.com")
         var defaultOptions = JitsiMeetConferenceOptions.Builder()
             .setServerURL(serverURL)
 
@@ -130,7 +130,7 @@ class VideoChannel:JitsiMeetActivity() , JitsiMeetActivityInterface{
 
 
             var options = JitsiMeetConferenceOptions.Builder()
-                .setRoom("https://meet.çet.com/$name")
+                .setRoom("https://meet.recommyz.com/$name")
                 .setUserInfo(userinfo)
                 .setFeatureFlag("tile-view.enabled" , true)
                 .setFeatureFlag("prejoinpage.enabled" , false)
