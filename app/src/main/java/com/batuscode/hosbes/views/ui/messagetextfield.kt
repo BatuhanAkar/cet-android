@@ -38,6 +38,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.app.ActivityCompat.requestPermissions
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
@@ -51,6 +52,11 @@ import com.batuscode.hosbes.utility.MainActivityVM
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
+import com.giphy.sdk.ui.GPHSettings
+import com.giphy.sdk.ui.views.GPHMediaView
+import com.giphy.sdk.ui.views.GifView
+import com.giphy.sdk.ui.views.GiphyDialogFragment
+import com.giphy.sdk.ui.views.dialogview.GiphyDialogView
 import java.security.AccessController.getContext
 
 
@@ -290,49 +296,31 @@ private fun CustomTextField( chatViewModel: ChatViewModel , mainActivityVM: Main
 
                     )
             }
-/*
 
-            AnimatedVisibility(visible = isEmpty) {
-
-                OutlinedIconButton(
-                    onClick = {
-
-
-                        if (channelId == "P1"){
-                            mainActivityVM.updateOutForSelectImage(true)
-                        }
-
-                       if (checkPhotoPermission()){
-
-                           launcher.launch(PickVisualMediaRequest.Builder()
-                               .setMediaType(ActivityResultContracts.PickVisualMedia.ImageAndVideo)
-                               .build()
-                           )
-
-                       } else {
-
-                           mainActivityVM.updateShowPermissionDialog(true)
-
-
-                       }
-
-                    } ,
-                    modifier = Modifier
-                        .padding(0.dp) ,
-                    border = null
-                ) {
-                    Icon(painter = painterResource(id = R.drawable.photo_camera_24px), contentDescription = stringResource(
-                        id = R.string.gonder
-                    )
-                    )
-                }
-            }
-*/
 
             if (editMessageFieldMode == false) {
 
-                // standart mesaj kutusu
+//
+//                            AnimatedVisibility(visible = isEmpty) {
+//
+//                                OutlinedIconButton(
+//                                    onClick = {
+//
+//
+//
+//
+//                                    } ,
+//                                    modifier = Modifier
+//                                        .padding(0.dp) ,
+//                                    border = null
+//                                ) {
+//                                    Icon(painter = painterResource(id = R.drawable.gif_box_24px), contentDescription = ""
+//                                    )
+//                                }
+//                            }
 
+
+                // standart mesaj kutusu
 
                 OutlinedIconButton(
                     onClick = {
@@ -377,6 +365,8 @@ private fun CustomTextField( chatViewModel: ChatViewModel , mainActivityVM: Main
                 ) {
                     Icon(imageVector = Icons.Filled.Send, contentDescription = "send")
                 }
+
+
 
             } else {
 
@@ -506,6 +496,7 @@ private fun showEmoji(context:Context){
     val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
     imm.toggleSoftInput(InputMethodManager.SHOW_FORCED , 0)
 }
+
 
 @Preview
 @Composable

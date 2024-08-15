@@ -58,6 +58,7 @@ import com.batuscode.hosbes.views.WhisperChat
 import com.batuscode.hosbes.views._WhisperChat
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
+import com.giphy.sdk.ui.Giphy
 import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : ComponentActivity() {
@@ -125,7 +126,7 @@ class MainActivity : ComponentActivity() {
                 val chatViewModel:ChatViewModel by viewModels()
                 val whisperViewModel:WhisperViewModel by viewModels()
                 mainActivityVM.updateSelectedChannel("Hoşbeş")
-
+                Giphy.configure(this, "5eryANGrljO1uXPSf7GLEhUAU3q8zF1k")
                 fm.loadMoreChat = false
 
                 context = this

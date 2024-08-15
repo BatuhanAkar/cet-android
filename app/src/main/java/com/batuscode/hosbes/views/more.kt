@@ -25,14 +25,21 @@ import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material3.BottomSheetDefaults
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.ModalBottomSheetDefaults
 import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.contentColorFor
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -44,17 +51,21 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -87,6 +98,7 @@ fun More(mainActivityVM: MainActivityVM){
         ) ,
         tonalElevation = 10.dp ,
         shape = RectangleShape ,
+        containerColor = Color.White
 
 
     ) {
@@ -142,7 +154,9 @@ fun MoreContent(scope: CoroutineScope , sheetState: SheetState , mainActivityVM:
         ) {
 
 
-            ElevatedCard(
+            ElevatedCard( colors = CardDefaults.elevatedCardColors(
+                containerColor = Color.White
+            ),
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
@@ -174,20 +188,35 @@ fun MoreContent(scope: CoroutineScope , sheetState: SheetState , mainActivityVM:
                         contentScale = ContentScale.FillBounds
                     )
 
-                    OutlinedIconButton(onClick = {
+                    FilledTonalButton(onClick = {
                                                  mainActivityVM.updateShowEditProfileCard(true)
                     },
-                        border = BorderStroke(0.dp, Color.Transparent)
+                        border = BorderStroke(0.dp, Color.Transparent) ,
+                        shape = RoundedCornerShape(10.dp) ,
+                        colors = ButtonDefaults.filledTonalButtonColors(
+                            containerColor = colorResource(id = R.color.blue)
+                        ) ,
+                        elevation = ButtonDefaults.buttonElevation(
+                            defaultElevation = 4.dp
+                        )
                         ,
                         modifier = Modifier
                             .constrainAs(editButton) {
-                                top.linkTo(profileImage.top)
+                                top.linkTo(username.bottom)
                                 bottom.linkTo(profileImage.bottom)
-                                end.linkTo(parent.end)
+                                start.linkTo(username.start)
                             }
-                            .padding(end = 8.5.dp)
+                            .width(150.dp)
+                            .height(30.dp)
+                            .padding(start = 8.5.dp)
                     ) {
-                        Icon(imageVector = Icons.Filled.Edit, contentDescription = "")
+                        Text(
+                            text = stringResource(id = R.string.editprofilecard) ,
+                            style = TextStyle(
+                                fontWeight = FontWeight.Bold ,
+                                color = colorResource(id = R.color.swhite)
+                            )
+                        )
                     }
 
 
@@ -201,12 +230,12 @@ fun MoreContent(scope: CoroutineScope , sheetState: SheetState , mainActivityVM:
                         ),
                         textAlign = TextAlign.Start,
                         modifier = Modifier
-                            .padding(8.dp)
+                            .padding(start = 8.dp)
                             .constrainAs(username) {
                                 start.linkTo(profileImage.end)
-                                end.linkTo(editButton.start)
+                                end.linkTo(parent.end)
                                 top.linkTo(profileImage.top)
-                                bottom.linkTo(profileImage.bottom)
+                                bottom.linkTo(editButton.top)
                                 width = Dimension.fillToConstraints
                             }
                     )

@@ -35,12 +35,15 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.IconButtonDefaults
@@ -128,6 +131,7 @@ fun EditProfileCard(mainActivityVM: MainActivityVM){
         ) ,
         tonalElevation = 10.dp ,
         shape = RectangleShape ,
+        containerColor = Color.White
 
 
         ) {
@@ -363,7 +367,7 @@ fun Content(mainActivityVM: MainActivityVM){
                     bitmap = if (changeImage) newPP!!  else currentPP!!,
                     contentDescription = "",
                     modifier = Modifier
-                        .clip(CircleShape)
+                        .clip(RoundedCornerShape(10.dp))
                         .width(80.dp)
                         .height(80.dp)
                     ,
@@ -447,13 +451,19 @@ fun Content(mainActivityVM: MainActivityVM){
 
         // update button
 
-        Button(
+        FilledTonalButton(
             onClick = {
                       mainActivityVM.updateStartUpdate(true)
                       mainActivityVM.updateProfileUpdating(true)
                       updateButtonEnable = false
                       } ,
-            enabled = updateButtonEnable,
+            enabled = updateButtonEnable ,
+            colors = ButtonDefaults.filledTonalButtonColors(
+                containerColor = colorResource(id = R.color.blue)
+            ) ,
+            elevation = ButtonDefaults.buttonElevation(
+                defaultElevation = 4.dp
+            ),
             modifier = Modifier
                 .padding(top = 8.5.dp, bottom = 8.5.dp)
                 .fillMaxWidth()

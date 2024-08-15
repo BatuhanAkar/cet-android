@@ -24,6 +24,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -57,6 +58,7 @@ fun MessageOption(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel)
         ) ,
         tonalElevation = 10.dp ,
         shape = RectangleShape ,
+        containerColor = Color.White
 
 
         ) {

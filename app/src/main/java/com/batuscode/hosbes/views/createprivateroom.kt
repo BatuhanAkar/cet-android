@@ -27,8 +27,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
@@ -54,6 +57,7 @@ import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -102,7 +106,7 @@ fun CreatePrivateRoom(mainActivityVM: MainActivityVM){
         ) ,
         tonalElevation = 10.dp ,
         shape = RectangleShape ,
-
+        containerColor = Color.White
 
         ) {
 
@@ -198,7 +202,7 @@ fun CreatePrivateRoomContent(mainActivityVM: MainActivityVM){
     }
 
 
-    Scaffold (
+    Scaffold ( containerColor = Color.White,
         modifier = Modifier
             .fillMaxSize()
     ){
@@ -332,6 +336,9 @@ fun CreatePrivateRoomContent(mainActivityVM: MainActivityVM){
 
             ElevatedCard(
                 onClick = { /*TODO*/ } ,
+                colors = CardDefaults.elevatedCardColors(
+                    containerColor = Color.White
+                ),
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
                     .wrapContentWidth()
@@ -484,7 +491,7 @@ fun CreatePrivateRoomContent(mainActivityVM: MainActivityVM){
                     valueRange = 0f..20f,
                     steps = 19 ,
                     colors = SliderDefaults.colors(
-                        thumbColor = Color.White ,
+                        thumbColor = colorResource(id = R.color.blue) ,
                         activeTrackColor = Color.LightGray ,
                         inactiveTickColor = Color.Black ,
                     ) ,
@@ -494,7 +501,7 @@ fun CreatePrivateRoomContent(mainActivityVM: MainActivityVM){
             }
 
             // TODO: özel oda oluştur butonu ...
-            Button(
+            FilledTonalButton(
                 onClick = {
 
                           roomId =  UUID.randomUUID().toString()
@@ -502,6 +509,13 @@ fun CreatePrivateRoomContent(mainActivityVM: MainActivityVM){
                     mainActivityVM.updateCreatingPrivateRoom(true)
 
                 } ,
+                colors = ButtonDefaults.filledTonalButtonColors(
+                    containerColor = colorResource(id = R.color.blue)
+                ) ,
+                elevation = ButtonDefaults.buttonElevation(
+                    defaultElevation = 4.dp
+                )
+                ,
                 enabled = createButton,
                 modifier = Modifier
                     .fillMaxWidth()

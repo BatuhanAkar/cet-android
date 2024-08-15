@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
@@ -108,14 +109,58 @@ fun ChannelMenu( mainActivityVM: MainActivityVM ,chatViewModel: ChatViewModel ,
             verticalAlignment = Alignment.CenterVertically
         ) {
 
-            SelectedChannel?.let {
-                Text(
-                    text = it ,
-                    style = TextStyle(
-                        fontFamily = FontFamily(Font(R.font.pacifico_regular)) ,
-                        fontSize = 23.sp
+            Row( verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .wrapContentSize()
+            ) {
+                SelectedChannel?.let {
+
+                    Text(
+                        text = it ,
+                        style = TextStyle(
+                            fontFamily = FontFamily(Font(R.font.pacifico_regular)) ,
+                            fontSize = 23.sp
+                        )
                     )
-                    )
+
+                    if (it == "Goygoy"){
+                        Icon(
+                            painter = painterResource(id = R.drawable.video_chat_24px) ,
+                            contentDescription = "" ,
+                            modifier = Modifier
+                                .padding(start = 10.dp)
+
+                                .size(24.dp)
+                        )
+                    } else if (it == "Dırdır"){
+                        Icon(
+                            painter = painterResource(id = R.drawable.voice_chat_24px) ,
+                            contentDescription = "" ,
+                            modifier = Modifier
+                                .padding(start = 10.dp)
+                                .size(24.dp)
+                        )
+
+                    } else if (it == "Mavi Boncuk"){
+                        Icon(
+                            painter = painterResource(id = R.drawable.chat_24px) ,
+                            contentDescription = "" ,
+                            modifier = Modifier
+                                .padding(start = 10.dp)
+                                .size(24.dp)
+                        )
+                    } else if (it == "Hoşbeş"){
+                        Icon(
+                            painter = painterResource(id = R.drawable.chat_24px) ,
+                            contentDescription = "" ,
+                            modifier = Modifier
+                                .padding(start = 10.dp)
+                                .size(24.dp)
+                        )
+                    }
+
+                }
+
             }
             Image(
                 imageVector = Icons.Filled.KeyboardArrowDown ,
@@ -180,7 +225,7 @@ fun ChannelMenu( mainActivityVM: MainActivityVM ,chatViewModel: ChatViewModel ,
 
                                 if (channel == "Goygoy"){
                                     Icon(
-                                        painter = painterResource(id = R.drawable.videocam_48px) ,
+                                        painter = painterResource(id = R.drawable.video_chat_24px) ,
                                         contentDescription = "" ,
                                         modifier = Modifier
                                             .padding(start = 15.dp)
@@ -188,13 +233,29 @@ fun ChannelMenu( mainActivityVM: MainActivityVM ,chatViewModel: ChatViewModel ,
                                     )
                                 } else if (channel == "Dırdır"){
                                     Icon(
-                                        painter = painterResource(id = R.drawable.mic_24px) ,
+                                        painter = painterResource(id = R.drawable.voice_chat_24px) ,
                                         contentDescription = "" ,
                                         modifier = Modifier
                                             .padding(start = 20.dp)
                                             .size(24.dp)
                                         )
 
+                                } else if (channel == "Mavi Boncuk"){
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.chat_24px) ,
+                                        contentDescription = "" ,
+                                        modifier = Modifier
+                                            .padding(start = 20.dp)
+                                            .size(24.dp)
+                                    )
+                                } else if (channel == "Hoşbeş"){
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.chat_24px) ,
+                                        contentDescription = "" ,
+                                        modifier = Modifier
+                                            .padding(start = 20.dp)
+                                            .size(24.dp)
+                                    )
                                 }
 //
 //                                Spacer(modifier = Modifier.padding(10.dp))

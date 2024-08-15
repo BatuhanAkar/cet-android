@@ -75,6 +75,8 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
+    implementation(libs.androidx.media3.common)
+    implementation(libs.androidx.media3.exoplayer)
     kapt ("com.github.bumptech.glide:compiler:4.16.0")
     implementation("com.github.bumptech.glide:okhttp3-integration:4.16.0")
     
@@ -89,7 +91,6 @@ dependencies {
     implementation(libs.firebase.firestore)
     implementation("com.firebaseui:firebase-ui-storage:8.0.2")
     implementation("org.jitsi.react:jitsi-meet-sdk:9.2.2"){ isTransitive = true}
-
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
