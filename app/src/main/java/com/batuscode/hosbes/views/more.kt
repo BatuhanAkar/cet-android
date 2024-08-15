@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -131,7 +132,7 @@ fun MoreContent(scope: CoroutineScope , sheetState: SheetState , mainActivityVM:
 
     ConstraintLayout (modifier = Modifier
         .fillMaxSize()
-        .padding(20.dp)
+        .padding(8.5.dp)
     ) {
 
 
@@ -142,9 +143,14 @@ fun MoreContent(scope: CoroutineScope , sheetState: SheetState , mainActivityVM:
 
 
         // user info
-        Row ( verticalAlignment = Alignment.CenterVertically,
+
+
+        ElevatedCard( colors = CardDefaults.elevatedCardColors(
+            containerColor = Color.White
+        ),
             modifier = Modifier
-                .padding()
+                .fillMaxWidth()
+                .wrapContentHeight()
                 .constrainAs(userInfo) {
                     top.linkTo(parent.top)
                     start.linkTo(parent.start)
@@ -154,94 +160,86 @@ fun MoreContent(scope: CoroutineScope , sheetState: SheetState , mainActivityVM:
         ) {
 
 
-            ElevatedCard( colors = CardDefaults.elevatedCardColors(
-                containerColor = Color.White
-            ),
+            ConstraintLayout(
                 modifier = Modifier
                     .fillMaxWidth()
-            ) {
+                    .align(Alignment.CenterHorizontally)
+                    .padding(8.dp)
+            )
+            {
 
+                val (editButton, profileImage, username) = createRefs()
 
-                ConstraintLayout(
+                Image(
+                    bitmap = imageBitmap!! ,
+                    contentDescription = "",
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp)
+                        .clip(RoundedCornerShape(10.dp))
+                        .width(80.dp)
+                        .height(80.dp)
+                        .constrainAs(profileImage) {
+                            start.linkTo(parent.start)
+                            end.linkTo(username.start)
+                            top.linkTo(parent.top)
+                            bottom.linkTo(editButton.top)
+
+                        },
+                    contentScale = ContentScale.FillBounds
                 )
-                {
 
-                    val (editButton, profileImage, username) = createRefs()
-
-                    Image(
-                        bitmap = imageBitmap!!,
-                        contentDescription = "",
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(10.dp))
-                            .width(80.dp)
-                            .height(80.dp)
-                            .constrainAs(profileImage) {
-                                start.linkTo(parent.start)
-                                end.linkTo(username.start)
-                                top.linkTo(parent.top)
-                                bottom.linkTo(parent.bottom)
-
-                            },
-                        contentScale = ContentScale.FillBounds
+                FilledTonalButton(onClick = {
+                    mainActivityVM.updateShowEditProfileCard(true)
+                },
+                    border = BorderStroke(0.dp, Color.Transparent) ,
+                    shape = RoundedCornerShape(10.dp) ,
+                    colors = ButtonDefaults.filledTonalButtonColors(
+                        containerColor = colorResource(id = R.color.blue)
+                    ) ,
+                    elevation = ButtonDefaults.buttonElevation(
+                        defaultElevation = 4.dp
                     )
-
-                    FilledTonalButton(onClick = {
-                                                 mainActivityVM.updateShowEditProfileCard(true)
-                    },
-                        border = BorderStroke(0.dp, Color.Transparent) ,
-                        shape = RoundedCornerShape(10.dp) ,
-                        colors = ButtonDefaults.filledTonalButtonColors(
-                            containerColor = colorResource(id = R.color.blue)
-                        ) ,
-                        elevation = ButtonDefaults.buttonElevation(
-                            defaultElevation = 4.dp
-                        )
-                        ,
-                        modifier = Modifier
-                            .constrainAs(editButton) {
-                                top.linkTo(username.bottom)
-                                bottom.linkTo(profileImage.bottom)
-                                start.linkTo(username.start)
-                            }
-                            .width(150.dp)
-                            .height(30.dp)
-                            .padding(start = 8.5.dp)
-                    ) {
-                        Text(
-                            text = stringResource(id = R.string.editprofilecard) ,
-                            style = TextStyle(
-                                fontWeight = FontWeight.Bold ,
-                                color = colorResource(id = R.color.swhite)
-                            )
-                        )
-                    }
-
-
-
-
-
+                    ,
+                    modifier = Modifier
+                        .constrainAs(editButton) {
+                            top.linkTo(profileImage.bottom)
+                            bottom.linkTo(parent.bottom)
+                            start.linkTo(parent.start)
+                            end.linkTo(parent.end)
+                            width = Dimension.fillToConstraints
+                        }
+                        .width(150.dp)
+                        .height(40.dp)
+                        .padding(top = 8.5.dp)
+                ) {
                     Text(
-                        text = displayName!!,
+                        text = stringResource(id = R.string.editprofilecard) ,
                         style = TextStyle(
-                            fontSize = 23.sp
-                        ),
-                        textAlign = TextAlign.Start,
-                        modifier = Modifier
-                            .padding(start = 8.dp)
-                            .constrainAs(username) {
-                                start.linkTo(profileImage.end)
-                                end.linkTo(parent.end)
-                                top.linkTo(profileImage.top)
-                                bottom.linkTo(editButton.top)
-                                width = Dimension.fillToConstraints
-                            }
+                            fontWeight = FontWeight.Bold ,
+                            color = colorResource(id = R.color.swhite)
+                        )
                     )
-
                 }
 
+
+
+
+
+                Text(
+                    text = displayName!!,
+                    style = TextStyle(
+                        fontSize = 23.sp
+                    ),
+                    textAlign = TextAlign.Start,
+                    modifier = Modifier
+                        .padding(start = 8.dp)
+                        .constrainAs(username) {
+                            start.linkTo(profileImage.end)
+                            end.linkTo(parent.end)
+                            top.linkTo(profileImage.top)
+                            bottom.linkTo(editButton.top)
+                            width = Dimension.fillToConstraints
+                        }
+                )
 
             }
 
