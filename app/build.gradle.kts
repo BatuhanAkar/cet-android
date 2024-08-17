@@ -90,7 +90,7 @@ dependencies {
     implementation("com.google.firebase:firebase-storage-ktx:21.0.0")
     implementation(libs.firebase.firestore)
     implementation("com.firebaseui:firebase-ui-storage:8.0.2")
-    implementation("org.jitsi.react:jitsi-meet-sdk:9.2.2"){ isTransitive = true}
+    implementation("org.jitsi.react:jitsi-meet-sdk:10.0.1"){ isTransitive = true}
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
