@@ -154,7 +154,6 @@ fun Authentication(navController: NavController , mainActivityVM: MainActivityVM
 
         override fun onVerificationFailed(p0: FirebaseException) {
 
-            Log.d("verifyphonenumber" , "verifcation is failed :: " + p0.toString() + " " + p0.message)
         }
 
     }
@@ -217,7 +216,7 @@ fun Authentication(navController: NavController , mainActivityVM: MainActivityVM
 
                     if (isErrorPhoneNumber && newText.text.isNotEmpty()) isErrorPhoneNumber = false
 
-                    if (newText.text.length <= 13) {
+                    if (newText.text.length <= 11) {
                         Log.d("verifyphonenumber" , "enable now send code button...")
 
                         phoneNumber = newText
@@ -277,9 +276,12 @@ fun Authentication(navController: NavController , mainActivityVM: MainActivityVM
 
                             // run function for verification code sending
 
+                            val complatedPhoneNumber = "+9${phoneNumber.text}"
+                            Log.d("complatedPhoneNumber" , complatedPhoneNumber)
+
                             var options = MainActivity.activity?.let {activity ->
                                 PhoneAuthOptions.newBuilder(FirebaseManager.auth)
-                                    .setPhoneNumber(phoneNumber.text)
+                                    .setPhoneNumber(complatedPhoneNumber)
                                     .setTimeout(60L , TimeUnit.SECONDS)
                                     .setActivity(activity)
                                     .setCallbacks(verifyCallback)
