@@ -144,7 +144,6 @@ class MainActivity : ComponentActivity() {
 
                 activity = this
 
-                FirebaseManager.auth.firebaseAuthSettings.setAppVerificationDisabledForTesting(true)
 
 
                 val whisperItem by mainActivityVM.whisperItem.collectAsState()

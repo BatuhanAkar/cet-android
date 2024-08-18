@@ -217,11 +217,11 @@ fun Authentication(navController: NavController , mainActivityVM: MainActivityVM
 
                     if (isErrorPhoneNumber && newText.text.isNotEmpty()) isErrorPhoneNumber = false
 
-                    if (newText.text.length <= 12) {
+                    if (newText.text.length <= 13) {
                         Log.d("verifyphonenumber" , "enable now send code button...")
 
                         phoneNumber = newText
-                        if (newText.text.length == 12){
+                        if (newText.text.length == 11){
                             Log.d("verifyphonenumber" , "enable now send code button...")
                             sendCodeButtonEnabled = true
                         }
