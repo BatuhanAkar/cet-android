@@ -60,11 +60,16 @@ import com.batuscode.hosbes.MainActivity
 import com.batuscode.hosbes.R
 import com.batuscode.hosbes.utility.FirebaseManager
 import com.batuscode.hosbes.utility.MainActivityVM
+import com.google.android.gms.tasks.Task
+import com.google.android.play.core.integrity.IntegrityManagerFactory
+import com.google.android.play.core.integrity.IntegrityTokenRequest
+import com.google.android.play.core.integrity.IntegrityTokenResponse
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
 import com.google.firebase.auth.userProfileChangeRequest
+import java.util.UUID
 import java.util.concurrent.TimeUnit
 
 @Composable
@@ -124,6 +129,19 @@ fun Authentication(navController: NavController , mainActivityVM: MainActivityVM
     var vId by remember {
         mutableStateOf("")
     }
+    val nonce: String = UUID.randomUUID().toString()
+
+// Create an instance of a manager.
+    val integrityManager =
+        IntegrityManagerFactory.create(context)
+
+// Request the integrity token by providing a nonce.
+    val integrityTokenResponse: Task<IntegrityTokenResponse> =
+        integrityManager.requestIntegrityToken(
+            IntegrityTokenRequest.builder()
+                .setNonce(nonce)
+                .build())
+
 
 
     val uploadComplated by mainActivityVM.uploadComplated.collectAsState()

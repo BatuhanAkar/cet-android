@@ -92,6 +92,8 @@ dependencies {
     implementation("com.firebaseui:firebase-ui-storage:8.0.2")
     implementation("org.jitsi.react:jitsi-meet-sdk:10.0.1"){ isTransitive = true}
 
+    implementation ("com.google.android.play:integrity:1.4.0")
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
