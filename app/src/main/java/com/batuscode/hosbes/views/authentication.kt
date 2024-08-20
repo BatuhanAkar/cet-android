@@ -69,9 +69,18 @@ import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
 import com.google.firebase.auth.userProfileChangeRequest
+import kotlinx.coroutines.CoroutineStart
+import java.security.KeyFactory
+import java.security.PublicKey
+import java.security.spec.X509EncodedKeySpec
 import java.util.UUID
 import java.util.concurrent.TimeUnit
+import javax.crypto.SecretKey
+import javax.crypto.spec.SecretKeySpec
+import kotlin.io.encoding.Base64
+import kotlin.io.encoding.ExperimentalEncodingApi
 
+@OptIn(ExperimentalEncodingApi::class)
 @Composable
 fun Authentication(navController: NavController , mainActivityVM: MainActivityVM){
 
@@ -129,19 +138,6 @@ fun Authentication(navController: NavController , mainActivityVM: MainActivityVM
     var vId by remember {
         mutableStateOf("")
     }
-    val nonce: String = UUID.randomUUID().toString()
-
-// Create an instance of a manager.
-    val integrityManager =
-        IntegrityManagerFactory.create(context)
-
-// Request the integrity token by providing a nonce.
-    val integrityTokenResponse: Task<IntegrityTokenResponse> =
-        integrityManager.requestIntegrityToken(
-            IntegrityTokenRequest.builder()
-                .setNonce(nonce)
-                .build())
-
 
 
     val uploadComplated by mainActivityVM.uploadComplated.collectAsState()

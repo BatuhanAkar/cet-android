@@ -38,6 +38,7 @@ import com.batuscode.hosbes.utility.AuthViewModel
 import com.batuscode.hosbes.utility.ChatViewModel
 import com.batuscode.hosbes.utility.FirebaseManager
 import com.batuscode.hosbes.utility.GlideApp
+import com.batuscode.hosbes.utility.IntegrityManager
 import com.batuscode.hosbes.utility.MainActivityVM
 import com.batuscode.hosbes.utility.ParticipantsViewModel
 import com.batuscode.hosbes.utility.PreferenceManager
@@ -130,6 +131,8 @@ class MainActivity : ComponentActivity() {
                 fm.loadMoreChat = false
 
                 context = this
+
+                IntegrityManager().getintegritytoken(context)
 
 
                 permissionLauncher= rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission()) {}
