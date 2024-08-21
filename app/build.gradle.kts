@@ -93,6 +93,7 @@ dependencies {
     implementation("org.jitsi.react:jitsi-meet-sdk:10.0.1"){ isTransitive = true}
 
     implementation ("com.google.android.play:integrity:1.4.0")
+    implementation ("com.google.firebase:firebase-functions:21.0.0")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

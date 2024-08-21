@@ -132,7 +132,8 @@ class MainActivity : ComponentActivity() {
 
                 context = this
 
-                IntegrityManager().getintegritytoken(context)
+                IntegrityManager().context = this
+                IntegrityManager().getintegritytoken()
 
 
                 permissionLauncher= rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission()) {}

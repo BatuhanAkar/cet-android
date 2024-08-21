@@ -49,6 +49,8 @@ import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
+import com.google.firebase.functions.FirebaseFunctions
+import com.google.firebase.functions.ktx.functions
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.storageMetadata
@@ -60,6 +62,7 @@ import kotlin.random.Random
 
 class FirebaseManager {
 
+    val functions:FirebaseFunctions = Firebase.functions
     companion object {
 
 
