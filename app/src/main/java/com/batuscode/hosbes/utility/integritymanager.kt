@@ -12,10 +12,10 @@ import java.util.UUID
 
 class IntegrityManager{
 
-    lateinit var context: Context
 
-    private fun callMethod(token:String) : Task<String>{
-        Log.d("myintegritytoken" , "functions çözümlenme başladı ... ")
+
+    private fun callMethod(token:String?) : Task<Map<String , Any>>{
+        Log.d("myintegritytoken" , "functions çözümlenme başladı ... " + " token :: " + token)
 
         val data = hashMapOf(
             "token" to token
@@ -26,19 +26,19 @@ class IntegrityManager{
             .call(data)
             .continueWith { task ->
 
-                val result = task.result?.data as String
+                val result = task.result?.data as Map<String, Any>
+
                 Log.d("myintegritytoken" , "functions tamam ... " + "result :: " + result)
 
                 result
-
             }
             .addOnFailureListener { error ->
-                Log.d("myintegritytoken" , "functionsda hata ...")
+                Log.d("myintegritytoken" , "functionsda hata ..." + error.message)
             }
 
     }
 
-    fun getintegritytoken(){
+    fun getintegritytoken(context:Context){
         Log.d("myintegritytoken" , "token alma çalıştı ... ")
 
 
@@ -59,9 +59,11 @@ class IntegrityManager{
         integrityTokenResponse.addOnSuccessListener {
             response ->
 
-            Log.d("myintegritytoken" , " response :: ${response.token()}")
 
-            callMethod(response.token())
+            val token = response.token()
+            Log.d("myintegritytoken" , " response :: " + token)
+
+            callMethod(token)
 
 
         }
