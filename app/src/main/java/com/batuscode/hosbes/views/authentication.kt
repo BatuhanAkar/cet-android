@@ -237,6 +237,7 @@ fun Authentication(navController: NavController , mainActivityVM: MainActivityVM
                         if (newText.text.length == 11){
                             Log.d("verifyphonenumber" , "enable now send code button...")
                             sendCodeButtonEnabled = true
+                            createButtonEnable = true
                         }
                     }
                 } ,
@@ -250,7 +251,7 @@ fun Authentication(navController: NavController , mainActivityVM: MainActivityVM
                     modifier = Modifier.padding(top = 30.dp)
                 )
 
-                // verification code textfield
+               /* // verification code textfield
                 OutlinedTextField(value = verificationCode, onValueChange = {newText ->
 
                     // verification code length equal 6 enable button
@@ -273,16 +274,60 @@ fun Authentication(navController: NavController , mainActivityVM: MainActivityVM
                     modifier = Modifier.padding(top = 8.5.dp)
                 )
 
-
+*/
                 Box {
+                    OutlinedButton(onClick = { /*TODO: go button authentication*/
+
+                        val phoneNumber = phoneNumber.text
+
+                        val data = hashMapOf(
+                            "phoneNumber" to phoneNumber ,
+                            "displayName" to username
+                        )
+                        MainActivity.fm.functions
+                            .getHttpsCallable("createUser")
+                            .call(data)
+                            .continueWith { task ->
+
+                                val customToken = task.result?.data as String
+                                Log.d("myintegritytoken" , "functions tamam ... " + "customToken :: " + customToken)
+
+                                FirebaseManager.auth.signInWithCustomToken(customToken)
+                                    .addOnCompleteListener { task ->
+                                        FirebaseManager.currentUser = task.result.user
+
+                                        val uid = FirebaseManager.currentUser?.uid.toString()
+
+                                        MainActivity.PreferenceManager?.saveuid(key = "uid" , value = uid)
+
+                                        MainActivity.PreferenceManager?.saveSession(key = "session" , true)
+
+                                        navController.navigate("chat")
+
+                                    }
+
+                            }
+                            .addOnFailureListener { error ->
+                                Log.d("myintegritytoken" , "functionsda hata ..." + error.message)
+                            }
+                    } ,
+                        modifier = Modifier
+                            .padding(top = 15.dp)
+                            .width(200.dp),
+                        enabled = createButtonEnable ,
 
 
+                        ) {
+                        Text(text = stringResource(id = R.string.signin))
+                    }
+
+/*
 
                     if (!codeSended){
 
                         // send verification code button
 
-                        OutlinedButton(onClick = { /*TODO: send verification code button*/
+                        OutlinedButton(onClick = { *//*TODO: send verification code button*//*
 
                             Log.d("authtrying" , phoneNumber.text)
 
@@ -318,7 +363,7 @@ fun Authentication(navController: NavController , mainActivityVM: MainActivityVM
 
                         // kullanici telefonu girdi doğrulama kodunu girdi ... buton aktifleşti önce profil resmini yükle ... sonra tam bilgileri yaz ...
                         // go button
-                        OutlinedButton(onClick = { /*TODO: go button authentication*/
+                        OutlinedButton(onClick = { *//*TODO: go button authentication*//*
 
                             val credential = PhoneAuthProvider.getCredential(vId , verificationCode.text)
 
@@ -362,7 +407,7 @@ fun Authentication(navController: NavController , mainActivityVM: MainActivityVM
                             ) {
                             Text(text = stringResource(id = R.string.signin))
                         }
-                    }
+                    }*/
 
 
 

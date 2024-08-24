@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -170,22 +171,39 @@ fun MoreContent(scope: CoroutineScope , sheetState: SheetState , mainActivityVM:
 
                 val (editButton, profileImage, username) = createRefs()
 
-                Image(
-                    bitmap = imageBitmap!! ,
-                    contentDescription = "",
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(10.dp))
-                        .width(80.dp)
-                        .height(80.dp)
-                        .constrainAs(profileImage) {
-                            start.linkTo(parent.start)
-                            end.linkTo(username.start)
-                            top.linkTo(parent.top)
-                            bottom.linkTo(editButton.top)
+                if (imageBitmap != null){
+                    Image(
+                        bitmap = imageBitmap!! ,
+                        contentDescription = "",
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(10.dp))
+                            .width(80.dp)
+                            .height(80.dp)
+                            .constrainAs(profileImage) {
+                                start.linkTo(parent.start)
+                                end.linkTo(username.start)
+                                top.linkTo(parent.top)
+                                bottom.linkTo(editButton.top)
 
-                        },
-                    contentScale = ContentScale.FillBounds
-                )
+                            },
+                        contentScale = ContentScale.FillBounds
+                    )
+                } else {
+                    Image(
+                        painter = painterResource(id = R.drawable.account_circle_24px) ,
+                        contentDescription = "" ,
+                        contentScale = ContentScale.Fit,
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(10.dp))
+                            .width(30.dp)
+                            .height(30.dp)
+                            .clickable {
+                                Log.d("chatProfilePicture", "clicked...")
+                                mainActivityVM.updateShowMore(true)
+                            }
+                    )
+                }
+
 
                 FilledTonalButton(onClick = {
                     mainActivityVM.updateShowEditProfileCard(true)
