@@ -192,15 +192,18 @@ fun MoreContent(scope: CoroutineScope , sheetState: SheetState , mainActivityVM:
                     Image(
                         painter = painterResource(id = R.drawable.account_circle_24px) ,
                         contentDescription = "" ,
-                        contentScale = ContentScale.Fit,
                         modifier = Modifier
                             .clip(RoundedCornerShape(10.dp))
-                            .width(30.dp)
-                            .height(30.dp)
-                            .clickable {
-                                Log.d("chatProfilePicture", "clicked...")
-                                mainActivityVM.updateShowMore(true)
-                            }
+                            .width(80.dp)
+                            .height(80.dp)
+                            .constrainAs(profileImage) {
+                                start.linkTo(parent.start)
+                                end.linkTo(username.start)
+                                top.linkTo(parent.top)
+                                bottom.linkTo(editButton.top)
+
+                            },
+                        contentScale = ContentScale.FillBounds
                     )
                 }
 

@@ -2043,71 +2043,203 @@ class FirebaseManager {
 
     fun deleteAccounWithAllUserData(){
         val selfUid = MainActivity.PreferenceManager?.getuidShared("uid")
+
         val whisperChildCount = MainActivity?.PreferenceManager?.getLong("Wcount")
         val whisperChilderenlatch = CountDownLatch(whisperChildCount?.toInt()!!)
 
         val privRoomCount = MainActivity.PreferenceManager?.getLong("privRoomCount")
         val privateRoomsSizeLatch = CountDownLatch(privRoomCount?.toInt()!!)
 
-        W.child(selfUid!!)
-            .get()
-            .addOnCompleteListener {
-                if (it.isSuccessful){
-                    it.result.children.forEach { dataSnapshot ->
-                        val whisper = dataSnapshot.getValue(Whisper::class.java)
 
-                        val wid = whisper?.wid
 
-                        W_C.child(wid!!).removeValue().addOnCompleteListener {
-                            if (it.isSuccessful){
-                                whisperChilderenlatch.countDown()
+        Log.d("Wcount" , " size :: " + whisperChildCount)
+        Log.d("privRoomCount" , " size :: " + privRoomCount)
+
+
+        if (whisperChildCount > 0 && privRoomCount > 0){
+
+            val whisperChilderenlatch = CountDownLatch(whisperChildCount?.toInt()!!)
+            val privateRoomsSizeLatch = CountDownLatch(privRoomCount?.toInt()!!)
+
+            W.child(selfUid!!)
+                .get()
+                .addOnCompleteListener {
+                    if (it.isSuccessful){
+                        it.result.children.forEach { dataSnapshot ->
+                            val whisper = dataSnapshot.getValue(Whisper::class.java)
+
+                            val wid = whisper?.wid
+
+                            W_C.child(wid!!).removeValue().addOnCompleteListener {
+                                if (it.isSuccessful){
+                                    whisperChilderenlatch.countDown()
+                                }
                             }
                         }
                     }
                 }
-            }
 
-        whisperChilderenlatch.await()
-        W.child(selfUid)
-            .removeValue().addOnCompleteListener {
-                if (it.isSuccessful){
-                    whisperLatch.countDown()
-                }
-            }
-        whisperLatch.await()
+            whisperChilderenlatch.await()
 
-        prvRoomRef
-            .whereEqualTo("ownerId" , selfUid)
-            .get()
-            .addOnCompleteListener {
-                if (it.isSuccessful){
 
-                    it.result.documents.forEach { documentSnapshot ->
+            W.child(selfUid)
+                .get()
+                .addOnCompleteListener {
+                        task ->
 
-                        var roomId = documentSnapshot.getString("roomId")
+                    if (!task.result.exists()){
+                        whisperLatch.countDown()
 
-                        P1.child("participants")
-                            .child(roomId!!).removeValue()
-
-                        P1.child(roomId!!).removeValue().addOnCompleteListener {
-                            if (it.isSuccessful){
-                                prvRoomRef.document(roomId).delete()
-                                privateRoomsSizeLatch.countDown()
+                    } else {
+                        W.child(selfUid)
+                            .removeValue().addOnCompleteListener {
+                                if (it.isSuccessful){
+                                    whisperLatch.countDown()
+                                }
                             }
-                        }
-
-
                     }
                 }
+
+
+            whisperLatch.await()
+
+            prvRoomRef
+                .whereEqualTo("ownerId" , selfUid)
+                .get()
+                .addOnCompleteListener {
+                    if (it.isSuccessful){
+
+
+                        if (!it.result.isEmpty){
+                            it.result.documents.forEach { documentSnapshot ->
+
+                                var roomId = documentSnapshot.getString("roomId")
+
+                                P1.child("participants")
+                                    .child(roomId!!).removeValue()
+
+                                P1.child(roomId!!).removeValue().addOnCompleteListener {
+                                    if (it.isSuccessful){
+                                        prvRoomRef.document(roomId).delete()
+                                        privateRoomsSizeLatch.countDown()
+                                    }
+                                }
+
+
+                            }
+
+
+                        } else {
+                            privateRoomsSizeLatch.countDown()
+                        }
+                    }
+                }
+
+            privateRoomsSizeLatch.await()
+
+
+            usersRef.document(selfUid).delete()
+            auth.currentUser?.delete()?.addOnCompleteListener {
+                MainActivity.PreferenceManager?.clear()
             }
 
-        privateRoomsSizeLatch.await()
+        } else if (whisperChildCount > 0){
+            val whisperChilderenlatch = CountDownLatch(whisperChildCount?.toInt()!!)
+            W.child(selfUid!!)
+                .get()
+                .addOnCompleteListener {
+                    if (it.isSuccessful){
+                        it.result.children.forEach { dataSnapshot ->
+                            val whisper = dataSnapshot.getValue(Whisper::class.java)
+
+                            val wid = whisper?.wid
+
+                            W_C.child(wid!!).removeValue().addOnCompleteListener {
+                                if (it.isSuccessful){
+                                    whisperChilderenlatch.countDown()
+                                }
+                            }
+                        }
+                    }
+                }
+
+            whisperChilderenlatch.await()
+
+            W.child(selfUid)
+                .get()
+                .addOnCompleteListener {
+                        task ->
+
+                    if (!task.result.exists()){
+                        whisperLatch.countDown()
+
+                    } else {
+                        W.child(selfUid)
+                            .removeValue().addOnCompleteListener {
+                                if (it.isSuccessful){
+                                    whisperLatch.countDown()
+                                }
+                            }
+                    }
+                }
 
 
-        usersRef.document(selfUid).delete()
-        auth.currentUser?.delete()?.addOnCompleteListener {
-            MainActivity.PreferenceManager?.clear()
+            whisperLatch.await()
+
+            usersRef.document(selfUid).delete()
+            auth.currentUser?.delete()?.addOnCompleteListener {
+                MainActivity.PreferenceManager?.clear()
+            }
+        } else if (privRoomCount > 0){
+
+
+            prvRoomRef
+                .whereEqualTo("ownerId" , selfUid)
+                .get()
+                .addOnCompleteListener {
+                    if (it.isSuccessful){
+
+
+                        if (!it.result.isEmpty){
+                            it.result.documents.forEach { documentSnapshot ->
+
+                                var roomId = documentSnapshot.getString("roomId")
+
+                                P1.child("participants")
+                                    .child(roomId!!).removeValue()
+
+                                P1.child(roomId!!).removeValue().addOnCompleteListener {
+                                    if (it.isSuccessful){
+                                        prvRoomRef.document(roomId).delete()
+                                        privateRoomsSizeLatch.countDown()
+                                    }
+                                }
+
+
+                            }
+
+
+                        } else {
+                            privateRoomsSizeLatch.countDown()
+                        }
+                    }
+                }
+
+            privateRoomsSizeLatch.await()
+
+            usersRef.document(selfUid!!).delete()
+            auth.currentUser?.delete()?.addOnCompleteListener {
+                MainActivity.PreferenceManager?.clear()
+            }
+
+        } else {
+            usersRef.document(selfUid!!).delete()
+            auth.currentUser?.delete()?.addOnCompleteListener {
+                MainActivity.PreferenceManager?.clear()
+            }
         }
+
+
     }
 }
 

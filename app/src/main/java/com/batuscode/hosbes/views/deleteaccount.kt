@@ -67,55 +67,13 @@ fun AuthenticationForm(mainActivityVM: MainActivityVM){
     var phoneNumber by remember {
         mutableStateOf(TextFieldValue())
     }
-    var verificationCode by remember {
-        mutableStateOf(TextFieldValue())
-    }
-
-    var codeFieldEnabled by remember {
-        mutableStateOf(false)
-    }
-    var sendCodeButtonEnabled by remember {
-        mutableStateOf(false)
-    }
     var isErrorPhoneNumber by remember {
         mutableStateOf(false)
-    }
-    var codeSended by remember {
-        mutableStateOf(false)
-    }
-    var vId by remember {
-        mutableStateOf("")
     }
     var deleteAccountButtonEnable by remember {
         mutableStateOf(false)
     }
-    val verifyCallback =  object : PhoneAuthProvider.OnVerificationStateChangedCallbacks(){
 
-        override fun onCodeSent(verificationId: String, forceResendingToken: PhoneAuthProvider.ForceResendingToken) {
-            super.onCodeSent(verificationId, forceResendingToken)
-            Log.d("verifyphonenumber" , "onCodeSent :: " + "verfyId :: " + verificationId
-                    + " fores :: " + forceResendingToken)
-
-
-            codeFieldEnabled = true
-            codeSended = true
-            vId = verificationId
-
-
-
-        }
-
-        override fun onVerificationCompleted(p0: PhoneAuthCredential) {
-
-            Log.d("verifyphonenumber" , "verifcation is complated...")
-        }
-
-        override fun onVerificationFailed(p0: FirebaseException) {
-
-            Log.d("verifyphonenumber" , "verifcation is failed :: " + p0.toString() + " " + p0.message)
-        }
-
-    }
     Scaffold (
         modifier = Modifier
             .fillMaxSize()
@@ -153,13 +111,13 @@ fun AuthenticationForm(mainActivityVM: MainActivityVM){
 
                 if (isErrorPhoneNumber && newText.text.isNotEmpty()) isErrorPhoneNumber = false
 
-                if (newText.text.length <= 12) {
+                if (newText.text.length <= 11) {
                     Log.d("verifyphonenumber" , "enable now send code button...")
 
                     phoneNumber = newText
-                    if (newText.text.length == 12){
+                    if (newText.text.length == 11){
                         Log.d("verifyphonenumber" , "enable now send code button...")
-                        sendCodeButtonEnabled = true
+                        deleteAccountButtonEnable = true
                     }
                 }
             } ,
@@ -173,100 +131,51 @@ fun AuthenticationForm(mainActivityVM: MainActivityVM){
                 modifier = Modifier.padding(top = 30.dp)
             )
 
-            // verification code textfield
-            OutlinedTextField(value = verificationCode, onValueChange = {newText ->
-
-                // verification code length equal 6 enable button
-                if (newText.text.length <= 6){
-                    verificationCode = newText
-                    if (verificationCode.text.length == 6){
-                        deleteAccountButtonEnable = true
-                    }
-                }
-
-            } ,
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Phone
-                ),
-                enabled = codeFieldEnabled,
-                isError = isErrorPhoneNumber,
-                placeholder = { Text(text = stringResource(id = R.string.verificationCode)) },
-                singleLine = true ,
-                shape = RoundedCornerShape(12.5.dp),
-                modifier = Modifier.padding(top = 8.5.dp)
-            )
 
 
             Box {
 
+                // kullanicinin hesabını kapatmak için son güncel girişi yaptır ...
+                OutlinedButton(
+                    onClick = { /*TODO: go button authentication*/
+
+                        val data = hashMapOf(
+                            "phoneNumber" to phoneNumber.text
+                        )
+                        MainActivity.fm.functions.getHttpsCallable("deleteAccount")
+                            .call(data)
+                            .continueWith { task ->
+                                Log.d("deleteaccountHttps" , "silinecek tamamdır ... ")
 
 
-                if (!codeSended){
+                                val customToken = task.result?.data as String
 
-                    // send verification code button
-
-                    OutlinedButton(onClick = { /*TODO: send verification code button*/
-
-                        Log.d("authtrying" , phoneNumber.text)
-
-                        Log.d("authtrying" , verificationCode.text)
-
-                        // run function for verification code sending
-
-                        var options = MainActivity.activity?.let { activity ->
-                            PhoneAuthOptions.newBuilder(FirebaseManager.auth)
-                                .setPhoneNumber(phoneNumber.text)
-                                .setTimeout(60L , TimeUnit.SECONDS)
-                                .setActivity(activity)
-                                .setCallbacks(verifyCallback)
-                                .build()
-                        }
-
-                        if (options != null) {
-                            PhoneAuthProvider.verifyPhoneNumber(options)
-                        }
-                    } ,
-                        modifier = Modifier
-                            .padding(top = 15.dp)
-                            .width(200.dp) ,
-                        enabled = sendCodeButtonEnabled
-                    ) {
-                        Text(text = stringResource(id = R.string.sendverificationcode))
-                    }
-
-                }
-                else {
-
-
-                    // kullanicinin hesabını kapatmak için son güncel girişi yaptır ...
-                    OutlinedButton(
-                        onClick = { /*TODO: go button authentication*/
-
-                            val credential = PhoneAuthProvider.getCredential(vId, verificationCode.text)
-
-                            FirebaseManager.auth.signInWithCredential(credential)
-                                .addOnCompleteListener { task ->
-                                    if (task.isSuccessful) {
-
-                                        mainActivityVM.updateUserVerified(true)
-
-                                    } else {
-                                        Log.d("verifyphonenumber", "verifcation not Successful...")
+                                FirebaseManager.auth.signInWithCustomToken(customToken)
+                                    .addOnCompleteListener { task ->
+                                        if (task.isSuccessful){
+                                            mainActivityVM.updateUserVerified(true)
+                                        }
                                     }
-                                }
-                        },
-                        modifier = Modifier
-                            .padding(top = 15.dp)
-                            .width(200.dp),
-                        enabled = deleteAccountButtonEnable,
 
 
-                        ) {
-                        Text(text = stringResource(id = R.string.closeaccount))
-                    }
+                            }
+                            .addOnFailureListener {
+                                error ->
+
+                                Log.d("deleteaccountHttps" , " hata :: " + error.message)
+
+                            }
+
+                    },
+                    modifier = Modifier
+                        .padding(top = 15.dp)
+                        .width(200.dp),
+                    enabled = deleteAccountButtonEnable,
+
+
+                    ) {
+                    Text(text = stringResource(id = R.string.closeaccount))
                 }
-
-
 
             }
 

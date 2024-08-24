@@ -267,6 +267,18 @@ fun MessageItemView(message:Message , type:String , mainActivityVM: MainActivity
                 contentScale = ContentScale.FillBounds
             )
 
+        } else {
+            Image(
+                painter = painterResource(id = R.drawable.account_circle_24px),
+                contentDescription = "",
+                modifier = Modifier
+                    .padding(top = 5.dp, bottom = 5.dp)
+                    .clip(RoundedCornerShape(10.dp))
+                    .blur(10.dp, BlurredEdgeTreatment.Rectangle)
+                    .width(60.dp)
+                    .height(60.dp),
+                contentScale = ContentScale.FillBounds
+            )
         }
 
 

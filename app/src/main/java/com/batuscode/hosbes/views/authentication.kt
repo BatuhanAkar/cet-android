@@ -2,6 +2,8 @@ package com.batuscode.hosbes.views
 
 import android.app.Activity
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import android.graphics.drawable.shapes.Shape
 import android.telephony.PhoneNumberUtils
 import android.text.TextUtils
@@ -39,6 +41,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
@@ -57,9 +60,14 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.batuscode.hosbes.MainActivity
+import com.batuscode.hosbes.MainActivity.Companion
+import com.batuscode.hosbes.MainActivity.Companion.PreferenceManager
 import com.batuscode.hosbes.R
 import com.batuscode.hosbes.utility.FirebaseManager
+import com.batuscode.hosbes.utility.GlideApp
 import com.batuscode.hosbes.utility.MainActivityVM
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
 import com.google.android.gms.tasks.Task
 import com.google.android.play.core.integrity.IntegrityManagerFactory
 import com.google.android.play.core.integrity.IntegrityTokenRequest
@@ -297,12 +305,46 @@ fun Authentication(navController: NavController , mainActivityVM: MainActivityVM
                                         FirebaseManager.currentUser = task.result.user
 
                                         val uid = FirebaseManager.currentUser?.uid.toString()
+                                        Log.d("myintegritytoken" , "functions tamam ... " + "uid :: " + uid)
 
                                         MainActivity.PreferenceManager?.saveuid(key = "uid" , value = uid)
 
                                         MainActivity.PreferenceManager?.saveSession(key = "session" , true)
 
-                                        navController.navigate("chat")
+
+                                        var displayName = FirebaseManager.currentUser?.displayName
+                                        var photo = FirebaseManager.currentUser?.photoUrl.toString()
+
+                                        PreferenceManager?.saveString("displayName" , displayName!!)
+                                        PreferenceManager?.saveString("photoUrl" , photo!!)
+
+                                        MainActivity.PreferenceManager?.saveLong("Wcount" , 0L)
+                                        MainActivity.PreferenceManager?.saveLong("privRoomCount" , 0L)
+
+                                        mainActivityVM.updateDisplayName(displayName!!)
+                                        var Pphoto = FirebaseManager.currentUser?.photoUrl.toString()
+
+                                        GlideApp.with(MainActivity.context)
+                                            .asBitmap()
+                                            .load(Pphoto)
+                                            .into(object : CustomTarget<Bitmap>() {
+                                                override fun onResourceReady(
+                                                    resource: Bitmap,
+                                                    transition: Transition<in Bitmap>?
+                                                ) {
+                                                    var imageBitmap = resource.asImageBitmap()
+
+                                                    mainActivityVM.updatePhoto(imageBitmap)
+
+                                                    navController.navigate("chat")
+                                                }
+
+                                                override fun onLoadCleared(placeholder: Drawable?) {
+                                                    TODO("Not yet implemented")
+                                                }
+
+                                            })
+
 
                                     }
 
