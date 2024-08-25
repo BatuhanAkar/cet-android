@@ -1198,12 +1198,12 @@ class FirebaseManager {
 
 
         Log.d("writeMessage" , "messageId :: $messageId")
-
+        val postValues = message.toMap()
 
 
         channel
             .child(messageId)
-            .setValue(message)
+            .setValue(postValues)
 
         Log.d("fmanager" , "user control :: " + if (currentUser == null) true else false)
 
