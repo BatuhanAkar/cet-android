@@ -152,8 +152,9 @@ class VoiceChannel:JitsiMeetActivity() , JitsiMeetActivityInterface{
                 .setFeatureFlag("pip-while-screensharing.enabled" , false)
                 .setFeatureFlag("meeting-password.enabled" , false)
                 .setFeatureFlag("kick-out.enabled" , false)
+                .setFeatureFlag("fullscreen.enabled" , true)
 
-                .setFeatureFlag("meeting-name.enabled" , false)
+                .setFeatureFlag("meeting-name.enabled" , true)
                 .setFeatureFlag("settings.enabled" , false)
 
 

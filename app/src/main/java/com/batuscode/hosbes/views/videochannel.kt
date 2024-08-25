@@ -132,27 +132,68 @@ class VideoChannel:JitsiMeetActivity() , JitsiMeetActivityInterface{
             var options = JitsiMeetConferenceOptions.Builder()
                 .setRoom("https://meet.recommyz.com/$name")
                 .setUserInfo(userinfo)
+                .setFeatureFlag("everyoneIsModerator" , false)
                 .setFeatureFlag("tile-view.enabled" , true)
+
                 .setFeatureFlag("prejoinpage.enabled" , false)
+
                 .setFeatureFlag("invite.enabled" , false)
+
                 .setFeatureFlag("add-people.enabled" , false)
+
+                .setFeatureFlag("speakerstats.enabled" , true)
+
                 .setFeatureFlag("car-mode.enabled" , false)
+
                 .setFeatureFlag("close-captions.enabled" , false)
+
                 .setFeatureFlag("help.enabled" , false)
+
                 .setFeatureFlag("ios.screensharing.enabled" , false)
+
                 .setFeatureFlag("ios.recording.enabled" , false)
+
                 .setFeatureFlag("android.screensharing.enabled" , false)
+
+                .setFeatureFlag("recording.enabled" , false)
+
                 .setFeatureFlag("overflow-menu.enabled" , false)
+
                 .setFeatureFlag("pip-while-screensharing.enabled" , false)
+
+                .setFeatureFlag("lobby-mode.enabled" , false)
+
                 .setFeatureFlag("meeting-password.enabled" , false)
+
                 .setFeatureFlag("kick-out.enabled" , false)
 
-                .setFeatureFlag("meeting-name.enabled" , false)
+                .setFeatureFlag("breakout-rooms.enabled" , false)
+
                 .setFeatureFlag("settings.enabled" , false)
 
+                .setFeatureFlag("filmstrip.enabled" , true)
+
+
+                .setFeatureFlag("disableSimulcast" , false)
+                .setFeatureFlag("disableAEC" , false)
+                .setFeatureFlag("disableNS" , false)
+                .setFeatureFlag("disableAGC" , false)
+                .setFeatureFlag("fullscreen.enabled" , true)
+
+                .setFeatureFlag("enableLayerSuspension" , true)
+
+                .setFeatureFlag("toolbox.alwaysVisible" , false)
+
+                .setFeatureFlag("unsaferoomwarning.enabled" , false)
+
+                .setFeatureFlag("replace.participant" , true)
 
                 .setFeatureFlag("invite-dial-in.enabled" , false)
+
+                .setFeatureFlag("live-streaming.enabled" , false)
+
                 .setFeatureFlag("server-url-change.enabled" , false)
+
                 .setFeatureFlag("security-options.enabled" , false)
 
 
