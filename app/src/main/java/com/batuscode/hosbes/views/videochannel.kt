@@ -89,7 +89,6 @@ class VideoChannel:JitsiMeetActivity() , JitsiMeetActivityInterface{
     }
     override fun onParticipantLeft(extraData: HashMap<String, Any>?) {
         super.onParticipantLeft(extraData)
-        hangUp()
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -124,6 +123,7 @@ class VideoChannel:JitsiMeetActivity() , JitsiMeetActivityInterface{
             avatar = URL(photo)
         }
 
+        val toolbarbuttons = arrayOf("camera" , "participants")
         mainActivityVM.channelName.observe(this , Observer {
                 name ->
 
@@ -179,6 +179,7 @@ class VideoChannel:JitsiMeetActivity() , JitsiMeetActivityInterface{
                 .setFeatureFlag("disableNS" , false)
                 .setFeatureFlag("disableAGC" , false)
                 .setFeatureFlag("fullscreen.enabled" , true)
+                .setFeatureFlag("end-conference.enabled" , false)
 
                 .setFeatureFlag("enableLayerSuspension" , true)
 
