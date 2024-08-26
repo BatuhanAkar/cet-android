@@ -229,7 +229,7 @@ fun MessageItemView(message:Message , type:String , mainActivityVM: MainActivity
         mutableStateOf<ImageBitmap?>(null)
     }
 
-   // val timeStamp by remember { mutableStateOf(  dateformatHour(message.time!!) ) }
+    val timeStamp by remember { mutableStateOf(  dateformatHour(message.time!!) ) }
 
     val inWhisper by mainActivityVM.inWhisper.collectAsState()
 
@@ -291,8 +291,8 @@ fun MessageItemView(message:Message , type:String , mainActivityVM: MainActivity
                         contentDescription = "",
                         modifier = Modifier
                             .clip(RoundedCornerShape(10.dp))
-                            .width(60.dp)
-                            .height(60.dp),
+                            .width(40.dp)
+                            .height(40.dp),
                         contentScale = ContentScale.FillBounds
                     )
 
@@ -302,9 +302,9 @@ fun MessageItemView(message:Message , type:String , mainActivityVM: MainActivity
                         contentDescription = "",
                         modifier = Modifier
                             .clip(RoundedCornerShape(10.dp))
-                            // .blur(10.dp, BlurredEdgeTreatment.Rectangle)
-                            .width(60.dp)
-                            .height(60.dp),
+                             .blur(10.dp, BlurredEdgeTreatment.Rectangle)
+                            .width(40.dp)
+                            .height(40.dp),
                         contentScale = ContentScale.FillBounds
                     )
                 }
@@ -370,7 +370,7 @@ fun MessageItemView(message:Message , type:String , mainActivityVM: MainActivity
                         }
 
                         Text(
-                            text = "timeStamp" ,
+                            text = timeStamp ,
                             style = TextStyle(
                                 fontSize = 12.sp
                             ),
@@ -409,8 +409,7 @@ fun MessageItemView(message:Message , type:String , mainActivityVM: MainActivity
                     {
                         type.equals("text")->{
                             Text(
-                                text = "dlfgkdfşlgkdsfşlgkdsşflgkdşslfkgdkmdlkfvdlkmfvlkdfmvlkdfmvldkfmmvdfkmvldfk" +
-                                        "mvldfkmvldkfmvldkfmvldfkmvldkfmvlkdfmvlkdfmvlkdmfvlknrnkjfnbjkfgnbkjnfgkjfngbjk",
+                                text = message.message!!,
                                 style = TextStyle(
                                     fontWeight = FontWeight.Bold ,
                                     fontSize = 20.sp
