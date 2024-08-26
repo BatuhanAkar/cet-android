@@ -10,6 +10,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -20,6 +21,8 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -71,6 +74,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.Observer
@@ -224,99 +229,118 @@ fun MessageItemView(message:Message , type:String , mainActivityVM: MainActivity
         mutableStateOf<ImageBitmap?>(null)
     }
 
-    val timeStamp by remember { mutableStateOf(  dateformatHour(message.time!!) ) }
+   // val timeStamp by remember { mutableStateOf(  dateformatHour(message.time!!) ) }
 
     val inWhisper by mainActivityVM.inWhisper.collectAsState()
 
 
-    // gönderen resmi ile mesaj görünümünü yan yana koy...
 
-    Row (
-        verticalAlignment = Alignment.Top ,
+    GlideApp.with(context)
+        .asBitmap()
+        .load(message.senderImage)
+        .into(object : CustomTarget<Bitmap>(){
+            override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+                image = resource.asImageBitmap()
+            }
+
+            override fun onLoadCleared(placeholder: Drawable?) {
+                TODO("Not yet implemented")
+            }
+
+
+        })
+
+    Scaffold (
         modifier = Modifier
-            .padding(5.5.dp)
-    )
-    {
+            .fillMaxWidth()
+            .wrapContentHeight()
+    ){
+        innerPadding ->
 
-        GlideApp.with(context)
-            .asBitmap()
-            .load(message.senderImage)
-            .into(object : CustomTarget<Bitmap>(){
-                override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
-                    image = resource.asImageBitmap()
-                }
-
-                override fun onLoadCleared(placeholder: Drawable?) {
-                    TODO("Not yet implemented")
-                }
-
-
-            })
-
-        if (image != null){
-
-
-            Image(
-                bitmap = image!!,
-                contentDescription = "",
-                modifier = Modifier
-                    .padding(top = 5.dp, bottom = 5.dp)
-                    .clip(RoundedCornerShape(10.dp))
-                    .width(60.dp)
-                    .height(60.dp),
-                contentScale = ContentScale.FillBounds
-            )
-
-        } else {
-            Image(
-                painter = painterResource(id = R.drawable.account_circle_24px),
-                contentDescription = "",
-                modifier = Modifier
-                    .padding(top = 5.dp, bottom = 5.dp)
-                    .clip(RoundedCornerShape(10.dp))
-                    .blur(10.dp, BlurredEdgeTreatment.Rectangle)
-                    .width(60.dp)
-                    .height(60.dp),
-                contentScale = ContentScale.FillBounds
-            )
-        }
-
-
-
-        Column(
+        ConstraintLayout(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 9.dp)
-        )
-        {
+                .wrapContentHeight()
+                .padding(innerPadding)
+        ) {
 
 
-            // gönderen adı ile seçenek butonunu aralarında boşlukla yanyana koy...
+            val (profileImageView , messagebody) = createRefs()
 
-            Row (
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically ,
+            Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(0.dp)
+                    .wrapContentWidth()
+                    .wrapContentHeight()
+                    .width(60.dp)
+                    .height(60.dp)
+                    .constrainAs(profileImageView) {
+                        bottom.linkTo(messagebody.bottom)
+                        start.linkTo(parent.start)
+
+
+                    }
+
+            )
+            {
+                if (image != null){
+
+
+                    Image(
+                        bitmap = image!!,
+                        contentDescription = "",
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(10.dp))
+                            .width(60.dp)
+                            .height(60.dp),
+                        contentScale = ContentScale.FillBounds
+                    )
+
+                } else {
+                    Image(
+                        painter = painterResource(id = R.drawable.account_circle_24px),
+                        contentDescription = "",
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(10.dp))
+                           // .blur(10.dp, BlurredEdgeTreatment.Rectangle)
+                            .width(60.dp)
+                            .height(60.dp),
+                        contentScale = ContentScale.FillBounds
+                    )
+                }
+            }
+
+
+            Column(
+                modifier = Modifier
+
+                    .constrainAs(messagebody) {
+                        start.linkTo(profileImageView.end)
+                        end.linkTo(parent.end)
+                        width = Dimension.fillToConstraints
+                    }
             )
             {
 
 
+                // gönderen adı ile seçenek butonunu aralarında boşlukla yanyana koy...
+
                 Row (
-                    verticalAlignment = Alignment.CenterVertically
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically ,
+                    modifier = Modifier
+                        .fillMaxWidth()
                 )
                 {
-
-                    Text(
-                        text = message.senderName!!,
-                        style = TextStyle(
-                            fontWeight = FontWeight.SemiBold ,
-                            fontSize = 17.sp
-                        )
+/*
+                Text(
+                    text = "message.senderName!!",
+                    style = TextStyle(
+                        fontWeight = FontWeight.SemiBold ,
+                        fontSize = 17.sp
                     )
+                )*/
 
-                    Spacer(modifier = Modifier.width(8.dp))
+
 
                     if (message.edited == true){
 
@@ -324,72 +348,80 @@ fun MessageItemView(message:Message , type:String , mainActivityVM: MainActivity
                             text = stringResource(id = R.string.edited) ,
                             style = TextStyle(
                                 fontSize = 12.sp
-                            )
+                            ),
+                            modifier = Modifier
+                                .wrapContentWidth()
                         )
 
                     }
 
                     Text(
-                        text = timeStamp ,
+                        text = "timeStamp" ,
                         style = TextStyle(
                             fontSize = 12.sp
-                        )
+                        ),
+                        modifier = Modifier
+                            .wrapContentWidth()
                     )
 
-
-                }
-
-                if (inWhisper == false) {
-                    OutlinedIconButton(
-                        onClick = {
-                            mainActivityVM.updateWhisperUserUid(message.senderId!!)
-                            mainActivityVM.updateMessageItem(message)
-                            mainActivityVM.updateShowMessageOption(true)
-                        } ,
-                        border = null ,
-                        modifier = Modifier
-                            .padding(0.dp)
-                            .size(24.dp)
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.more_horiz_24px) ,
-                            contentDescription = "" ,
+                    if (inWhisper == false) {
+                        OutlinedIconButton(
+                            onClick = {
+                                mainActivityVM.updateWhisperUserUid(message.senderId!!)
+                                mainActivityVM.updateMessageItem(message)
+                                mainActivityVM.updateShowMessageOption(true)
+                            } ,
+                            border = null ,
                             modifier = Modifier
-                                .align(Alignment.Top)
-                        )
+                                .padding(0.dp)
+                                .size(24.dp)
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.more_horiz_24px) ,
+                                contentDescription = "" ,
+                                modifier = Modifier
+                                    .align(Alignment.Top)
+                            )
+                        }
+
+
                     }
 
 
+
                 }
-            }
 
-            Row (
-            ) {
+                Row (
+                ) {
 
-                Surface (
-                    shape = RoundedCornerShape(10.dp) ,
-                    color = Color.Transparent ,
-                    tonalElevation = 1.dp
-                )
-                {
-                    when
+                    Surface (
+                        shape = RoundedCornerShape(10.dp) ,
+                        color = Color.Transparent ,
+                        tonalElevation = 1.dp
+                    )
                     {
-                        type.equals("text")->{
-                            Text(
-                                text = message.message!! ,
-                                style = TextStyle(
-                                    fontWeight = FontWeight.Bold ,
-                                    fontSize = 20.sp
-                                ),
-                                modifier = Modifier
+                        when
+                        {
+                            type.equals("text")->{
+                                Text(
+                                    text = "dlfgkdfşlgkdsfşlgkdsşflgkdşslfkgdslfjglkdsjfgşlkdjsfglşkjdsflşgkjdsfşlkgj" ,
+                                    style = TextStyle(
+                                        fontWeight = FontWeight.Bold ,
+                                        fontSize = 20.sp
+                                    ),
+                                    modifier = Modifier
 
-                            )
+                                )
+                            }
                         }
                     }
                 }
             }
         }
     }
+
+
+
 }
 
 
@@ -565,7 +597,7 @@ fun MessageItemViewPreview(){
     val mainActivityVM:MainActivityVM = viewModel()
     val chatViewModel:ChatViewModel = viewModel()
     HoşbeşTheme {
-        MessageItemView(message = message, type = "text" , mainActivityVM = mainActivityVM , chatViewModel)
+        MessageItemView(Message(), type = "text" , mainActivityVM = mainActivityVM , chatViewModel)
     }
 }
 
