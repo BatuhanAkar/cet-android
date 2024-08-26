@@ -275,6 +275,7 @@ fun MessageItemView(message:Message , type:String , mainActivityVM: MainActivity
                     .height(60.dp)
                     .constrainAs(profileImageView) {
                         bottom.linkTo(messagebody.bottom)
+                        end.linkTo(messagebody.start)
                         start.linkTo(parent.start)
 
 
@@ -301,7 +302,7 @@ fun MessageItemView(message:Message , type:String , mainActivityVM: MainActivity
                         contentDescription = "",
                         modifier = Modifier
                             .clip(RoundedCornerShape(10.dp))
-                           // .blur(10.dp, BlurredEdgeTreatment.Rectangle)
+                            // .blur(10.dp, BlurredEdgeTreatment.Rectangle)
                             .width(60.dp)
                             .height(60.dp),
                         contentScale = ContentScale.FillBounds
@@ -310,27 +311,40 @@ fun MessageItemView(message:Message , type:String , mainActivityVM: MainActivity
             }
 
 
-            Column(
+            Surface (
+                shape = RoundedCornerShape(10.dp) ,
+                color = colorResource(id = R.color.message) ,
+                tonalElevation = 30.dp ,
                 modifier = Modifier
-
+                    .padding(8.dp)
                     .constrainAs(messagebody) {
                         start.linkTo(profileImageView.end)
                         end.linkTo(parent.end)
+                        top.linkTo(parent.top)
                         width = Dimension.fillToConstraints
                     }
             )
             {
 
 
-                // gönderen adı ile seçenek butonunu aralarında boşlukla yanyana koy...
-
-                Row (
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically ,
+                Column(
                     modifier = Modifier
-                        .fillMaxWidth()
+                        .wrapContentHeight()
+                        .padding(8.dp)
+
                 )
                 {
+
+
+                    // gönderen adı ile seçenek butonunu aralarında boşlukla yanyana koy...
+
+                    Row (
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically ,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    )
+                    {
 /*
                 Text(
                     text = "message.senderName!!",
@@ -342,10 +356,21 @@ fun MessageItemView(message:Message , type:String , mainActivityVM: MainActivity
 
 
 
-                    if (message.edited == true){
+                        if (message.edited == true){
+
+                            Text(
+                                text = stringResource(id = R.string.edited) ,
+                                style = TextStyle(
+                                    fontSize = 12.sp
+                                ),
+                                modifier = Modifier
+                                    .wrapContentWidth()
+                            )
+
+                        }
 
                         Text(
-                            text = stringResource(id = R.string.edited) ,
+                            text = "timeStamp" ,
                             style = TextStyle(
                                 fontSize = 12.sp
                             ),
@@ -353,66 +378,46 @@ fun MessageItemView(message:Message , type:String , mainActivityVM: MainActivity
                                 .wrapContentWidth()
                         )
 
-                    }
-
-                    Text(
-                        text = "timeStamp" ,
-                        style = TextStyle(
-                            fontSize = 12.sp
-                        ),
-                        modifier = Modifier
-                            .wrapContentWidth()
-                    )
-
-                    if (inWhisper == false) {
-                        OutlinedIconButton(
-                            onClick = {
-                                mainActivityVM.updateWhisperUserUid(message.senderId!!)
-                                mainActivityVM.updateMessageItem(message)
-                                mainActivityVM.updateShowMessageOption(true)
-                            } ,
-                            border = null ,
-                            modifier = Modifier
-                                .padding(0.dp)
-                                .size(24.dp)
-                        ) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.more_horiz_24px) ,
-                                contentDescription = "" ,
+                        if (inWhisper == false) {
+                            OutlinedIconButton(
+                                onClick = {
+                                    mainActivityVM.updateWhisperUserUid(message.senderId!!)
+                                    mainActivityVM.updateMessageItem(message)
+                                    mainActivityVM.updateShowMessageOption(true)
+                                } ,
+                                border = null ,
                                 modifier = Modifier
-                                    .align(Alignment.Top)
-                            )
+                                    .padding(0.dp)
+                                    .size(24.dp)
+                            ) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.more_horiz_24px) ,
+                                    contentDescription = "" ,
+                                    modifier = Modifier
+                                        .align(Alignment.Top)
+                                )
+                            }
+
+
                         }
 
 
+
                     }
 
-
-
-                }
-
-                Row (
-                ) {
-
-                    Surface (
-                        shape = RoundedCornerShape(10.dp) ,
-                        color = Color.Transparent ,
-                        tonalElevation = 1.dp
-                    )
+                    when
                     {
-                        when
-                        {
-                            type.equals("text")->{
-                                Text(
-                                    text = "dlfgkdfşlgkdsfşlgkdsşflgkdşslfkgdslfjglkdsjfgşlkdjsfglşkjdsflşgkjdsfşlkgj" ,
-                                    style = TextStyle(
-                                        fontWeight = FontWeight.Bold ,
-                                        fontSize = 20.sp
-                                    ),
-                                    modifier = Modifier
+                        type.equals("text")->{
+                            Text(
+                                text = "dlfgkdfşlgkdsfşlgkdsşflgkdşslfkgdkmdlkfvdlkmfvlkdfmvlkdfmvldkfmmvdfkmvldfk" +
+                                        "mvldfkmvldkfmvldkfmvldfkmvldkfmvlkdfmvlkdfmvlkdmfvlknrnkjfnbjkfgnbkjnfgkjfngbjk",
+                                style = TextStyle(
+                                    fontWeight = FontWeight.Bold ,
+                                    fontSize = 20.sp
+                                ),
+                                modifier = Modifier
 
-                                )
-                            }
+                            )
                         }
                     }
                 }
