@@ -360,7 +360,7 @@ fun Chat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
                         Image(
                             bitmap = imageBitmap!! ,
                             contentDescription = "" ,
-                            contentScale = ContentScale.Fit,
+                            contentScale = ContentScale.FillWidth,
                             modifier = Modifier
                                 .clip(RoundedCornerShape(10.dp))
                                 .width(30.dp)

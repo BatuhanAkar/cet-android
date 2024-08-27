@@ -183,10 +183,10 @@ fun MoreContent(scope: CoroutineScope , sheetState: SheetState , mainActivityVM:
                                 start.linkTo(parent.start)
                                 end.linkTo(username.start)
                                 top.linkTo(parent.top)
-                                bottom.linkTo(editButton.top)
+
 
                             },
-                        contentScale = ContentScale.FillBounds
+                        contentScale = ContentScale.FillWidth
                     )
                 } else {
                     Image(
@@ -200,45 +200,48 @@ fun MoreContent(scope: CoroutineScope , sheetState: SheetState , mainActivityVM:
                                 start.linkTo(parent.start)
                                 end.linkTo(username.start)
                                 top.linkTo(parent.top)
-                                bottom.linkTo(editButton.top)
+
 
                             },
-                        contentScale = ContentScale.FillBounds
+                        contentScale = ContentScale.FillWidth
                     )
                 }
 
 
-                FilledTonalButton(onClick = {
+                OutlinedIconButton(onClick = {
                     mainActivityVM.updateShowEditProfileCard(true)
                 },
                     border = BorderStroke(0.dp, Color.Transparent) ,
-                    shape = RoundedCornerShape(10.dp) ,
-                    colors = ButtonDefaults.filledTonalButtonColors(
+
+                    /*colors = ButtonDefaults.filledTonalButtonColors(
                         containerColor = colorResource(id = R.color.blue)
                     ) ,
                     elevation = ButtonDefaults.buttonElevation(
                         defaultElevation = 4.dp
                     )
-                    ,
+                    ,*/
                     modifier = Modifier
                         .constrainAs(editButton) {
-                            top.linkTo(profileImage.bottom)
-                            bottom.linkTo(parent.bottom)
-                            start.linkTo(parent.start)
+                            top.linkTo(profileImage.top)
+                            bottom.linkTo(profileImage.bottom)
+                         //   start.linkTo(parent.start)
                             end.linkTo(parent.end)
-                            width = Dimension.fillToConstraints
+                         //   width = Dimension.fillToConstraints
                         }
-                        .width(150.dp)
-                        .height(40.dp)
-                        .padding(top = 8.5.dp)
+
                 ) {
-                    Text(
+                    Icon(
+                        painter = painterResource(id = R.drawable.change_circle_40px) ,
+                        contentDescription = "" ,
+                        tint = Color.Black
+                        )
+             /*       Text(
                         text = stringResource(id = R.string.editprofilecard) ,
                         style = TextStyle(
                             fontWeight = FontWeight.Bold ,
                             color = colorResource(id = R.color.swhite)
                         )
-                    )
+                    )*/
                 }
 
 
@@ -255,9 +258,9 @@ fun MoreContent(scope: CoroutineScope , sheetState: SheetState , mainActivityVM:
                         .padding(start = 8.dp)
                         .constrainAs(username) {
                             start.linkTo(profileImage.end)
-                            end.linkTo(parent.end)
+                            end.linkTo(editButton.start)
                             top.linkTo(profileImage.top)
-                            bottom.linkTo(editButton.top)
+                            bottom.linkTo(profileImage.bottom)
                             width = Dimension.fillToConstraints
                         }
                 )

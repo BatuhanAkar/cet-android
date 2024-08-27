@@ -9,10 +9,12 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.drawable.Drawable
 import android.net.Uri
+import android.os.Build
 import android.os.IBinder
 import android.os.Looper
 import android.provider.OpenableColumns
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -1280,12 +1282,12 @@ class FirebaseManager {
     @Composable
     fun uploadPrivateRoomPhoto(bitmap: Bitmap? , mainActivityVM: MainActivityVM , uid:String){
 
-        val profileImageRef = storageRef.child("pvRooms/" + uid + "/" + "roomImage/rm.png")
+        val profileImageRef = storageRef.child("pvRooms/" + uid + "/" + "roomImage/rm.webp")
 
         val baos = ByteArrayOutputStream()
 
         if (bitmap != null) {
-            bitmap.compress(Bitmap.CompressFormat.PNG , 100 , baos)
+            bitmap.compress(Bitmap.CompressFormat.WEBP , 80 , baos)
         }
 
         val data = baos.toByteArray()
@@ -1465,6 +1467,7 @@ class FirebaseManager {
             }
     }
 
+    @RequiresApi(Build.VERSION_CODES.R)
     @Composable
     fun handleUpdateProfileCard(bitmap: Bitmap? , mainActivityVM: MainActivityVM){
 
@@ -1474,12 +1477,12 @@ class FirebaseManager {
 
         val UID = currentUser?.uid
 
-        val profileImageRef = storageRef.child("users/" + UID + "/" + "profileImage/pp.png")
+        val profileImageRef = storageRef.child("users/" + UID + "/" + "profileImage/pp.webp")
 
         val baos = ByteArrayOutputStream()
 
         if (bitmap != null) {
-            bitmap.compress(Bitmap.CompressFormat.PNG , 100 , baos)
+            bitmap.compress(Bitmap.CompressFormat.WEBP , 80 , baos)
         }
 
         val data = baos.toByteArray()
@@ -2230,12 +2233,14 @@ class FirebaseManager {
             usersRef.document(selfUid!!).delete()
             auth.currentUser?.delete()?.addOnCompleteListener {
                 MainActivity.PreferenceManager?.clear()
+                MainActivity().restartActivity()
             }
 
         } else {
             usersRef.document(selfUid!!).delete()
             auth.currentUser?.delete()?.addOnCompleteListener {
                 MainActivity.PreferenceManager?.clear()
+                MainActivity().restartActivity()
             }
         }
 

@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -32,10 +33,13 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -115,6 +119,7 @@ fun CreatePrivateRoom(mainActivityVM: MainActivityVM){
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreatePrivateRoomContent(mainActivityVM: MainActivityVM){
 
@@ -399,13 +404,33 @@ fun CreatePrivateRoomContent(mainActivityVM: MainActivityVM){
                             }
                     ){
 
-                        Image(
-                            painter = painterResource(id = R.drawable.add_photo_alternate_24px) ,
-                            contentDescription = "" ,
+                        OutlinedIconButton(onClick = {
+                            if (scheckPermisson()){
+
+
+                                val intent = Intent(
+                                    Intent.ACTION_PICK,
+                                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+                                )
+                                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                launcher.launch(intent)
+
+                            } else {
+
+                                showPermissionDialog = true
+
+
+                            }
+                        } ,
+                            border = null,
                             modifier = Modifier
-                                .padding(5.5.dp)
-                                .align(Alignment.TopEnd)
+                                .align(Alignment.TopEnd) ,
                         )
+                        {
+                            Icon(painter = painterResource(id = R.drawable.add_photo_alternate_24px), contentDescription = "")
+                        }
+
+
                     }
 
 
@@ -425,49 +450,39 @@ fun CreatePrivateRoomContent(mainActivityVM: MainActivityVM){
             }
 
             Row (
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically ,
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
             ) {
-                TextButton(onClick = {
-                    if (scheckPermisson()){
 
+                Surface(
+                    shape = RoundedCornerShape(24.dp) ,
+                    color = colorResource(id = R.color.white) ,
+                    shadowElevation = 2.dp ,
+                ) {
+                    TextField(
+                        value = roomName ,
+                        onValueChange = {
+                            if (it.length <= 19){
+                                roomName = it
 
-                        val intent = Intent(
-                            Intent.ACTION_PICK,
-                            MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-                        )
-                        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                        launcher.launch(intent)
-
-                    } else {
-
-                        showPermissionDialog = true
-
-
-                    }
-                }) {
-                    Text(text = stringResource(id = R.string.setprivateroomimage))
+                            }
+                        } ,
+                        label = {
+                            Text(text = stringResource(id = R.string.privateroomname))
+                        } ,
+                        colors = TextFieldDefaults.colors(
+                            unfocusedIndicatorColor = Color.Transparent ,
+                            focusedIndicatorColor = Color.Transparent
+                        ) ,
+                        maxLines = 1 ,
+                        singleLine = true ,
+                        modifier = Modifier
+                            .background(colorResource(id = R.color.white))
+                    )
                 }
 
-                TextField(
-                    value = roomName ,
-                    onValueChange = {
-                        if (it.length <= 19){
-                            roomName = it
 
-                        }
-                    } ,
-                    label = {
-                        Text(text = stringResource(id = R.string.privateroomname))
-                    } ,
-                    colors = TextFieldDefaults.colors(
-                        unfocusedIndicatorColor = Color.Transparent ,
-                        focusedIndicatorColor = Color.Transparent
-                    ) ,
-                    maxLines = 1 ,
-                    singleLine = true ,
-                    modifier = Modifier
-                        .background(Color.Gray.copy(0.5f))
-                )
             }
 
             Row (
@@ -493,8 +508,10 @@ fun CreatePrivateRoomContent(mainActivityVM: MainActivityVM){
                     colors = SliderDefaults.colors(
                         thumbColor = colorResource(id = R.color.blue) ,
                         activeTrackColor = Color.LightGray ,
-                        inactiveTickColor = Color.Black ,
+                        inactiveTickColor = Color.Transparent ,
+                        inactiveTrackColor = Color.LightGray
                     ) ,
+
                     modifier = Modifier
                         .padding(15.dp)
                 )
@@ -521,7 +538,7 @@ fun CreatePrivateRoomContent(mainActivityVM: MainActivityVM){
                     .fillMaxWidth()
                     .padding(8.5.dp)
             ) {
-                Text(text = stringResource(id = R.string.createprivateroom))
+                Text(text = stringResource(id = R.string.create))
             }
 
 

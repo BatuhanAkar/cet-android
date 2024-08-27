@@ -191,14 +191,14 @@ fun WhisperView(whisper: Whisper , mainActivityVM: MainActivityVM){
                         verticalAlignment = Alignment.CenterVertically ,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(0.dp)
+                            .padding(top = 5.dp)
                     )
                     {
                         Text(
                             text = whisper.wdisplayName!!,
                             style = TextStyle(
-                                fontWeight = FontWeight.SemiBold ,
-                                fontSize = 17.sp
+                                fontWeight = FontWeight.Bold ,
+                                fontSize = 20.sp
                             )
                         )
 
@@ -244,8 +244,8 @@ fun WhisperView(whisper: Whisper , mainActivityVM: MainActivityVM){
                                     Text(
                                         text = whisper.lm!!,
                                         style = TextStyle(
-                                            fontWeight = FontWeight.Bold ,
-                                            fontSize = 20.sp ,
+                                            fontWeight = FontWeight.SemiBold ,
+                                            fontSize = 17.sp ,
                                             color = if (whisper.readed == false) colorResource(id = R.color.message) else Color.Gray
                                         ),
                                         maxLines = 1,

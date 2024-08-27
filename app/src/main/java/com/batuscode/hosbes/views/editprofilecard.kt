@@ -371,7 +371,7 @@ fun Content(mainActivityVM: MainActivityVM){
                         .width(80.dp)
                         .height(80.dp)
                     ,
-                    contentScale = ContentScale.FillBounds
+                    contentScale = ContentScale.FillWidth
                     )
 
 
