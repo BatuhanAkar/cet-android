@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imePadding
@@ -27,6 +28,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
@@ -242,6 +244,9 @@ fun WhisperChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
 
             MessageTextField ( chatViewModel , mainActivityVM = mainActivityVM ,
                 modifier = Modifier
+                    .padding(2.dp)
+                    .background(Color.White)
+                    .imePadding()
                     .constrainAs(
                         messageTextField
                     )
@@ -250,6 +255,7 @@ fun WhisperChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
                         bottom.linkTo(parent.bottom)
                         start.linkTo(parent.start)
                         end.linkTo(parent.end)
+                        width = Dimension.fillToConstraints
                     }
             ) {}
 

@@ -1,6 +1,7 @@
 package com.batuscode.hosbes.views
 
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imePadding
@@ -17,6 +18,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -83,7 +85,13 @@ fun _WhisperChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
                     Log.d("WhisperChat" , "ON_STOP")
                     mainActivityVM.updateInWhisper(false) // fısıltıda mesaj seçeneklerinin kontrolü için ...
 
-                    MainActivity.fm.detachWhisperChatListener(wid!!)
+
+                    if (wid != null){
+
+                        MainActivity.fm.detachWhisperChatListener(wid!!)
+
+
+                    }
                     mainActivityVM.update_whisper(false)
                 }
                 Lifecycle.Event.ON_DESTROY -> {
@@ -159,6 +167,9 @@ fun _WhisperChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
 
             MessageTextField ( chatViewModel , mainActivityVM = mainActivityVM ,
                 modifier = Modifier
+                    .padding(2.dp)
+                    .background(Color.White)
+                    .imePadding()
                     .constrainAs(
                         messageTextField
                     )
@@ -167,6 +178,7 @@ fun _WhisperChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
                         bottom.linkTo(parent.bottom)
                         start.linkTo(parent.start)
                         end.linkTo(parent.end)
+                        width = Dimension.fillToConstraints
                     }
             ) {}
 
@@ -176,6 +188,7 @@ fun _WhisperChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
     }
 
 }
+/*
 
 @Preview(showBackground = true , showSystemUi = true)
 @Composable
@@ -183,4 +196,4 @@ fun _WhisperChatPreview(){
     HoşbeşTheme {
         _WhisperChat(mainActivityVM = MainActivityVM() , chatViewModel = ChatViewModel())
     }
-}
+}*/

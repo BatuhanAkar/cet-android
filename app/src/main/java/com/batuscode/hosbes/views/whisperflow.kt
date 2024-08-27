@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CardColors
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedIconButton
@@ -88,6 +90,12 @@ fun WhisperView(whisper: Whisper , mainActivityVM: MainActivityVM){
             MainActivity.navigate?.navigate("whisperchat")
         } ,
         shape = RectangleShape ,
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 5.dp
+        ),
+        colors = CardDefaults.cardColors(
+            containerColor = colorResource(id = R.color.white)
+        ),
         modifier = Modifier
             .fillMaxWidth()
             .height(80.dp)

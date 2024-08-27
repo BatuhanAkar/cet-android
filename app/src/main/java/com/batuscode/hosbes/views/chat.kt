@@ -7,6 +7,7 @@ import android.util.Log
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -49,6 +50,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
@@ -344,6 +346,9 @@ fun Chat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
 
 
             TopAppBar(title = {},
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = colorResource(id = R.color.white)
+                ),
                 navigationIcon = {
                     ChannelMenu( mainActivityVM = mainActivityVM ,chatViewModel = chatViewModel ,
                         selectedChannel = selectedChannel!!, modifier = Modifier)
@@ -372,7 +377,6 @@ fun Chat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
         }
 
     ){innerPadding ->
-        
         if (inVoiceChannel == false){
             ChatUI(chatViewModel = chatViewModel, mainActivityVM = mainActivityVM, innerPadding = innerPadding)
         } else if (inVoiceChannel == true){
@@ -453,7 +457,32 @@ fun ChatUI(chatViewModel: ChatViewModel , mainActivityVM: MainActivityVM , inner
 
                 )
 
-        } else {
+            MessageTextField ( chatViewModel , mainActivityVM = mainActivityVM ,
+                modifier = Modifier
+                    .padding(2.dp)
+                    .background(Color.White)
+                    .imePadding()
+                    .constrainAs(
+                        messageTextField
+                    )
+                    {
+                        top.linkTo(messageRecyclerView.bottom)
+                        bottom.linkTo(parent.bottom)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                        width = Dimension.fillToConstraints
+                    }
+            ) {
+                if (!it.isEmpty()){
+                    message = it
+                    if (messageSended == true){
+
+                    }
+                }
+            }
+
+        }
+        else {
 
             Column (
                 verticalArrangement = Arrangement.Center ,
@@ -498,25 +527,7 @@ fun ChatUI(chatViewModel: ChatViewModel , mainActivityVM: MainActivityVM , inner
         }
 
 
-        MessageTextField ( chatViewModel , mainActivityVM = mainActivityVM ,
-            modifier = Modifier
-                .constrainAs(
-                    messageTextField
-                )
-                {
-                    top.linkTo(messageRecyclerView.bottom)
-                    bottom.linkTo(parent.bottom)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                }
-        ) {
-            if (!it.isEmpty()){
-                message = it
-                if (messageSended == true){
 
-                }
-            }
-        }
 
     }
 }

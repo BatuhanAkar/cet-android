@@ -59,6 +59,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -233,6 +234,7 @@ fun MessageItemView(message:Message , type:String , mainActivityVM: MainActivity
 
     val inWhisper by mainActivityVM.inWhisper.collectAsState()
 
+    val uid = MainActivity.PreferenceManager?.getString("uid")
 
 
     GlideApp.with(context)
@@ -250,113 +252,119 @@ fun MessageItemView(message:Message , type:String , mainActivityVM: MainActivity
 
         })
 
-    Scaffold (
+    ConstraintLayout(
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight()
-    ){
-        innerPadding ->
+    ) {
 
-        ConstraintLayout(
+
+        val (profileImageView , messagebody) = createRefs()
+
+        Box(
             modifier = Modifier
-                .fillMaxWidth()
+                .wrapContentWidth()
                 .wrapContentHeight()
-                .padding(innerPadding)
-        ) {
+                .padding(bottom = 8.dp)
+                .width(40.dp)
+                .height(40.dp)
+                .constrainAs(profileImageView) {
+                    bottom.linkTo(parent.bottom)
+                    end.linkTo(messagebody.start)
+                    start.linkTo(parent.start)
+                    width = Dimension.wrapContent
 
-
-            val (profileImageView , messagebody) = createRefs()
-
-            Box(
-                modifier = Modifier
-                    .wrapContentWidth()
-                    .wrapContentHeight()
-                    .width(60.dp)
-                    .height(60.dp)
-                    .constrainAs(profileImageView) {
-                        bottom.linkTo(messagebody.bottom)
-                        end.linkTo(messagebody.start)
-                        start.linkTo(parent.start)
-
-
-                    }
-
-            )
-            {
-                if (image != null){
-
-
-                    Image(
-                        bitmap = image!!,
-                        contentDescription = "",
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(10.dp))
-                            .width(40.dp)
-                            .height(40.dp),
-                        contentScale = ContentScale.FillBounds
-                    )
-
-                } else {
-                    Image(
-                        painter = painterResource(id = R.drawable.account_circle_24px),
-                        contentDescription = "",
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(10.dp))
-                             .blur(10.dp, BlurredEdgeTreatment.Rectangle)
-                            .width(40.dp)
-                            .height(40.dp),
-                        contentScale = ContentScale.FillBounds
-                    )
                 }
+
+        )
+        {
+            if (image != null){
+
+
+                Image(
+                    bitmap = image!!,
+                    contentDescription = "",
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(10.dp))
+                        .width(40.dp)
+                        .height(40.dp),
+                    contentScale = ContentScale.FillBounds
+                )
+
+            } else {
+                Image(
+                    painter = painterResource(id = R.drawable.account_circle_24px),
+                    contentDescription = "",
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(10.dp))
+                        // .blur(10.dp, BlurredEdgeTreatment.Rectangle)
+                        .width(40.dp)
+                        .height(40.dp),
+                    contentScale = ContentScale.FillBounds
+                )
             }
+        }
 
 
-            Surface (
-                shape = RoundedCornerShape(10.dp) ,
-                color = colorResource(id = R.color.message) ,
-                tonalElevation = 30.dp ,
+        Surface (
+            shape = RectangleShape ,
+            color = if(message.senderId?.equals(uid) == true) colorResource(id = R.color.d) else colorResource(
+                id = R.color.white
+            ) ,
+            shadowElevation = 2.dp,
+            modifier = Modifier
+                .padding(bottom = 8.dp, start = 8.dp)
+                .constrainAs(messagebody) {
+                    start.linkTo(profileImageView.end)
+                    end.linkTo(parent.end)
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
+                    width = Dimension.fillToConstraints
+                }
+        )
+        {
+
+
+            Column(
                 modifier = Modifier
+                    .wrapContentHeight()
                     .padding(8.dp)
-                    .constrainAs(messagebody) {
-                        start.linkTo(profileImageView.end)
-                        end.linkTo(parent.end)
-                        top.linkTo(parent.top)
-                        width = Dimension.fillToConstraints
-                    }
+
             )
             {
 
 
-                Column(
-                    modifier = Modifier
-                        .wrapContentHeight()
-                        .padding(8.dp)
+                // gönderen adı ile seçenek butonunu aralarında boşlukla yanyana koy...
 
+                Row (
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically ,
+                    modifier = Modifier
+                        .fillMaxWidth()
                 )
                 {
 
 
-                    // gönderen adı ile seçenek butonunu aralarında boşlukla yanyana koy...
-
-                    Row (
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically ,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                    )
-                    {
-/*
-                Text(
-                    text = "message.senderName!!",
-                    style = TextStyle(
-                        fontWeight = FontWeight.SemiBold ,
-                        fontSize = 17.sp
-                    )
-                )*/
 
 
+                    if (message.edited == true){
 
-                        if (message.edited == true){
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically ,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+
+                            Text(
+                                text = message.senderName!!,
+                                style = TextStyle(
+                                    fontWeight = FontWeight.SemiBold ,
+                                    fontSize = 16.sp
+                                ),
+                                modifier = Modifier
+                                    .wrapContentWidth()
+                            )
+                            
+                            Spacer(modifier = Modifier.width(8.dp))
 
                             Text(
                                 text = stringResource(id = R.string.edited) ,
@@ -366,64 +374,89 @@ fun MessageItemView(message:Message , type:String , mainActivityVM: MainActivity
                                 modifier = Modifier
                                     .wrapContentWidth()
                             )
-
-                        }
-
-                        Text(
-                            text = timeStamp ,
-                            style = TextStyle(
-                                fontSize = 12.sp
-                            ),
-                            modifier = Modifier
-                                .wrapContentWidth()
-                        )
-
-                        if (inWhisper == false) {
-                            OutlinedIconButton(
-                                onClick = {
-                                    mainActivityVM.updateWhisperUserUid(message.senderId!!)
-                                    mainActivityVM.updateMessageItem(message)
-                                    mainActivityVM.updateShowMessageOption(true)
-                                } ,
-                                border = null ,
+                            Text(
+                                text = timeStamp ,
+                                style = TextStyle(
+                                    fontSize = 12.sp
+                                ),
                                 modifier = Modifier
-                                    .padding(0.dp)
-                                    .size(24.dp)
-                            ) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.more_horiz_24px) ,
-                                    contentDescription = "" ,
-                                    modifier = Modifier
-                                        .align(Alignment.Top)
-                                )
-                            }
-
-
+                                    .wrapContentWidth()
+                            )
                         }
 
+
+
+                    } else {
+
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically ,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Text(
+                                text = message.senderName!!,
+                                style = TextStyle(
+                                    fontWeight = FontWeight.Bold ,
+                                    fontSize = 16.sp
+                                ),
+                                modifier = Modifier
+                                    .wrapContentWidth()
+                            )
+                            Text(
+                                text = timeStamp ,
+                                style = TextStyle(
+                                    fontSize = 12.sp
+                                ),
+                                modifier = Modifier
+                                    .wrapContentWidth()
+                            )
+                        }
+
+                    }
+
+
+                    if (inWhisper == false) {
+                        OutlinedIconButton(
+                            onClick = {
+                                mainActivityVM.updateWhisperUserUid(message.senderId!!)
+                                mainActivityVM.updateMessageItem(message)
+                                mainActivityVM.updateShowMessageOption(true)
+                            } ,
+                            border = null ,
+                            modifier = Modifier
+                                .size(24.dp)
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.more_horiz_24px) ,
+                                contentDescription = "" ,
+                                modifier = Modifier
+                                    .align(Alignment.Top)
+                            )
+                        }
 
 
                     }
 
-                    when
-                    {
-                        type.equals("text")->{
-                            Text(
-                                text = message.message!!,
-                                style = TextStyle(
-                                    fontWeight = FontWeight.Bold ,
-                                    fontSize = 20.sp
-                                ),
-                                modifier = Modifier
 
-                            )
-                        }
+
+                }
+
+                when
+                {
+                    type.equals("text")->{
+                        Text(
+                            text = message.message!!,
+                            style = TextStyle(
+                                fontWeight = FontWeight.SemiBold ,
+                                fontSize = 14.sp
+                            ),
+                            modifier = Modifier
+
+                        )
                     }
                 }
             }
         }
     }
-
 
 
 }
@@ -592,6 +625,7 @@ fun MyMessagePreview(){
     }
 }*/
 
+/*
 
 @Preview(showBackground = true , showSystemUi = true)
 @Composable
@@ -604,4 +638,5 @@ fun MessageItemViewPreview(){
         MessageItemView(Message(), type = "text" , mainActivityVM = mainActivityVM , chatViewModel)
     }
 }
+*/
 

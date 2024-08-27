@@ -297,7 +297,8 @@ fun MoreContent(scope: CoroutineScope , sheetState: SheetState , mainActivityVM:
                         text = stringResource(id = R.string.hosbeslerim) ,
                         style = TextStyle(
                             fontSize = 20.sp ,
-                            fontFamily = FontFamily.SansSerif
+                            fontFamily = FontFamily.SansSerif ,
+                            color = Color.Black
                         )
                     )
 
@@ -325,7 +326,8 @@ fun MoreContent(scope: CoroutineScope , sheetState: SheetState , mainActivityVM:
                         text = stringResource(id = R.string.privaterooms) ,
                         style = TextStyle(
                             fontSize = 20.sp ,
-                            fontFamily = FontFamily.SansSerif
+                            fontFamily = FontFamily.SansSerif ,
+                            color = Color.Black
                         )
                     )
 
@@ -351,7 +353,8 @@ fun MoreContent(scope: CoroutineScope , sheetState: SheetState , mainActivityVM:
                         text = stringResource(id = R.string.random) ,
                         style = TextStyle(
                             fontSize = 20.sp ,
-                            fontFamily = FontFamily.SansSerif
+                            fontFamily = FontFamily.SansSerif ,
+                            color = Color.Black
                         )
                     )
 
@@ -389,7 +392,8 @@ fun MoreContent(scope: CoroutineScope , sheetState: SheetState , mainActivityVM:
                         text = stringResource(id = R.string.deleteaccount) ,
                         style = TextStyle(
                             fontSize = 20.sp ,
-                            fontFamily = FontFamily.SansSerif
+                            fontFamily = FontFamily.SansSerif ,
+                            color = Color.Black
                         )
                     )
 

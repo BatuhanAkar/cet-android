@@ -11,6 +11,7 @@ import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -303,6 +304,9 @@ fun PrivateRoomChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewMode
 
             MessageTextField ( chatViewModel , mainActivityVM = mainActivityVM ,
                 modifier = Modifier
+                    .padding(2.dp)
+                    .background(Color.White)
+                    .imePadding()
                     .constrainAs(
                         messageTextField
                     )
@@ -311,6 +315,7 @@ fun PrivateRoomChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewMode
                         bottom.linkTo(parent.bottom)
                         start.linkTo(parent.start)
                         end.linkTo(parent.end)
+                        width = Dimension.fillToConstraints
                     }
             ) {
                 if (!it.isEmpty()){
