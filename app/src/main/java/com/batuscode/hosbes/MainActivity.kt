@@ -19,7 +19,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -39,7 +38,6 @@ import com.batuscode.hosbes.utility.AuthViewModel
 import com.batuscode.hosbes.utility.ChatViewModel
 import com.batuscode.hosbes.utility.FirebaseManager
 import com.batuscode.hosbes.utility.GlideApp
-import com.batuscode.hosbes.utility.IntegrityManager
 import com.batuscode.hosbes.utility.MainActivityVM
 import com.batuscode.hosbes.utility.ParticipantsViewModel
 import com.batuscode.hosbes.utility.PreferenceManager
@@ -60,7 +58,6 @@ import com.batuscode.hosbes.views.WhisperChat
 import com.batuscode.hosbes.views._WhisperChat
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
-import com.giphy.sdk.ui.Giphy
 import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : ComponentActivity() {
@@ -104,14 +101,6 @@ class MainActivity : ComponentActivity() {
         fm.detachListenerICC()
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-    }
-
     fun restartActivity(){
         restartActivity()
     }
@@ -128,7 +117,7 @@ class MainActivity : ComponentActivity() {
                 val chatViewModel:ChatViewModel by viewModels()
                 val whisperViewModel:WhisperViewModel by viewModels()
                 mainActivityVM.updateSelectedChannel("Hoşbeş")
-                Giphy.configure(this, "5eryANGrljO1uXPSf7GLEhUAU3q8zF1k")
+
                 fm.loadMoreChat = false
 
                 context = this
@@ -167,10 +156,6 @@ class MainActivity : ComponentActivity() {
                 var splash by remember {
                     mutableStateOf(true)
                 }
-
-                val channelId by mainActivityVM.channelId.collectAsState()
-
-
 
                 LaunchedEffect(Unit) {
 
