@@ -288,7 +288,7 @@ fun MessageItemView(message:Message , type:String , mainActivityVM: MainActivity
                         .clip(RoundedCornerShape(10.dp))
                         .width(40.dp)
                         .height(40.dp),
-                    contentScale = ContentScale.FillBounds
+                    contentScale = ContentScale.FillWidth
                 )
 
             } else {
@@ -300,7 +300,7 @@ fun MessageItemView(message:Message , type:String , mainActivityVM: MainActivity
                         // .blur(10.dp, BlurredEdgeTreatment.Rectangle)
                         .width(40.dp)
                         .height(40.dp),
-                    contentScale = ContentScale.FillBounds
+                    contentScale = ContentScale.FillWidth
                 )
             }
         }

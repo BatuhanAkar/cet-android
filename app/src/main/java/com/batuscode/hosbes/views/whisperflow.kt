@@ -3,6 +3,7 @@ package com.batuscode.hosbes.views
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -88,6 +89,8 @@ fun WhisperView(whisper: Whisper , mainActivityVM: MainActivityVM){
         onClick = {
             mainActivityVM.updateWhisperItem(whisper)
             MainActivity.navigate?.navigate("whisperchat")
+
+            Log.d( "firstcall", "aramayı başlatacak kişi karşı tarafı seçti ... ")
         } ,
         shape = RectangleShape ,
         elevation = CardDefaults.cardElevation(

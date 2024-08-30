@@ -402,37 +402,18 @@ class MainActivityVM:ViewModel() {
     fun updateLoadMoreChat(state: Boolean){
         _loadMoreChat.value = state
     }
-    private val _requestCall = MutableStateFlow<Boolean?>(null)
-    val requestCall: StateFlow<Boolean?> get() = _requestCall
 
-    fun updateRequestCall(state: Boolean){
-        _requestCall.value = state
-    }
-    private val _call = MutableStateFlow<Boolean?>(false)
-    val call:StateFlow<Boolean?> get() = _call
+    private val _Incall = MutableStateFlow<Boolean?>(false)
+    val incall: StateFlow<Boolean?> get() = _Incall
 
     fun updateCall(state: Boolean){
-        _call.value = state
+        _Incall.value = state
     }
-
     private val _Historycalls = MutableStateFlow<Calls?>(null)
-    val Historycalls:StateFlow<Calls?> get() = _Historycalls
+    val Historycalls: StateFlow<Calls?> get() = _Historycalls
 
     fun updateHistoryCalls(calls: Calls){
         _Historycalls.value = calls
-    }
-
-    private val _calls = MutableStateFlow<Calls?>(null)
-    val calls:StateFlow<Calls?> get() = _calls
-
-    fun updateCalls(calls: Calls){
-        _calls.value = calls
-    }
-    private val _Wcalls = MutableStateFlow<Calls?>(null)
-    val Wcalls:StateFlow<Calls?> get() = _Wcalls
-
-    fun updateWCalls(calls: Calls){
-        _Wcalls.value = calls
     }
 
     private val _isOnline = MutableStateFlow<Boolean?>(null)
@@ -442,26 +423,8 @@ class MainActivityVM:ViewModel() {
         _isOnline.value = status
     }
 
-    private val _endCall = MutableLiveData<Boolean?>(false)
-    val endCall:LiveData<Boolean?> get() = _endCall
 
-    fun updateEndCall(status: Boolean){
-        _endCall.value = status
-    }
 
-    private val _showEndedCallText = MutableStateFlow<Boolean?>(false)
-    val showEndedCallText:StateFlow<Boolean?> get() = _showEndedCallText
-
-    fun updateShowEndedCallText(state: Boolean){
-        _showEndedCallText.value = state
-    }
-
-    private val _participantJoined = MutableStateFlow<Boolean?>(false)
-    val participantJoined:StateFlow<Boolean?> get() = _participantJoined
-
-    fun updateParticipantJoined(state: Boolean){
-        _participantJoined.value = state
-    }
 
     private val _inVoiceChannel = MutableStateFlow<Boolean?>(false)
     val inVoiceChannel:StateFlow<Boolean?> get() = _inVoiceChannel
@@ -491,33 +454,11 @@ class MainActivityVM:ViewModel() {
         _profileUpdating.value = state
     }
 
-    private val _randomParticipant = MutableStateFlow<RandomParticipant?>(null)
-    val randomParticipant:StateFlow<RandomParticipant?> get() = _randomParticipant
 
-    fun updateRandomParticipant(randomParticipant: RandomParticipant){
-        _randomParticipant.value = randomParticipant
-    }
 
-    private val _liverandomParticipant = MutableLiveData<RandomParticipant?>(null)
-    val liverandomParticipant:LiveData<RandomParticipant?> get() = _liverandomParticipant
 
-    fun updateliveRandomParticipant(liverandomParticipant: RandomParticipant){
-        _liverandomParticipant.value = liverandomParticipant
-    }
 
-    private val _matched = MutableStateFlow<Boolean?>(false)
-    val matched:StateFlow<Boolean?> get() = _matched
 
-    fun updateMatched(state: Boolean?){
-        _matched.value = state
-    }
-
-    private val _randomParticipantUid = MutableStateFlow<String?>(null)
-    val randomParticipantUid:StateFlow<String?> get() = _randomParticipantUid
-
-    fun updateRandomParticipantUid(uid: String?){
-        _randomParticipantUid.value = uid
-    }
 
     private val _updatedOutId = MutableStateFlow<Boolean?>(false)
     val updatedOutId:StateFlow<Boolean?> get() = _updatedOutId
@@ -526,12 +467,6 @@ class MainActivityVM:ViewModel() {
         _updatedOutId.value = status
     }
 
-    private val _x = MutableStateFlow<Boolean?>(false)
-    val x:StateFlow<Boolean?> get() = _x
-
-    fun update_x(status: Boolean){
-        _x.value = status
-    }
 
 
     private val _c = MutableStateFlow<Boolean?>(false)

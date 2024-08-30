@@ -8,6 +8,8 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="swhite">#F0F0F0</color>
+    <color name="pianoblack">#010B02</color>
+
 
     <color name="delete">#ea4f4f</color>
     <color name="message">#e8f3ff</color>
@@ -24,5 +26,9 @@
     <color name="x">#d0dbb1</color>
     <color name="blue">#1e91ff</color>
     <color name="dark">#121212</color>
+    <color name="de">#6ddbff</color>
+    <color name="dr">#6dffd3</color>
+    <color name="dt">#6dff96</color>
+    <color name="dy">#ffcc6d</color>
 
 </resources>

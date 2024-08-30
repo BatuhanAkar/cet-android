@@ -1552,7 +1552,7 @@ class FirebaseManager {
             snapshot , e ->
 
             if (snapshot != null && snapshot.exists()){
-                var ICC = snapshot.getBoolean("ICC")
+                var ICC = snapshot.getBoolean("inCall")
                 if (ICC != null){
                     mainActivityVM.updateCall(ICC)
                     Log.d("ICC" , "gelen arama " + ICC)
@@ -1571,8 +1571,9 @@ class FirebaseManager {
 
     /** arama isteği gönder ...*/
 
-    fun callrequest( ownerId: String , uid: String , displayName:String , photoUrl:String , mainActivityVM: MainActivityVM){
+    fun callrequest( ownerId: String , uid: String , displayName:String , photoUrl:String , inCallActivityViewModel: InCallActivityViewModel){
 
+        Log.d( "firstcall", "aramayı başlatanın aramada olduğu true ayarlandı ... ")
 
         usersRef.document(ownerId)
             .update("inCall" , true)
@@ -1586,11 +1587,12 @@ class FirebaseManager {
             .addOnCompleteListener {
 
                var call = it.result.getBoolean("inCall") // aranan kişinin arama durumu burda ...
+                Log.d( "firstcall", "arayan kişi karşı tarafın aramada olup olmadığını doğruluyor ... ")
 
                 /**
                  * arama isteği sonucunu karşı tarafın aramada olup olmamasına göre dönder ...
                  * */
-                mainActivityVM.updateRequestCall(call!!)
+                inCallActivityViewModel.updateRequestCall(call!!)
 
             }
 
@@ -1610,9 +1612,9 @@ class FirebaseManager {
             uid = uid ,
             type = "in" , // in algıla giden gelen arama ...
             time = System.currentTimeMillis() ,
-            act = true // kabul edildi mi ... arayan kişi ekranda kalması için ilkte true ayarlanır ...
-
-        )
+            act = true , // kabul edildi mi ... arayan kişi ekranda kalması için ilkte true ayarlanır ...
+            roomId = ownerId
+            )
 
         W.child("calls")
             .child(ownerId)
@@ -1625,7 +1627,7 @@ class FirebaseManager {
                      * arama yapan kişinin arama geçmişini dinleme sebebi ise ... karşı tarafın cevabına göre
                      * gelen arama durumunun dinlenmesi ve koridorun akışının şekillenmesi ...
                      * */
-                    listenCalls(ownerId, uid)
+                   // listenCalls(ownerId, uid)
                 }
             }
 
@@ -1647,7 +1649,8 @@ class FirebaseManager {
             uid = ownerId ,
             type = "out" , // out algıla gelen arama ...
             time = System.currentTimeMillis() ,
-            act = false // kabul edildi mi ...
+            act = false ,  // kabul edildi mi ...
+            roomId = ownerId
             )
 
         W.child("calls")
@@ -1657,7 +1660,7 @@ class FirebaseManager {
             .setValue(Ownercalls)
             .addOnCompleteListener {
                 if (it.isSuccessful){
-                    listenWCalls(ownerId, uid)
+                  //  listenWCalls(ownerId, uid)
                 }
             }
 
@@ -1667,19 +1670,19 @@ class FirebaseManager {
     lateinit var callsQuery:Query
     lateinit var WcallsQuery:Query
 
-    lateinit var mainActivityVM: MainActivityVM
+
 
 
     /**
      * arama geçmişinde arayan kişinin aranan kişinin arama geçmişinin dinleyicisi ...
      * */
-    private val WcallsValueListener = object : ValueEventListener{
+  /*  private val WcallsValueListener = object : ValueEventListener{
         override fun onDataChange(snapshot: DataSnapshot) {
             //TODO: arama dinleyici ...
 
             val call = snapshot.getValue(Calls::class.java)
             if (call != null){
-                mainActivityVM.updateWCalls(call)
+                voiceCallActivityVM.updateWCalls(call)
             }
         }
 
@@ -1687,7 +1690,7 @@ class FirebaseManager {
             TODO("Not yet implemented")
         }
 
-    }
+    }*//*
     @SuppressLint("SuspiciousIndentation")
     fun listenWCalls(ownerId:String, uid: String){
         WcallsQuery = W.child("calls")
@@ -1695,17 +1698,17 @@ class FirebaseManager {
             .child(ownerId)
 
         WcallsQuery.addValueEventListener(WcallsValueListener)
-    }
+    }*/
     /**
      * arama geçmişinde arayan kişinin kendi arama bilgilerinin dinleyicisi
      * */
-    private val callsValueListener = object : ValueEventListener{
+/*    private val callsValueListener = object : ValueEventListener{
         override fun onDataChange(snapshot: DataSnapshot) {
             //TODO: arama dinleyici ...
 
             val call = snapshot.getValue(Calls::class.java)
             if (call != null){
-                mainActivityVM.updateCalls(call)
+                voiceCallActivityVM.updateCalls(call)
             }
         }
 
@@ -1713,8 +1716,8 @@ class FirebaseManager {
             TODO("Not yet implemented")
         }
 
-    }
-    @SuppressLint("SuspiciousIndentation")
+    }*/
+   /* @SuppressLint("SuspiciousIndentation")
     fun listenCalls(ownerId:String, uid: String){
       callsQuery = W.child("calls")
             .child(ownerId)
@@ -1728,16 +1731,17 @@ class FirebaseManager {
             callsQuery.removeEventListener(callsValueListener)
         }
     }
-
+*/
     fun calling(uid: String ){
         /**
          * aranan kişi aramada olmadığı için arayabiliriz ... önce karşı tarafın aramayı kabul veya red onayı vermesi için
          * karşı tarafın ICC (incomingcall) field'ını güncelle ...
          * */
 
-        Log.d("calling" , "calling çalıştı ... ")
+        Log.d( "firstcall", "aramayı başlatan kişi karşı tarafın gelen arama durumunu true ayarladı ... ")
+
         usersRef.document(uid)
-            .update("ICC" , true) // karşı taraf artık bir aramanın geldiğini görebilecek ...
+            .update("inCall" , true) // karşı taraf artık bir aramanın geldiğini görebilecek ...
 
     }
 
@@ -1765,13 +1769,22 @@ class FirebaseManager {
     }
 
     fun declineCall(ownerId: String , uid: String){
+        Log.d( "firstcall", "aramayı başlatan kişi aramadan vazgeçti ... ")
+
         usersRef.document(ownerId)
             .update("inCall" , false)
+        Log.d( "firstcall", "aramayı başlatan kişinin aramada durumu false ayarlandı ... ")
+
         usersRef.document(uid)
             .update("inCall" , false)
 
+        Log.d( "firstcall", "aramayı başlatan kişi karşı tarafın aramada durumu false ayarlandı ... ")
+
+
         usersRef.document(uid)
             .update("ICC" , false)
+        Log.d( "firstcall", "aramayı başlatan kişi karşı tarafın gelen arama durumu false ayarlandı ... ")
+
 
         // kabul etmedin ... arayan kişinin arama geçmişindeki arama kabul durumunu false ayarla ...
         W.child("calls")
@@ -1810,7 +1823,7 @@ class FirebaseManager {
 
     fun addRandomParticipant(uid:String , displayName:String , photoUrl:String){
         val participant = RandomParticipant(
-            displayName, photoUrl, uid , false
+            displayName, photoUrl, uid , false,null,null,null
         )
         random
             .document(uid)
@@ -1871,17 +1884,17 @@ class FirebaseManager {
         val selfUid = MainActivity.PreferenceManager?.getuidShared("uid")
         random
             .document(uid)
-            .update("match" , false)
+            .update("match" , true)
         random
             .document(selfUid!!)
-            .update("match" , false)
+            .update("match" , true)
 
         random
             .document(uid)
-            .update("matched" , state)
+            .update("tfc" , state)
         random
             .document(selfUid!!)
-            .update("matched" , false)
+            .update("tfc" , false)
 
         random
             .document(uid)
@@ -1904,26 +1917,26 @@ class FirebaseManager {
      * kendi yakalayamadan başkası yakaladıysa kendi oda adını güncelle ...
      * */
 
-    fun updateSelfRoomName(randomParticipant: RandomParticipant , mainActivityVM: MainActivityVM){
+    fun updateSelfRoomName(randomParticipant: RandomParticipant , randomActivityViewModel: RandomActivityViewModel){
         val selfUid = MainActivity.PreferenceManager?.getuidShared("uid")
         var selfName = currentUser?.displayName
         var parname = randomParticipant?.displayName
 
-        var roomName =  "$selfName-$parname"
+        var roomName =  "$parname"
         random
             .document(selfUid!!)
             .update("rm" , roomName)
             .addOnCompleteListener {
                 if (it.isSuccessful){
-                    mainActivityVM.update_c(true)
+                  //  mainActivityVM.update_c(true)
                     randomParticipant?.rm = roomName
-                    mainActivityVM.updateliveRandomParticipant(randomParticipant)
+                    randomActivityViewModel.updateliveRandomParticipant(randomParticipant)
                 }
             }
     }
 
 
-    fun ListenMatch(Ouid: String , mainActivityVM: MainActivityVM){
+    fun ListenMatch(Ouid: String , randomActivityViewModel: RandomActivityViewModel){
        listenMatch = random
             .addSnapshotListener{
                 snapshot , e ->
@@ -1938,15 +1951,19 @@ class FirebaseManager {
 
                             if (uid?.equals(Ouid!!) == true) {
 
-                                var matched = dc.document.getBoolean("matched")
-                                mainActivityVM.updateMatched(matched!!) // ana aktivitedeki karşılaşma durumunuda güncelle ...
-                                if (dc.document.getString("outId")?.isNotEmpty() == true) {
+                                var matched = dc.document.getBoolean("match")
+                                randomActivityViewModel.updateMatched(matched!!) // ana aktivitedeki karşılaşma durumunuda güncelle ...
+
+                                var tfc = dc.document.getBoolean("tfc")
+                                randomActivityViewModel.updateTFC(tfc)
+                                randomActivityViewModel.updateTfc(tfc)
+                                if (dc.document.getString("outId")?.isNotEmpty() == true ) {
 
                                     var outId = dc.document.getString("outId")!!
 
                                     Log.d("outId", outId)
-                                    mainActivityVM.updateRandomParticipantUid(outId!!) // ana aktivitedeki karşılaşılan kişinin id sini güncelle ...
-                                    mainActivityVM.updatedOutIdSatus(true)
+                                    randomActivityViewModel.updateRandomParticipantUid(outId!!) // ana aktivitedeki karşılaşılan kişinin id sini güncelle ...
+                                  //  randomActivityViewModel.updatedOutIdSatus(true)
                                 }
                             }
                         }
@@ -1972,14 +1989,16 @@ class FirebaseManager {
         }
     }
 
-    fun getRandomParticipant(uid: String , mainActivityVM: MainActivityVM){
+    fun getRandomParticipant(uid: String , randomActivityViewModel: RandomActivityViewModel){
         random.document(uid)
             .get().addOnCompleteListener {
                 if (it.isSuccessful){
                     var randomParticipant = it.result.toObject(RandomParticipant::class.java)
                     if (randomParticipant != null){
-                        mainActivityVM.updateRandomParticipant(randomParticipant!!)
-                        mainActivityVM.update_x(true)
+                        randomActivityViewModel.updateRandomParticipant(randomParticipant!!)
+                        randomActivityViewModel.updateliveRandomParticipant(randomParticipant!!)
+                        randomActivityViewModel.update_x(true)
+                        randomActivityViewModel.update_X(true)
                     }
                 }
             }
@@ -1992,13 +2011,13 @@ class FirebaseManager {
             .update("matched" , state)
     }
 
-    fun matchParticipants(uid: String , mainActivityVM: MainActivityVM){
+    fun matchParticipants(uid: String , randomActivityViewModel: RandomActivityViewModel){
         /**
          * eşleme isteği true olan ve kişinin kendi id sine eşit olmayan rastgele kişiyi getir ...
          * */
         random
-            .whereEqualTo("match" , true) // karşılaşma isteği olan ...
-            .whereEqualTo("matched" , false) // karşılaşmamış olan ...
+            .whereEqualTo("match" , false) // karşılaşma isteği olan ...
+           // .whereEqualTo("matched" , false) // karşılaşmamış olan ...
             .whereEqualTo("outId" , null) // karşı taraf id'si boş olan ...
             .whereNotEqualTo("uid" , uid) // ve kendisi olmayan ...
             .get()
@@ -2020,10 +2039,10 @@ class FirebaseManager {
                             var parname = randomParticipant?.displayName
                             var name = MainActivity.PreferenceManager?.getString("displayName")
 
-                            var roomName = "$name-$parname"
+                            var roomName = "$name"
                             updateMatched(true , uid , roomName)
 
-                            mainActivityVM.updateRandomParticipant(randomParticipant!!)
+                            randomActivityViewModel.updateRandomParticipant(randomParticipant!!)
 
                             break ;
                         }
@@ -2251,9 +2270,9 @@ class FirebaseManager {
 
 class SessionService:Service() {
     lateinit var preferenceManager:PreferenceManager
-    var uid:String? = ""
+    lateinit var uid:String
     var session:Boolean? = false
-    var privRoomId:String? = ""
+    lateinit var privRoomId:String
     override fun onCreate() {
         super.onCreate()
         preferenceManager = PreferenceManager(context = this) ;

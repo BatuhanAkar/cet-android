@@ -28,8 +28,20 @@
         android:theme="@style/Theme.Hoşbeş"
         android:usesCleartextTraffic="true"
         tools:targetApi="31" >
+
+
         <activity
-            android:name=".views.VoiceCalls"
+            android:name=".views.RandomActivity"
+            android:theme="@style/JitsiMeetActivityStyle"
+            android:exported="false" />
+
+        <activity
+            android:name=".views.InCallActivity"
+            android:theme="@style/JitsiMeetActivityStyle"
+            android:exported="false" />
+
+        <activity
+            android:name=".views.OutCallActivity"
             android:theme="@style/JitsiMeetActivityStyle"
             android:exported="false" />
 

@@ -1,6 +1,7 @@
 package com.batuscode.hosbes.views
 
 import android.content.Context
+import android.content.Intent
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
@@ -280,7 +281,8 @@ fun MoreContent(scope: CoroutineScope , sheetState: SheetState , mainActivityVM:
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
                 }
-        ) {
+        )
+        {
 
             // hosbeslerim button
             TextButton(
@@ -338,14 +340,22 @@ fun MoreContent(scope: CoroutineScope , sheetState: SheetState , mainActivityVM:
                 }
 
             }
+
+            // rastgele butonu
+
             TextButton(
                 onClick = {
+
+                    val intent = Intent(context , RandomActivity::class.java)
+                    context.startActivity(intent)
+/*
 
                     scope.launch {
                         MainActivity.navigate?.navigate("random")
                     }.invokeOnCompletion {
                         if (!sheetState.isVisible) mainActivityVM.updateShowMore(false)
                     }
+*/
 
                 } ,
                 modifier = Modifier.fillMaxWidth()

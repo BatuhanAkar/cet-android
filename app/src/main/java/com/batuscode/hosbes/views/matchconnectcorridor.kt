@@ -80,12 +80,12 @@ fun MatchConnectCorridor(mainActivityVM: MainActivityVM){
 
     val context = LocalContext.current
 
-    val randomParticipant by mainActivityVM.randomParticipant.collectAsState()
+   // val randomParticipant by mainActivityVM.randomParticipant.collectAsState()
 
-    val Ruid = randomParticipant?.uid
+ /*   val Ruid = randomParticipant?.uid
     val Rname = randomParticipant?.displayName
     val RphotoUrl = randomParticipant?.photoUrl
-
+*/
     var image by remember{
         mutableStateOf<ImageBitmap?>(null)
     }
@@ -137,7 +137,7 @@ fun MatchConnectCorridor(mainActivityVM: MainActivityVM){
 
     GlideApp.with(context)
         .asBitmap()
-        .load(randomParticipant?.photoUrl)
+       // .load(randomParticipant?.photoUrl)
         .into(object : CustomTarget<Bitmap>(){
             override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
                 image = resource.asImageBitmap()
@@ -187,21 +187,21 @@ fun MatchConnectCorridor(mainActivityVM: MainActivityVM){
 
             }
 
-            Text(text = randomParticipant?.displayName!!)
+          //  Text(text = randomParticipant?.displayName!!)
 
             OutlinedButton(onClick = {
-                MainActivity.fm.updateRandomOwnerMatchedStatus(randomParticipant?.uid!! , true)
+             //   MainActivity.fm.updateRandomOwnerMatchedStatus(randomParticipant?.uid!! , true)
                 MainActivity.navigate?.popBackStack()
-                startMeeting(uid = uid!! , name = displayName!! , photoUrl = photoUrl!! ,
+               /* startMeeting(uid = uid!! , name = displayName!! , photoUrl = photoUrl!! ,
                     Ruid = Ruid!! , Rname = Rname!! , RphotoUrl = RphotoUrl!! , context = context)
-
+*/
 
             }) {
                 Text(text = stringResource(id = R.string.random))
             }
             OutlinedButton(onClick = {
-                mainActivityVM.updateRandomParticipantUid(null)
-                MainActivity.fm.declineMatch(false , randomParticipant?.uid!! , mainActivityVM)
+              //  mainActivityVM.updateRandomParticipantUid(null)
+              //  MainActivity.fm.declineMatch(false , randomParticipant?.uid!! , mainActivityVM)
                 MainActivity.navigate?.popBackStack()
             }) {
                 Text(text = stringResource(id = R.string.cancel))

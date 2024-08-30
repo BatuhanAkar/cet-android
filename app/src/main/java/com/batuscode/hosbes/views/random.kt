@@ -70,8 +70,8 @@ fun Random(mainActivityVM: MainActivityVM){
      * Bunun içinde esas olan şey ... kendi random bilgilerini dinleyip karşılaşma oldumu bakmak ... çünkü karşının güncelleyeceği şeylerden ilki karşılaşma durumu ...
      * */
 
-    val matched by mainActivityVM.matched.collectAsState() // karşılaşma durumu ana aktiviteden gelir ... sebebi karşılaşma isteği başlatan kişiyi biri yakalarsa işleyelim diye ...
-    val outId by mainActivityVM.randomParticipantUid.collectAsState() // kişinin kendi random dinlemesi sonucu gelen outId ...
+  //  val matched by mainActivityVM.matched.collectAsState() // karşılaşma durumu ana aktiviteden gelir ... sebebi karşılaşma isteği başlatan kişiyi biri yakalarsa işleyelim diye ...
+  //  val outId by mainActivityVM.randomParticipantUid.collectAsState() // kişinin kendi random dinlemesi sonucu gelen outId ...
 
     val d by mainActivityVM.d.collectAsState()
     /**
@@ -87,17 +87,17 @@ fun Random(mainActivityVM: MainActivityVM){
      * RandomParticipant belli olan işlemlerin hepsi karşılaşmayı başlatan kişi birini yakalarda düşer diye ...
      *
      * */
-    val randomParticipant by mainActivityVM.randomParticipant.collectAsState()
+   // val randomParticipant by mainActivityVM.randomParticipant.collectAsState()
 
-    val Ruid = randomParticipant?.uid
-    val Rname = randomParticipant?.displayName
-    val RphotoUrl = randomParticipant?.photoUrl
+  //  val Ruid = randomParticipant?.uid
+  //  val Rname = randomParticipant?.displayName
+  //  val RphotoUrl = randomParticipant?.photoUrl
 
     val scope = CoroutineScope(Dispatchers.Default)
     val lifecycle = LocalLifecycleOwner.current
 
     val updatedOutId by mainActivityVM.updatedOutId.collectAsState()
-    val x by mainActivityVM.x.collectAsState()
+  //  val x by mainActivityVM.x.collectAsState()
     val c by mainActivityVM.c.collectAsState()
 
     DisposableEffect(lifecycle) {
@@ -106,8 +106,8 @@ fun Random(mainActivityVM: MainActivityVM){
 
             when(event){
                 Lifecycle.Event.ON_CREATE -> {
-                    MainActivity.fm.addRandomParticipant(uid = uid!! , displayName = displayName!! , photoUrl = photoUrl!!) // önce random a kaydet ...
-                    MainActivity.fm.ListenMatch(uid!! , mainActivityVM) // sonra random'ı dinle ...
+                   // MainActivity.fm.addRandomParticipant(uid = uid!! , displayName = displayName!! , photoUrl = photoUrl!!) // önce random a kaydet ...
+                   // MainActivity.fm.ListenMatch(uid!! , mainActivityVM) // sonra random'ı dinle ...
                 }
                 Lifecycle.Event.ON_START -> {}
                 Lifecycle.Event.ON_RESUME -> {}
@@ -136,31 +136,31 @@ fun Random(mainActivityVM: MainActivityVM){
             lifecycle.lifecycle.removeObserver(observer)
         }
     }
-    if (x == true){
+   /* if (x == true){
         mainActivityVM.update_x(false)
         mainActivityVM.updateliveRandomParticipant(randomParticipant!!)
         mainActivityVM.updatedOutIdSatus(false)
         MainActivity.navigate?.navigate("matchconnectcorridor")
     }
-
-    if (matched == true){
+*/
+/*    if (matched == true){
         if (updatedOutId == true){
             Log.d("karsii" , "karsi taraf yakaladi ve karsinin id si geldi ... ")
-            MainActivity.fm.getRandomParticipant(outId!! , mainActivityVM)
+          //  MainActivity.fm.getRandomParticipant(outId!! , mainActivityVM)
 
         }
     } else if (matched == false) {
 
         if (outId?.isNotEmpty() == true){
-            /**
+            *//**
              * kişi kendi yakalamadan yakalandı ve karşılaşma true RandomParticipant bilgilerini çek ... neyle ??? dinlediğimiz veriyle ... outId ile ...
-             * */
-            /**
+             * *//*
+            *//**
              * kişi kendi yakalamadan yakalandı ve karşılaşma true RandomParticipant bilgilerini çek ... neyle ??? dinlediğimiz veriyle ... outId ile ...
-             * */
+             * *//*
 
-            MainActivity.fm?.updateSelfRoomName(randomParticipant!! , mainActivityVM)
-            mainActivityVM.updateliveRandomParticipant(randomParticipant!!)
+         //   MainActivity.fm?.updateSelfRoomName(randomParticipant!! , mainActivityVM)
+          //  mainActivityVM.updateliveRandomParticipant(randomParticipant!!)
 
             if (c == true){
                 mainActivityVM.update_c(false)
@@ -168,7 +168,7 @@ fun Random(mainActivityVM: MainActivityVM){
             }
         }
 
-    }
+    }*/
 
     Scaffold( modifier = Modifier.fillMaxSize() ,
         topBar = {
@@ -230,8 +230,8 @@ fun Random(mainActivityVM: MainActivityVM){
                 //TODO: eşleş butonu ...
                 OutlinedButton(onClick = {
                     mainActivityVM.update_d(true)
-                    MainActivity.fm.updateMatchRequest(true , uid = uid!!) // karşılaşma isteği olduğunu belirt ...
-                    MainActivity.fm.matchParticipants(uid = uid , mainActivityVM = mainActivityVM) // karşılaştır bakalım ...
+                  //  MainActivity.fm.updateMatchRequest(true , uid = uid!!) // karşılaşma isteği olduğunu belirt ...
+                   // MainActivity.fm.matchParticipants(uid = uid , mainActivityVM = mainActivityVM) // karşılaştır bakalım ...
                 }  ,
                     modifier = Modifier
                         .clip(CircleShape)
@@ -252,6 +252,7 @@ fun Random(mainActivityVM: MainActivityVM){
         }
     }
 }
+/*
 
 @Preview(showBackground = true , showSystemUi = true)
 @Composable
@@ -259,4 +260,4 @@ fun RandomPreview(){
     HoşbeşTheme {
         Random(MainActivityVM())
     }
-}
+}*/

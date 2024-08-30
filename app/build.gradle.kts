@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     id("com.google.gms.google-services")
     id("kotlin-kapt")
+    alias(libs.plugins.google.firebase.crashlytics)
 }
 
 android {
@@ -77,6 +78,7 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.media3.common)
     implementation(libs.androidx.media3.exoplayer)
+    implementation(libs.firebase.crashlytics)
     kapt ("com.github.bumptech.glide:compiler:4.16.0")
     implementation("com.github.bumptech.glide:okhttp3-integration:4.16.0")
     
@@ -84,7 +86,7 @@ dependencies {
 
     implementation("com.google.accompanist:accompanist-permissions:0.35.1-alpha")
 
-    implementation(platform("com.google.firebase:firebase-bom:33.1.1"))
+    implementation(platform("com.google.firebase:firebase-bom:33.2.0"))
     implementation("com.google.firebase:firebase-auth:21.2.0")
     implementation(libs.firebase.database)
     implementation("com.google.firebase:firebase-storage-ktx:21.0.0")
@@ -92,7 +94,7 @@ dependencies {
     implementation("com.firebaseui:firebase-ui-storage:8.0.2")
     implementation("org.jitsi.react:jitsi-meet-sdk:10.0.1"){ isTransitive = true}
 
-    implementation ("com.google.android.play:integrity:1.4.0")
+
     implementation ("com.google.firebase:firebase-functions:21.0.0")
 
     testImplementation(libs.junit)

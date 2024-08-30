@@ -6,8 +6,7 @@ data class RandomParticipant(
     val photoUrl:String? = null ,
     val uid:String? = null ,
     var match:Boolean? = false ,
-    var matched:Boolean? = false ,
-    var outId:String? = null ,
     var rm:String? = null ,
-    var meeting:Boolean? = false
+    var tfc:Boolean? = false ,
+    var outId:String? = null
 )

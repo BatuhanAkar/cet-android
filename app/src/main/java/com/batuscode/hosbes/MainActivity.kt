@@ -20,7 +20,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -44,10 +43,10 @@ import com.batuscode.hosbes.utility.PreferenceManager
 import com.batuscode.hosbes.utility.SessionService
 import com.batuscode.hosbes.utility.WhisperViewModel
 import com.batuscode.hosbes.views.Authentication
-import com.batuscode.hosbes.views.CallsCorridor
 import com.batuscode.hosbes.views.Chat
 import com.batuscode.hosbes.views.DeleteAccount
 import com.batuscode.hosbes.views.MatchConnectCorridor
+import com.batuscode.hosbes.views.OutCallActivity
 import com.batuscode.hosbes.views.PrivateRoomChat
 import com.batuscode.hosbes.views.PrivateRooms
 import com.batuscode.hosbes.views.Random
@@ -105,6 +104,10 @@ class MainActivity : ComponentActivity() {
         restartActivity()
     }
 
+
+
+
+
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -138,11 +141,11 @@ class MainActivity : ComponentActivity() {
 
 
 
-                val whisperItem by mainActivityVM.whisperItem.collectAsState()
+                val historyCallItem by mainActivityVM.Historycalls.collectAsState()
 
                 mMainActivityVM = mainActivityVM
 
-                val call by mainActivityVM.call.collectAsState()
+                val incall by mainActivityVM.incall.collectAsState()
 
                 val participantsViewModel:ParticipantsViewModel by viewModels()
                 fm.whisperViewModel = whisperViewModel
@@ -157,67 +160,60 @@ class MainActivity : ComponentActivity() {
                     mutableStateOf(true)
                 }
 
-                LaunchedEffect(Unit) {
+                if (session == true){
+                    mainActivityVM.connectChannel("C1")
 
 
-                    if (session == true){
-                        mainActivityVM.connectChannel("C1")
+                    authStateListener = FirebaseAuth.AuthStateListener { firebaseAuth ->
+                        run {
+                            Log.d(FATG , "statelistenera girdi...")
+                            firebaseAuth.currentUser?.let {
+
+                                authViewModel.updateUser(it)
 
 
-                        authStateListener = FirebaseAuth.AuthStateListener { firebaseAuth ->
-                            run {
-                                Log.d(FATG , "statelistenera girdi...")
-                                firebaseAuth.currentUser?.let {
+                                FirebaseManager.currentUser = firebaseAuth.currentUser
 
-                                    authViewModel.updateUser(it)
+                                var displayName = FirebaseManager.currentUser?.displayName
+                                var photo = FirebaseManager.currentUser?.photoUrl.toString()
 
+                                PreferenceManager?.saveString("displayName" , displayName!!)
+                                PreferenceManager?.saveString("photoUrl" , photo!!)
 
-                                    FirebaseManager.currentUser = firebaseAuth.currentUser
+                                mainActivityVM.updateDisplayName(displayName!!)
+                                var Pphoto = FirebaseManager.currentUser?.photoUrl.toString()
 
-                                    var displayName = FirebaseManager.currentUser?.displayName
-                                    var photo = FirebaseManager.currentUser?.photoUrl.toString()
+                                GlideApp.with(context)
+                                    .asBitmap()
+                                    .load(Pphoto)
+                                    .into(object : CustomTarget<Bitmap>() {
+                                        override fun onResourceReady(
+                                            resource: Bitmap,
+                                            transition: Transition<in Bitmap>?
+                                        ) {
+                                            var imageBitmap = resource.asImageBitmap()
 
-                                    PreferenceManager?.saveString("displayName" , displayName!!)
-                                    PreferenceManager?.saveString("photoUrl" , photo!!)
+                                            mainActivityVM.updatePhoto(imageBitmap)
+                                        }
 
-                                    mainActivityVM.updateDisplayName(displayName!!)
-                                    var Pphoto = FirebaseManager.currentUser?.photoUrl.toString()
+                                        override fun onLoadCleared(placeholder: Drawable?) {
+                                            TODO("Not yet implemented")
+                                        }
 
-                                    GlideApp.with(context)
-                                        .asBitmap()
-                                        .load(Pphoto)
-                                        .into(object : CustomTarget<Bitmap>() {
-                                            override fun onResourceReady(
-                                                resource: Bitmap,
-                                                transition: Transition<in Bitmap>?
-                                            ) {
-                                                var imageBitmap = resource.asImageBitmap()
-
-                                                mainActivityVM.updatePhoto(imageBitmap)
-                                            }
-
-                                            override fun onLoadCleared(placeholder: Drawable?) {
-                                                TODO("Not yet implemented")
-                                            }
-
-                                        })
-                                    fm.updateSessionStatus()
-                                    fm.listenICC(it.uid , mainActivityVM)
+                                    })
+                                fm.updateSessionStatus()
+                                fm.listenICC(it.uid , mainActivityVM)
 
 
 
 
-                                    Log.d(FATG , "kullanici bos degil...")
-                                }
+                                Log.d(FATG , "kullanici bos degil...")
                             }
                         }
-
-                        FirebaseManager.auth.addAuthStateListener(authStateListener)
                     }
 
+                    FirebaseManager.auth.addAuthStateListener(authStateListener)
                 }
-
-
 
                 handler.postDelayed({
                     splash = false
@@ -267,12 +263,7 @@ class MainActivity : ComponentActivity() {
                         composable("deleteaccount"){
                             DeleteAccount(mainActivityVM)
                         }
-                        composable("ICC"){
-                            com.batuscode.hosbes.views.ICC(mainActivityVM = mainActivityVM)
-                        }
-                        composable("callscorridor"){
-                            CallsCorridor(mainActivityVM = mainActivityVM , whisperItem = whisperItem!!)
-                        }
+
                         composable("random"){
                             Random(mainActivityVM = mainActivityVM)
                         }
@@ -286,7 +277,7 @@ class MainActivity : ComponentActivity() {
 
 
 
-                    if (call == true){
+                    if (incall == true){
 
                         /**
                          * arama geldiği zaman arama geçmişinin en son öğesini getir ...
@@ -294,7 +285,21 @@ class MainActivity : ComponentActivity() {
 
                         fm.getLastCallHistory(uid!! , mainActivityVM)
 
-                        navigate?.navigate("ICC")
+                       // navigate?.navigate("ICC")
+
+                        val historycalls by mainActivityVM.Historycalls.collectAsState()
+
+                        if (historycalls != null && historycalls?.type?.equals("out") == true){
+
+                            val intent = Intent(this , OutCallActivity::class.java)
+                            intent.putExtra("type" , "ICC")
+                            intent.putExtra("wuid" , historyCallItem?.uid)
+                            intent.putExtra("wphotoUrl" , historyCallItem?.photoUrl)
+                            intent.putExtra("wdisplayName" , historyCallItem?.displayName)
+                            startActivity(intent)
+                        }
+
+
                     }
 
                 } else {

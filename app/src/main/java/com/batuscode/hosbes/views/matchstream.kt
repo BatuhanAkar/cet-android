@@ -107,7 +107,7 @@ class MatchStream:JitsiMeetActivity() , JitsiMeetActivityInterface {
             displayName = name
             avatar = URL(photo)
         }
-
+/*
         mainActivityVM.liverandomParticipant.observe(this , Observer {
             randomParticipant ->
 
@@ -148,12 +148,12 @@ class MatchStream:JitsiMeetActivity() , JitsiMeetActivityInterface {
                 join(options)
 
             }
-        })
+        })*/
     }
 
     override fun onBackPressed() {
         super.onBackPressed()
-        mainActivityVM.updateMatched(false)
+      //  mainActivityVM.updateMatched(false)
         LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver)
         JitsiMeetActivityDelegate.onBackPressed()
     }
@@ -165,7 +165,7 @@ class MatchStream:JitsiMeetActivity() , JitsiMeetActivityInterface {
 
     override fun onDestroy() {
         super.onDestroy()
-        mainActivityVM.updateMatched(false)
+      //  mainActivityVM.updateMatched(false)
         LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver)
         JitsiMeetActivityDelegate.onHostDestroy(this)
 
@@ -173,7 +173,7 @@ class MatchStream:JitsiMeetActivity() , JitsiMeetActivityInterface {
 
     override fun onStop() {
         super.onStop()
-        mainActivityVM.updateMatched(false)
+        //mainActivityVM.updateMatched(false)
         JitsiMeetActivityDelegate.onHostDestroy(this)
     }
 }

@@ -179,17 +179,29 @@ fun WhisperChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
                     OutlinedIconButton( border = null , onClick = {
                         val uid = whisperItem?.wuid
 
+                        Log.d("yanit" , "tikladi...")
                         /**
                          * çevrimiçi ise ara ...
                          * */
 
                         MainActivity.fm.checkSession(uid!! , mainActivityVM)
 
-                        if (_isOnline == true){
-                            /**
+                        val intent = Intent(context , InCallActivity::class.java)
+                        intent.putExtra("type" , "OGG")
+                        intent.putExtra("wuid" , whisperItem?.wuid)
+                        intent.putExtra("wphotoUrl" , whisperItem?.wphotoUrl)
+                        intent.putExtra("wdisplayName" , whisperItem?.wdisplayName)
+                        context.startActivity(intent)
+
+                       /* if (_isOnline == true){
+                            *//**
                              * Arama yapılmak istendi ... VoiceCall aktivitesi başlat ... Aranan kişinin bilgilerini geçir ...
-                             * */
+                             * *//*
                             //  startCall(MainActivity.context , uid!! , photoUrl!! , displayName!!)
+
+
+                            //TODO: arama istendi ...
+                            Log.d( "firstcall", "karşı taraf aranmak isteniyor ... ")
                             MainActivity.navigate?.navigate("callscorridor")
 
                         } else {
@@ -202,7 +214,7 @@ fun WhisperChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
                                     withDismissAction = false
                                 )
                             }
-                        }
+                        }*/
                     }
                         ) {
                         Icon(painter = painterResource(id = R.drawable.call_24px), contentDescription = "")
@@ -282,6 +294,7 @@ fun setReaded(whisperItem: Whisper){
     }
 
 }
+/*
 
 @Preview(showBackground = true , showSystemUi = true)
 @Composable
@@ -289,4 +302,4 @@ fun WhisperChatPreview(){
     HoşbeşTheme {
         WhisperChat(mainActivityVM = MainActivityVM() , chatViewModel = ChatViewModel())
     }
-}
+}*/

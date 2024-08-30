@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
+import androidx.annotation.OptIn
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -35,24 +36,24 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.media3.common.util.Log
+import androidx.media3.common.util.UnstableApi
 import com.batuscode.hosbes.MainActivity
 import com.batuscode.hosbes.R
 import com.batuscode.hosbes.models.Calls
+import com.batuscode.hosbes.models.Participnat
 import com.batuscode.hosbes.ui.theme.HoşbeşTheme
 import com.batuscode.hosbes.utility.GlideApp
 import com.batuscode.hosbes.utility.MainActivityVM
+import com.batuscode.hosbes.utility.OutCallActivityViewModel
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 
-fun answerCall(context: Context , calls:Calls){
-    val intent = Intent(context , VoiceCalls::class.java)
-    intent.putExtra("type" , "answered")
-    intent.putExtra("roomId" , calls.uid!!)
 
-    context.startActivity(intent)
-}
+
+@OptIn(UnstableApi::class)
 @Composable
-fun ICC(mainActivityVM: MainActivityVM){
+fun ICC(outCallActivityViewModel: OutCallActivityViewModel , Historycalls:Participnat){
     val context = LocalContext.current
 
     val uid = MainActivity?.PreferenceManager?.getuidShared("uid")
@@ -61,7 +62,10 @@ fun ICC(mainActivityVM: MainActivityVM){
      * gelen arama ile birlikte getirilen arama geçmişindeki son arama ...
      * */
 
-    val Historycalls by mainActivityVM.Historycalls.collectAsState()
+   // val Historycalls by voiceCallActivityVM.Historycalls.collectAsState()
+
+    val WillJoin by outCallActivityViewModel.WillJoin.collectAsState()
+
 
 
     var image by remember{
@@ -86,6 +90,9 @@ fun ICC(mainActivityVM: MainActivityVM){
 
             })
     }
+
+
+
     Scaffold {innerPadding ->
         Column (
             verticalArrangement = Arrangement.SpaceBetween,
@@ -134,8 +141,11 @@ fun ICC(mainActivityVM: MainActivityVM){
                     )
                 }
 
-                Text(text = "Gelen sesli arama...")
-
+                when(WillJoin){
+                    null -> Text(text = "Gelen sesli arama...")
+                    true -> Text(text = "Bağlanıyor...")
+                    false -> Text(text = "Arama devam ediyor...")
+                }
 
             }
 
@@ -148,9 +158,13 @@ fun ICC(mainActivityVM: MainActivityVM){
 
                 IconButton(onClick = {
                     //TODO: aramayi cevapla butonu ...
-                    MainActivity.fm.acceptCall(ownerId = Historycalls?.uid!! , uid = uid!!)
-                    answerCall(MainActivity.context , calls = Historycalls!!)
-                    MainActivity.navigate?.popBackStack()
+
+                    outCallActivityViewModel.updateLjoin(true)
+
+
+                   // MainActivity.fm.acceptCall(ownerId = Historycalls?.uid!! , uid = uid!!)
+                  //  answerCall(MainActivity.context , calls = Historycalls!!)
+                  //  MainActivity.navigate?.popBackStack()
 
                 } ,
                     modifier = Modifier
@@ -160,8 +174,11 @@ fun ICC(mainActivityVM: MainActivityVM){
 
                 IconButton(onClick = {
                     //TODO: aramayi reddet butonu ...
-                    MainActivity.fm.declineCall(Historycalls?.uid!! , uid!!)
-                    MainActivity.navigate?.popBackStack()
+
+                    outCallActivityViewModel.updateLjoin(false)
+
+                  //  MainActivity.fm.declineCall(Historycalls?.uid!! , uid!!)
+                  //  MainActivity.navigate?.popBackStack()
                 } ,
                     modifier = Modifier
                 ) {
@@ -172,6 +189,7 @@ fun ICC(mainActivityVM: MainActivityVM){
     }
 
 }
+/*
 
 @Preview(showBackground = true , showSystemUi = true)
 @Composable
@@ -179,4 +197,4 @@ fun ICCPreview(){
     HoşbeşTheme {
         ICC(mainActivityVM = MainActivityVM())
     }
-}
+}*/
