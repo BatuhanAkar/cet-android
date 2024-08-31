@@ -2,6 +2,7 @@ package com.batuscode.hosbes.views
 
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
+import android.util.Log
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -114,7 +115,9 @@ fun RandomConnection(randomActivityViewModel: RandomActivityViewModel){
     val matched by randomActivityViewModel.matched.collectAsState()
     val Tfc by randomActivityViewModel.Tfc.collectAsState()
     val outId by randomActivityViewModel.randomParticipantUid.collectAsState()
+    val outIdUpdated by randomActivityViewModel.updatedOutId.collectAsState()
     val x by randomActivityViewModel.x.collectAsState()
+    val c by randomActivityViewModel.c.collectAsState()
 
     val randomParticipant by randomActivityViewModel.randomParticipant.collectAsState()
 
@@ -122,25 +125,8 @@ fun RandomConnection(randomActivityViewModel: RandomActivityViewModel){
         mutableStateOf<ImageBitmap?>(null)
     }
 
-    if (matched == true && Tfc == false){
-        MainActivity.fm.getRandomParticipant(outId!! , randomActivityViewModel = randomActivityViewModel)
 
-    }
 
-    GlideApp.with(context)
-        .asBitmap()
-        .load(randomParticipant?.photoUrl)
-        .into(object : CustomTarget<Bitmap>() {
-            override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
-
-                ppimage = resource.asImageBitmap()
-            }
-
-            override fun onLoadCleared(placeholder: Drawable?) {
-
-            }
-
-        })
 
     DisposableEffect(lifecycle) {
         val observer = LifecycleEventObserver{
@@ -148,8 +134,16 @@ fun RandomConnection(randomActivityViewModel: RandomActivityViewModel){
             when(event){
                 Lifecycle.Event.ON_CREATE -> {
 
-                     MainActivity.fm.updateMatchRequest(false , uid = uid!!) // karşılaşma isteği olduğunu belirt ...
-                     MainActivity.fm.matchParticipants(uid = uid , randomActivityViewModel = randomActivityViewModel) // karşılaştır bakalım ...
+                    Log.d("randomActivity" , "random connection view oluşturuldu ... ")
+                    val uid = MainActivity.PreferenceManager?.getuidShared("uid")
+
+                    MainActivity.fm.matchParticipants(uid = uid!! , randomActivityViewModel = randomActivityViewModel) // karşılaştır bakalım ...
+                   // MainActivity.fm.listenRandomHistory(randomActivityViewModel = randomActivityViewModel)
+
+                    /*
+                    MainActivity.fm.ListenMatch(uid!! , randomActivityViewModel) // sonra random'ı dinle ...
+                    MainActivity.fm.updateMatchRequest(false , uid = uid!!) // karşılaşma isteği olduğunu belirt ...
+                     MainActivity.fm.matchParticipants(uid = uid , randomActivityViewModel = randomActivityViewModel) // karşılaştır bakalım ...*/
                 }
                 Lifecycle.Event.ON_START -> {}
                 Lifecycle.Event.ON_RESUME -> {}
@@ -175,11 +169,26 @@ fun RandomConnection(randomActivityViewModel: RandomActivityViewModel){
     ) {
         innerPadding ->
 
+/*
 
-        if (matched == true && Tfc == true)
+        if (randomParticipant != null && Tfc == false)
         {
 
+            Log.d("randomActivity" , "karşılaşma içeriden bulundu ... ")
+            GlideApp.with(context)
+                .asBitmap()
+                .load(randomParticipant?.photoUrl)
+                .into(object : CustomTarget<Bitmap>() {
+                    override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
 
+                        ppimage = resource.asImageBitmap()
+                    }
+
+                    override fun onLoadCleared(placeholder: Drawable?) {
+
+                    }
+
+                })
 
             ConstraintLayout(
                 modifier = Modifier
@@ -201,7 +210,7 @@ fun RandomConnection(randomActivityViewModel: RandomActivityViewModel){
                             end.linkTo(parent.end)
                         }
                 )
-                
+
                 Surface(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -228,9 +237,23 @@ fun RandomConnection(randomActivityViewModel: RandomActivityViewModel){
 
         }
 
-        else if (matched == true && Tfc == false && x == true){
+        else if (randomParticipant != null && Tfc == true && x == true){
+            Log.d("randomActivity" , "karşılaşma dışarıdan bulundu ... ")
 
+            GlideApp.with(context)
+                .asBitmap()
+                .load(randomParticipant?.photoUrl)
+                .into(object : CustomTarget<Bitmap>() {
+                    override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
 
+                        ppimage = resource.asImageBitmap()
+                    }
+
+                    override fun onLoadCleared(placeholder: Drawable?) {
+
+                    }
+
+                })
             ConstraintLayout(
                 modifier = Modifier
                     .fillMaxSize()
@@ -277,8 +300,9 @@ fun RandomConnection(randomActivityViewModel: RandomActivityViewModel){
 
 
         }
+*/
 
-        else if (matched == false){
+        if (matched == false){
 
             // karşılaşılmamış ise aranıyor ekranını göster ...
 
@@ -307,6 +331,67 @@ fun RandomConnection(randomActivityViewModel: RandomActivityViewModel){
                         }
                         .align(Alignment.Center)
                 )
+            }
+
+
+        } else if (matched == true && randomParticipant != null && x == true){
+
+            GlideApp.with(context)
+                .asBitmap()
+                .load(randomParticipant?.photoUrl)
+                .into(object : CustomTarget<Bitmap>() {
+                    override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+
+                        ppimage = resource.asImageBitmap()
+                    }
+
+                    override fun onLoadCleared(placeholder: Drawable?) {
+
+                    }
+
+                })
+
+            ConstraintLayout(
+                modifier = Modifier
+                    .fillMaxSize()
+            ) {
+
+                val (backgraundImage , name) = createRefs()
+
+
+                Image(
+                    bitmap = ppimage!! ,
+                    contentDescription = "" ,
+                    contentScale = ContentScale.FillBounds,
+                    modifier = Modifier
+                        .constrainAs(backgraundImage){
+                            top.linkTo(parent.top)
+                            bottom.linkTo(parent.bottom)
+                            start.linkTo(parent.start)
+                            end.linkTo(parent.end)
+                        }
+                )
+
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .constrainAs(name) {
+                            top.linkTo(parent.top)
+                            start.linkTo(parent.start)
+                            end.linkTo(parent.end)
+                        },
+                    color = Color.LightGray
+                ) {
+                    Text(
+                        text = randomParticipant?.displayName!! ,
+                        modifier = Modifier
+                            .wrapContentSize()
+                    )
+                }
+
+
+
+
             }
 
 

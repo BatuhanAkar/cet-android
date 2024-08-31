@@ -96,9 +96,9 @@ fun Random(mainActivityVM: MainActivityVM){
     val scope = CoroutineScope(Dispatchers.Default)
     val lifecycle = LocalLifecycleOwner.current
 
-    val updatedOutId by mainActivityVM.updatedOutId.collectAsState()
+  //  val updatedOutId by mainActivityVM.updatedOutId.collectAsState()
   //  val x by mainActivityVM.x.collectAsState()
-    val c by mainActivityVM.c.collectAsState()
+  //  val c by mainActivityVM.c.collectAsState()
 
     DisposableEffect(lifecycle) {
         val observer = LifecycleEventObserver{

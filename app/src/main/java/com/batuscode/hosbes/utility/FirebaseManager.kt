@@ -88,6 +88,9 @@ class FirebaseManager {
 
         val W:DatabaseReference = Firebase.database("https://whispers-552e7.europe-west1.firebasedatabase.app/").getReference()
         val W_C:DatabaseReference = Firebase.database("https://whispers-chat.europe-west1.firebasedatabase.app/").getReference()
+        val Random_History = Firebase.database("https://random-27a8c.europe-west1.firebasedatabase.app/").getReference()
+
+
         val random:CollectionReference = firestore.collection("random")
     }
 
@@ -1821,13 +1824,35 @@ class FirebaseManager {
      * TODO: rastgele katılımcısı ekle ...
      * */
 
-    fun addRandomParticipant(uid:String , displayName:String , photoUrl:String){
+    fun addRandomParticipant(uid:String , displayName:String , photoUrl:String , randomActivityViewModel: RandomActivityViewModel){
         val participant = RandomParticipant(
-            displayName, photoUrl, uid , false,null,null,null
+            displayName, photoUrl, uid , null,null,null,null
         )
+        Log.d("randomActivity" , "random katılımcı veri tababnına eklendi ... ")
+
+
+        val par = hashMapOf(
+            "uid" to uid ,
+            "match" to false ,
+            "outId" to null ,
+            "displayName" to displayName ,
+            "photoUrl" to photoUrl
+        )
+/*
+        Random_History
+            .child("lobby")
+            .child(uid)
+            .setValue(true)*/
+
+
         random
             .document(uid)
-            .set(participant)
+            .set(par)
+            .addOnCompleteListener {
+                if (it.isSuccessful){
+
+                }
+            }
     }
     fun removeRandomParticipant(uid:String){
 
@@ -1837,6 +1862,8 @@ class FirebaseManager {
     }
 
     fun updateMatchRequest(state:Boolean , uid: String){
+        Log.d("randomActivity" , "karşılaşma isteği tamam ... ")
+
         random
             .document(uid)
             .update("match" , state)
@@ -1880,37 +1907,16 @@ class FirebaseManager {
             .update("meeting" , status)
     }
 
-    fun updateMatched(state: Boolean , uid:String , roomName: String?){
+    fun updateMatched(state: Boolean , uid:String){
         val selfUid = MainActivity.PreferenceManager?.getuidShared("uid")
         random
             .document(uid)
-            .update("match" , true)
+            .update("match" , state)
         random
             .document(selfUid!!)
-            .update("match" , true)
-
-        random
-            .document(uid)
-            .update("tfc" , state)
-        random
-            .document(selfUid!!)
-            .update("tfc" , false)
-
-        random
-            .document(uid)
-            .update("outId" , selfUid)
-        random
-            .document(selfUid!!)
-            .update("outId" , uid)
+            .update("match" , state)
 
 
-        random
-            .document(selfUid!!)
-            .update("rm" , roomName)
-
-        random
-            .document(uid)
-            .update("rm" , roomName)
     }
 
     /**
@@ -1936,6 +1942,27 @@ class FirebaseManager {
     }
 
 
+
+    fun listenRandomHistory(randomActivityViewModel: RandomActivityViewModel){
+        val selfUid = MainActivity.PreferenceManager?.getuidShared("uid")
+
+        Random_History
+            .child(selfUid!!)
+            .get()
+            .addOnCompleteListener {
+                if (it.isSuccessful){
+                    val random = it.result.children.last().getValue(RandomParticipant::class.java)
+
+                    randomActivityViewModel.updateRandomParticipant(random!!)
+                    randomActivityViewModel.updateliveRandomParticipant(random)
+                    randomActivityViewModel.update_x(true)
+
+                }
+            }
+
+
+    }
+
     fun ListenMatch(Ouid: String , randomActivityViewModel: RandomActivityViewModel){
        listenMatch = random
             .addSnapshotListener{
@@ -1952,19 +1979,13 @@ class FirebaseManager {
                             if (uid?.equals(Ouid!!) == true) {
 
                                 var matched = dc.document.getBoolean("match")
-                                randomActivityViewModel.updateMatched(matched!!) // ana aktivitedeki karşılaşma durumunuda güncelle ...
+                                randomActivityViewModel.updateMatched(true)
 
-                                var tfc = dc.document.getBoolean("tfc")
-                                randomActivityViewModel.updateTFC(tfc)
-                                randomActivityViewModel.updateTfc(tfc)
-                                if (dc.document.getString("outId")?.isNotEmpty() == true ) {
-
-                                    var outId = dc.document.getString("outId")!!
-
-                                    Log.d("outId", outId)
-                                    randomActivityViewModel.updateRandomParticipantUid(outId!!) // ana aktivitedeki karşılaşılan kişinin id sini güncelle ...
-                                  //  randomActivityViewModel.updatedOutIdSatus(true)
+                                if (matched == true){
+                                    listenRandomHistory(randomActivityViewModel = randomActivityViewModel)
                                 }
+
+
                             }
                         }
                         DocumentChange.Type.REMOVED -> {}
@@ -2015,6 +2036,8 @@ class FirebaseManager {
         /**
          * eşleme isteği true olan ve kişinin kendi id sine eşit olmayan rastgele kişiyi getir ...
          * */
+        Log.d("randomActivity" , "karşılaştırma çalıştı ... ")
+
         random
             .whereEqualTo("match" , false) // karşılaşma isteği olan ...
            // .whereEqualTo("matched" , false) // karşılaşmamış olan ...
@@ -2025,6 +2048,7 @@ class FirebaseManager {
 
                 if (it.isSuccessful){
 
+                    Log.d("randomActivity" , "karşılaştırma başarılı ... ")
                     val documents = it.result.documents
 
                     if (documents.isNotEmpty()){
@@ -2035,14 +2059,39 @@ class FirebaseManager {
 
                             val randomParticipant = ds.toObject(RandomParticipant::class.java)
 
-                            var uid = randomParticipant?.uid!!
-                            var parname = randomParticipant?.displayName
+                            var outId = randomParticipant?.uid!!
+                            var Xname = randomParticipant?.displayName
+                            var Xphoto = randomParticipant?.photoUrl
+
                             var name = MainActivity.PreferenceManager?.getString("displayName")
+                            var selfUid = MainActivity.PreferenceManager?.getuidShared("uid")
+                            var photo = MainActivity.PreferenceManager?.getString("photoUrl")
 
-                            var roomName = "$name"
-                            updateMatched(true , uid , roomName)
 
+                            updateMatched(true , outId)
+
+                            randomActivityViewModel.updateMatched(true) // ana aktivitedeki karşılaşma durumunuda güncelle ...
+
+                            // karşılaşılan kişinin karşılaşma geçmişine eklenecek ... karşılaşmayı bulan kişi bu ...
+                            val rPar = RandomParticipant(displayName = name , photoUrl = photo , uid = selfUid , true , name , tfc = true , outId = null)
+
+                            Random_History
+                                .child(outId)
+                                .child(selfUid!!)
+                                .setValue(rPar)
+
+                            val itPar = RandomParticipant(displayName = Xname , photoUrl = Xphoto , uid = outId , true , name , tfc = false , outId = null)
+
+                            Random_History
+                                .child(selfUid!!)
+                                .child(outId)
+                                .setValue(itPar)
+
+
+
+/*
                             randomActivityViewModel.updateRandomParticipant(randomParticipant!!)
+                            randomActivityViewModel.update_c(true)*/
 
                             break ;
                         }
@@ -2053,6 +2102,15 @@ class FirebaseManager {
 
                     }
 
+
+                } else {
+                    Log.d("matchlist" , "basarisiz ... ")
+
+                }
+
+                it.addOnFailureListener {
+                    error ->
+                    Log.d("matchlist" , "hata ... :: " + error.message)
 
                 }
             }

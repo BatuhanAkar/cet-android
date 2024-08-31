@@ -460,21 +460,10 @@ class MainActivityVM:ViewModel() {
 
 
 
-    private val _updatedOutId = MutableStateFlow<Boolean?>(false)
-    val updatedOutId:StateFlow<Boolean?> get() = _updatedOutId
-
-    fun updatedOutIdSatus(status: Boolean){
-        _updatedOutId.value = status
-    }
 
 
 
-    private val _c = MutableStateFlow<Boolean?>(false)
-    val c:StateFlow<Boolean?> get() = _c
 
-    fun update_c(status: Boolean){
-        _c.value = status
-    }
 
     private val _d = MutableStateFlow<Boolean??>(false)
     val d:StateFlow<Boolean?> get() = _d

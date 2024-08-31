@@ -42,17 +42,19 @@ class RandomActivity:JitsiMeetActivity(){
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        Log.d("randomActivity" , "aktivite oluşturuldu ... ")
+
         val randomActivityViewModel:RandomActivityViewModel by viewModels()
         mrandomActivityViewModel = randomActivityViewModel
-        val uid = MainActivity.PreferenceManager?.getuidShared("uid")
-        val mdisplayName = MainActivity.PreferenceManager?.getString("displayName")
-        val photoUrl = MainActivity.PreferenceManager?.getString("photoUrl")
-        MainActivity.fm.addRandomParticipant(uid = uid!! , displayName = mdisplayName!! , photoUrl = photoUrl!!) // önce random a kaydet ...
-        MainActivity.fm.ListenMatch(uid!! , randomActivityViewModel) // sonra random'ı dinle ...
         context = this
         view = jitsiView
 
+        var name = MainActivity.PreferenceManager?.getString("displayName")
+        var photo = MainActivity.PreferenceManager?.getString("photoUrl")
 
+        val uid = MainActivity.PreferenceManager?.getuidShared("uid")
+        MainActivity.fm.addRandomParticipant(uid = uid!! , displayName = name!! , photoUrl = photo!! , randomActivityViewModel) // önce random a kaydet ...
+        MainActivity.fm.ListenMatch(uid!! , randomActivityViewModel) // sonra random'ı dinle ...
         prejoinView = ComposeView(this).apply {
             setContent {
                 HoşbeşTheme {
@@ -85,59 +87,49 @@ class RandomActivity:JitsiMeetActivity(){
 
         randomActivityViewModel.swiped.observe(this , Observer {
             if (it?.equals(true) == true){
+
+                Log.d("randomActivity" , "ekran kaydırıldı random connection view eklendi ... ")
                 view!!.removeView(swipeScreen)
                 view!!.addView(randomconnectionview)
             }
         })
 
-        var name = MainActivity.PreferenceManager?.getString("displayName")
-        var photo = MainActivity.PreferenceManager?.getString("photoUrl")
 
-        randomActivityViewModel.tfc.observe(this , Observer {
-            if (it?.equals(true) == true){
+        randomActivityViewModel.liverandomParticipant.observe(this , Observer {
+            val tfc = it?.tfc
 
-                randomActivityViewModel.ParticipantJoined.observe(this, Observer {
-                    if (it?.equals(true) == true){
+            if (tfc == true){
+
+                leave()
+
+                val room = it?.rm
+
+                val userinfo = JitsiMeetUserInfo().apply {
+                    displayName = name
+                    avatar = URL(photo)
+                }
+
+                var options = JitsiMeetConferenceOptions.Builder()
+                    .setRoom("https://meet.recommyz.com/$room")
+                    .setUserInfo(userinfo)
+                    .build()
+
+
+                Log.d("randomActivity" , "prejoin view eklendi ... ")
+                join(options)
+                view!!.removeView(randomconnectionview)
+
+            } else if (tfc == false){
+
+                randomActivityViewModel.ParticipantJoined.observe(this , Observer {
+                    if (it == true){
                         view!!.removeView(randomconnectionview)
-
                     }
                 })
-
-            } else if (it?.equals(false) == true){
-
-                randomActivityViewModel.X.observe(this, Observer {
-                    if (it?.equals(true) == true){
-
-                        randomActivityViewModel.liverandomParticipant.observe(this, Observer {
-
-
-                            leave()
-                            val userinfo = JitsiMeetUserInfo().apply {
-                                displayName = name
-                                avatar = URL(photo)
-                            }
-
-                            var roomName = it?.rm
-
-                            var options = JitsiMeetConferenceOptions.Builder()
-                                .setRoom("https://meet.recommyz.com/$roomName")
-                                .setUserInfo(userinfo)
-                                .build()
-                            view!!.addView(prejoinView)
-
-                            join(options)
-
-                        })
-
-
-
-                    }
-                })
-
-
 
             }
         })
+
 
         registerForBroadcastMessages()
 
@@ -189,6 +181,7 @@ class RandomActivity:JitsiMeetActivity(){
             .build()
         view!!.addView(prejoinView)
 
+        Log.d("randomActivity" , "prejoin view eklendi ... ")
         join(options)
 
     }
@@ -201,6 +194,8 @@ class RandomActivity:JitsiMeetActivity(){
         super.onConferenceJoined(extraData)
         view!!.removeView(prejoinView)
         view!!.addView(swipeScreen)
+
+        Log.d("randomActivity" , "kendi odasını oluştrudu ... ")
     }
 
 
