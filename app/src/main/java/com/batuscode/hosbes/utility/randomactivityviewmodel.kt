@@ -29,11 +29,18 @@ class RandomActivityViewModel:ViewModel(){
         _randomParticipant.value = randomParticipant
     }
 
-    private val _matched = MutableStateFlow<Boolean?>(false)
+    private val _matched = MutableStateFlow<Boolean?>(null)
     val matched:StateFlow<Boolean?> get() = _matched
 
     fun updateMatched(state: Boolean?){
         _matched.value = state
+    }
+
+    private val _xmatched = MutableLiveData<Boolean?>(false)
+    val xmatched:LiveData<Boolean?> get() = _xmatched
+
+    fun update_xmatched(value: Boolean){
+        _xmatched.value = value
     }
 
     // katılımcı ekranını ayarlamak için ...

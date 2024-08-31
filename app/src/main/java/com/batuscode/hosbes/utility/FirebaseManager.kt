@@ -1833,7 +1833,7 @@ class FirebaseManager {
 
         val par = hashMapOf(
             "uid" to uid ,
-            "match" to false ,
+            "match" to null ,
             "outId" to null ,
             "displayName" to displayName ,
             "photoUrl" to photoUrl
@@ -1979,9 +1979,10 @@ class FirebaseManager {
                             if (uid?.equals(Ouid!!) == true) {
 
                                 var matched = dc.document.getBoolean("match")
-                                randomActivityViewModel.updateMatched(true)
+                                randomActivityViewModel.updateMatched(matched)
+                                randomActivityViewModel.update_xmatched(matched!!)
 
-                                if (matched == true){
+                                if (matched == false){
                                     listenRandomHistory(randomActivityViewModel = randomActivityViewModel)
                                 }
 
@@ -2039,7 +2040,7 @@ class FirebaseManager {
         Log.d("randomActivity" , "karşılaştırma çalıştı ... ")
 
         random
-            .whereEqualTo("match" , false) // karşılaşma isteği olan ...
+            .whereEqualTo("match" , true) // karşılaşma isteği olan ...
            // .whereEqualTo("matched" , false) // karşılaşmamış olan ...
             .whereEqualTo("outId" , null) // karşı taraf id'si boş olan ...
             .whereNotEqualTo("uid" , uid) // ve kendisi olmayan ...
@@ -2068,9 +2069,8 @@ class FirebaseManager {
                             var photo = MainActivity.PreferenceManager?.getString("photoUrl")
 
 
-                            updateMatched(true , outId)
+                            updateMatched(false , outId)
 
-                            randomActivityViewModel.updateMatched(true) // ana aktivitedeki karşılaşma durumunuda güncelle ...
 
                             // karşılaşılan kişinin karşılaşma geçmişine eklenecek ... karşılaşmayı bulan kişi bu ...
                             val rPar = RandomParticipant(displayName = name , photoUrl = photo , uid = selfUid , true , name , tfc = true , outId = null)

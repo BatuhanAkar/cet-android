@@ -2,6 +2,7 @@ package com.batuscode.hosbes.views
 
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
+import android.os.Handler
 import android.util.Log
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.RepeatMode
@@ -112,44 +113,24 @@ fun RandomConnection(randomActivityViewModel: RandomActivityViewModel){
         label = "color"
     )
 
-    val matched by randomActivityViewModel.matched.collectAsState()
-    val Tfc by randomActivityViewModel.Tfc.collectAsState()
-    val outId by randomActivityViewModel.randomParticipantUid.collectAsState()
-    val outIdUpdated by randomActivityViewModel.updatedOutId.collectAsState()
-    val x by randomActivityViewModel.x.collectAsState()
-    val c by randomActivityViewModel.c.collectAsState()
-
-    val randomParticipant by randomActivityViewModel.randomParticipant.collectAsState()
-
-    var ppimage by remember {
-        mutableStateOf<ImageBitmap?>(null)
-    }
-
-
-
+    val handler = Handler()
 
     DisposableEffect(lifecycle) {
         val observer = LifecycleEventObserver{
             _ , event ->
             when(event){
                 Lifecycle.Event.ON_CREATE -> {
-
-                    Log.d("randomActivity" , "random connection view oluşturuldu ... ")
-                    val uid = MainActivity.PreferenceManager?.getuidShared("uid")
-
-                    MainActivity.fm.matchParticipants(uid = uid!! , randomActivityViewModel = randomActivityViewModel) // karşılaştır bakalım ...
-                   // MainActivity.fm.listenRandomHistory(randomActivityViewModel = randomActivityViewModel)
-
-                    /*
-                    MainActivity.fm.ListenMatch(uid!! , randomActivityViewModel) // sonra random'ı dinle ...
-                    MainActivity.fm.updateMatchRequest(false , uid = uid!!) // karşılaşma isteği olduğunu belirt ...
-                     MainActivity.fm.matchParticipants(uid = uid , randomActivityViewModel = randomActivityViewModel) // karşılaştır bakalım ...*/
+                    handler.postDelayed({
+                        MainActivity.fm.matchParticipants(uid = uid!! , randomActivityViewModel = randomActivityViewModel)
+                    },200)
                 }
                 Lifecycle.Event.ON_START -> {}
                 Lifecycle.Event.ON_RESUME -> {}
                 Lifecycle.Event.ON_PAUSE -> {}
                 Lifecycle.Event.ON_STOP -> {}
-                Lifecycle.Event.ON_DESTROY -> {}
+                Lifecycle.Event.ON_DESTROY -> {
+                    MainActivity.fm.removeRandomParticipant(uid!!)
+                }
                 Lifecycle.Event.ON_ANY -> {}
             }
         }
@@ -161,6 +142,14 @@ fun RandomConnection(randomActivityViewModel: RandomActivityViewModel){
         }
     }
 
+
+    val match by randomActivityViewModel.matched.collectAsState()
+    val randomParticipant by randomActivityViewModel.randomParticipant.collectAsState()
+
+    var rImage by remember {
+        mutableStateOf<ImageBitmap?>(null)
+    }
+
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
@@ -169,143 +158,15 @@ fun RandomConnection(randomActivityViewModel: RandomActivityViewModel){
     ) {
         innerPadding ->
 
-/*
-
-        if (randomParticipant != null && Tfc == false)
-        {
-
-            Log.d("randomActivity" , "karşılaşma içeriden bulundu ... ")
-            GlideApp.with(context)
-                .asBitmap()
-                .load(randomParticipant?.photoUrl)
-                .into(object : CustomTarget<Bitmap>() {
-                    override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
-
-                        ppimage = resource.asImageBitmap()
-                    }
-
-                    override fun onLoadCleared(placeholder: Drawable?) {
-
-                    }
-
-                })
-
-            ConstraintLayout(
-                modifier = Modifier
-                    .fillMaxSize()
-            ) {
-
-                val (backgraundImage , name) = createRefs()
 
 
-                Image(
-                    bitmap = ppimage!! ,
-                    contentDescription = "" ,
-                    contentScale = ContentScale.FillBounds,
-                    modifier = Modifier
-                        .constrainAs(backgraundImage){
-                            top.linkTo(parent.top)
-                            bottom.linkTo(parent.bottom)
-                            start.linkTo(parent.start)
-                            end.linkTo(parent.end)
-                        }
-                )
-
-                Surface(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .constrainAs(name) {
-                            top.linkTo(parent.top)
-                            start.linkTo(parent.start)
-                            end.linkTo(parent.end)
-                        },
-                    color = Color.LightGray
-                ) {
-                    Text(
-                        text = randomParticipant?.displayName!! ,
-                        modifier = Modifier
-                            .wrapContentSize()
-                        )
-                }
+        /**
+         * karşılaşma arama düzeni ...
+         *
+         * */
 
 
-
-
-            }
-
-
-
-        }
-
-        else if (randomParticipant != null && Tfc == true && x == true){
-            Log.d("randomActivity" , "karşılaşma dışarıdan bulundu ... ")
-
-            GlideApp.with(context)
-                .asBitmap()
-                .load(randomParticipant?.photoUrl)
-                .into(object : CustomTarget<Bitmap>() {
-                    override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
-
-                        ppimage = resource.asImageBitmap()
-                    }
-
-                    override fun onLoadCleared(placeholder: Drawable?) {
-
-                    }
-
-                })
-            ConstraintLayout(
-                modifier = Modifier
-                    .fillMaxSize()
-            ) {
-
-                val (backgraundImage , name) = createRefs()
-
-
-                Image(
-                    bitmap = ppimage!! ,
-                    contentDescription = "" ,
-                    contentScale = ContentScale.FillBounds,
-                    modifier = Modifier
-                        .constrainAs(backgraundImage){
-                            top.linkTo(parent.top)
-                            bottom.linkTo(parent.bottom)
-                            start.linkTo(parent.start)
-                            end.linkTo(parent.end)
-                        }
-                )
-
-                Surface(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .constrainAs(name) {
-                            top.linkTo(parent.top)
-                            start.linkTo(parent.start)
-                            end.linkTo(parent.end)
-                        },
-                    color = Color.LightGray
-                ) {
-                    Text(
-                        text = randomParticipant?.displayName!! ,
-                        modifier = Modifier
-                            .wrapContentSize()
-                    )
-                }
-
-
-
-
-            }
-
-
-
-        }
-*/
-
-        if (matched == false){
-
-            // karşılaşılmamış ise aranıyor ekranını göster ...
-
+        if (match == true){
             Box (
                 modifier = Modifier
                     .fillMaxSize()
@@ -332,70 +193,47 @@ fun RandomConnection(randomActivityViewModel: RandomActivityViewModel){
                         .align(Alignment.Center)
                 )
             }
+        } else if (match == false){
 
+            /**
+             * karşılaşma bulundu ise ...
+             * */
 
-        } else if (matched == true && randomParticipant != null && x == true){
-
-            GlideApp.with(context)
+            GlideApp
+                .with(context)
                 .asBitmap()
                 .load(randomParticipant?.photoUrl)
-                .into(object : CustomTarget<Bitmap>() {
-                    override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
-
-                        ppimage = resource.asImageBitmap()
+                .into(object : CustomTarget<Bitmap>(){
+                    override fun onResourceReady(
+                        resource: Bitmap,
+                        transition: Transition<in Bitmap>?
+                    ) {
+                        rImage = resource.asImageBitmap()
                     }
 
                     override fun onLoadCleared(placeholder: Drawable?) {
 
                     }
 
+
                 })
 
-            ConstraintLayout(
-                modifier = Modifier
-                    .fillMaxSize()
-            ) {
-
-                val (backgraundImage , name) = createRefs()
-
+            if (rImage != null){
 
                 Image(
-                    bitmap = ppimage!! ,
+                    bitmap = rImage!! ,
                     contentDescription = "" ,
-                    contentScale = ContentScale.FillBounds,
+                    contentScale = ContentScale.Fit,
                     modifier = Modifier
-                        .constrainAs(backgraundImage){
-                            top.linkTo(parent.top)
-                            bottom.linkTo(parent.bottom)
-                            start.linkTo(parent.start)
-                            end.linkTo(parent.end)
-                        }
-                )
-
-                Surface(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .constrainAs(name) {
-                            top.linkTo(parent.top)
-                            start.linkTo(parent.start)
-                            end.linkTo(parent.end)
-                        },
-                    color = Color.LightGray
-                ) {
-                    Text(
-                        text = randomParticipant?.displayName!! ,
-                        modifier = Modifier
-                            .wrapContentSize()
+                        .fillMaxSize()
                     )
-                }
-
-
-
 
             }
 
 
         }
+
+
 
 
 

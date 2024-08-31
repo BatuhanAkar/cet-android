@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
@@ -14,6 +15,8 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.lifecycle.Observer
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.batuscode.hosbes.MainActivity
+import com.batuscode.hosbes.models.Participnat
+import com.batuscode.hosbes.models.RandomParticipant
 import com.batuscode.hosbes.ui.theme.HoşbeşTheme
 import com.batuscode.hosbes.utility.RandomActivityViewModel
 import com.facebook.react.modules.core.PermissionListener
@@ -87,49 +90,73 @@ class RandomActivity:JitsiMeetActivity(){
 
         randomActivityViewModel.swiped.observe(this , Observer {
             if (it?.equals(true) == true){
-
+                MainActivity.fm.updateMatchRequest(true , uid)
                 Log.d("randomActivity" , "ekran kaydırıldı random connection view eklendi ... ")
                 view!!.removeView(swipeScreen)
                 view!!.addView(randomconnectionview)
             }
         })
 
+        var participant:RandomParticipant? = null
 
         randomActivityViewModel.liverandomParticipant.observe(this , Observer {
-            val tfc = it?.tfc
 
-            if (tfc == true){
+            if (it != null){
 
-                leave()
+                Log.d("matchstat" , "live par observleendi ... " + it?.toString())
+                participant = it!!
+                randomActivityViewModel.update_xmatched(false)
+            } else {
 
-                val room = it?.rm
-
-                val userinfo = JitsiMeetUserInfo().apply {
-                    displayName = name
-                    avatar = URL(photo)
-                }
-
-                var options = JitsiMeetConferenceOptions.Builder()
-                    .setRoom("https://meet.recommyz.com/$room")
-                    .setUserInfo(userinfo)
-                    .build()
-
-
-                Log.d("randomActivity" , "prejoin view eklendi ... ")
-                join(options)
-                view!!.removeView(randomconnectionview)
-
-            } else if (tfc == false){
-
-                randomActivityViewModel.ParticipantJoined.observe(this , Observer {
-                    if (it == true){
-                        view!!.removeView(randomconnectionview)
-                    }
-                })
-
+                Log.d("matchstat" , "live par observleendi ... sonuç boş ... ")
             }
         })
 
+        val outhandler = Handler()
+        val inhandler = Handler()
+
+        randomActivityViewModel.xmatched.observe(this , Observer {
+
+            Log.d("matchstat" , "karşılaştı observe çalişti ... " + it)
+            val tfc = participant?.tfc
+
+
+            if (tfc == true){
+
+
+                leave()
+                outhandler.postDelayed({
+                    view!!.removeView(randomconnectionview)
+
+
+                    val room = participant?.rm
+
+                    val userinfo = JitsiMeetUserInfo().apply {
+                        displayName = name
+                        avatar = URL(photo)
+                    }
+
+                    var options = JitsiMeetConferenceOptions.Builder()
+                        .setRoom("https://meet.recommyz.com/$room")
+                        .setUserInfo(userinfo)
+                        .build()
+
+                    Log.d("randomActivity" , "prejoin view eklendi ... ")
+
+                    join(options)
+
+                },800)
+
+
+            } else if (tfc == false){
+                inhandler.postDelayed({
+                    view!!.removeView(randomconnectionview)
+                },800)
+
+            }
+
+
+        })
 
         registerForBroadcastMessages()
 
