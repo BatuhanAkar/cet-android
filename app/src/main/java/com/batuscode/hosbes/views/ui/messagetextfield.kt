@@ -11,8 +11,10 @@ import android.view.inputmethod.InputMethodManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
@@ -248,6 +250,7 @@ private fun CustomTextField( chatViewModel: ChatViewModel , mainActivityVM: Main
             shape = RoundedCornerShape(24.dp) ,
             color = colorResource(id = R.color.white) ,
             shadowElevation = 2.dp ,
+            border = BorderStroke(1.dp , colorResource(id = R.color.e))
         )
         {
             Box(modifier = Modifier
@@ -362,7 +365,13 @@ private fun CustomTextField( chatViewModel: ChatViewModel , mainActivityVM: Main
                     shape = RoundedCornerShape(50.dp)
 
                 ) {
-                    Icon(imageVector = Icons.Filled.Send, contentDescription = "send")
+                    Icon(
+                        imageVector = Icons.Filled.Send ,
+                        contentDescription = "send" ,
+                        modifier = Modifier
+                            .size(30.dp)
+                            .padding(start = 3.dp)
+                    )
                 }
             }
 
@@ -436,10 +445,15 @@ private fun CustomTextField( chatViewModel: ChatViewModel , mainActivityVM: Main
                         mainActivityVM.updateMessage(TextFieldValue(""))
                     } ,
                     modifier = Modifier
-                        .padding(0.dp) ,
-                    border = null
+                        .padding(0.dp),
+                    border = null ,
                 ) {
-                    Icon(imageVector = Icons.Filled.Close, contentDescription = "send")
+                    Icon(
+                        imageVector = Icons.Filled.Close ,
+                        contentDescription = "send" ,
+                        modifier = Modifier
+
+                        )
                 }
             }
         }
@@ -503,7 +517,7 @@ private fun showEmoji(context:Context){
     imm.toggleSoftInput(InputMethodManager.SHOW_FORCED , 0)
 }
 
-/*
+
 
 @Preview
 @Composable
@@ -515,4 +529,4 @@ fun MessageTextFieldPreview(){
 
         }
     }
-}*/
+}

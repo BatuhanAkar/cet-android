@@ -187,7 +187,7 @@ fun MoreContent(scope: CoroutineScope , sheetState: SheetState , mainActivityVM:
 
 
                             },
-                        contentScale = ContentScale.FillWidth
+                        contentScale = ContentScale.Crop
                     )
                 } else {
                     Image(

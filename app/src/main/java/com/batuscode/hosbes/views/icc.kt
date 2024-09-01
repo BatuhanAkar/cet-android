@@ -84,7 +84,7 @@ fun ICC(outCallActivityViewModel: OutCallActivityViewModel , Historycalls:Partic
                 }
 
                 override fun onLoadCleared(placeholder: Drawable?) {
-                    TODO("Not yet implemented")
+
                 }
 
 

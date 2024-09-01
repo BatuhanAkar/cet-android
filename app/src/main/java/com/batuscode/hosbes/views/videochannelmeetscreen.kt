@@ -1,6 +1,8 @@
 package com.batuscode.hosbes.views
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.indication
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -63,51 +65,25 @@ fun VideoChannelMeetScreen(videoChannelViewModel: VideoChannelViewModel){
         }
     }
 
+
+    val interactionSource = remember {
+        MutableInteractionSource()
+    }
+
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
             .padding(bottom = 120.dp)
+            .indication(indication = null , interactionSource = interactionSource)
             .clickable {
                 isVisible = isVisible.not()
             }
     ){
-        val (toolBar , roomName) = createRefs()
+        val (toolBar) = createRefs()
 
         if (isVisible){
 
 
-            Surface(
-                shape = RoundedCornerShape(8.dp),
-                shadowElevation = 15.dp,
-                color = colorResource(id = R.color.e),
-                modifier = Modifier
-                    .padding(20.dp)
-                    .constrainAs(roomName) {
-                        top.linkTo(parent.top)
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                    }
-            ) {
-                Box(
-                    contentAlignment = Alignment.Center ,
-                    modifier = Modifier
-                        .wrapContentSize()
-                ) {
-                    Text(
-                        text = selectedChannel!! ,
-                        style = TextStyle(
-                            fontFamily = FontFamily(Font(R.font.pacifico_regular)) ,
-                            textAlign = TextAlign.Center ,
-                            fontSize = 25.sp
-                        ),
-                        modifier = Modifier
-                            .padding(10.dp)
-
-                    )
-                }
-
-            }
-
 
 
             Surface(
@@ -115,20 +91,22 @@ fun VideoChannelMeetScreen(videoChannelViewModel: VideoChannelViewModel){
                 shadowElevation = 15.dp,
                 color = colorResource(id = R.color.e),
                 modifier = Modifier
-                    .padding(20.dp)
+                    .padding(10.dp)
                     .constrainAs(toolBar) {
-                        bottom.linkTo(parent.bottom)
+                        top.linkTo(parent.top)
                         start.linkTo(parent.start)
                         end.linkTo(parent.end)
                     }
             )
             {
 
+
+
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(15.dp) ,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp) ,
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
-                        .padding(10.dp)
+                        .padding(5.dp)
                 )
                 {
                     OutlinedIconButton(
@@ -139,8 +117,11 @@ fun VideoChannelMeetScreen(videoChannelViewModel: VideoChannelViewModel){
                         } ,
                         border = null ,
                         colors = IconButtonDefaults.iconButtonColors(
-                            containerColor = Color.White
-                        )
+                            containerColor = Color.Transparent
+                        ) ,
+                        modifier = Modifier
+                            .padding(0.dp)
+                            .size(30.dp)
                     )
                     {
                         Icon(
@@ -155,34 +136,16 @@ fun VideoChannelMeetScreen(videoChannelViewModel: VideoChannelViewModel){
 
                     OutlinedIconButton(
                         onClick = {
-                            videoChannelViewModel.update_videochannelhangup(true)
-                        },
-                        border = null ,
-                        colors = IconButtonDefaults.iconButtonColors(
-                            containerColor = colorResource(id = R.color.delete)
-                        ) ,
-                        modifier = Modifier
-                            .size(55.dp)
-                    )
-                    {
-                        Icon(
-                            painter = painterResource(id = R.drawable.baseline_call_end_24) ,
-                            contentDescription = "" ,
-                            modifier = Modifier
-                                .size(30.dp)
-                        )
-                    }
-
-                    OutlinedIconButton(
-                        onClick = {
                             cameraMuted = cameraMuted.not()
 
                             videoChannelViewModel.update_videochannelVideoMute(cameraMuted)
                         },
                         border = null ,
                         colors = IconButtonDefaults.iconButtonColors(
-                            containerColor = Color.White
-                        )
+                            containerColor = Color.Transparent
+                        ) ,
+                        modifier = Modifier
+                            .size(30.dp)
                     )
                     {
                         Icon(
@@ -194,6 +157,44 @@ fun VideoChannelMeetScreen(videoChannelViewModel: VideoChannelViewModel){
                                 .size(30.dp)
                         )
                     }
+
+                    Box(
+                        contentAlignment = Alignment.Center ,
+                        modifier = Modifier
+                            .wrapContentSize()
+                    ) {
+                        Text(
+                            text = selectedChannel!! ,
+                            style = TextStyle(
+                                fontFamily = FontFamily(Font(R.font.pacifico_regular)) ,
+                                textAlign = TextAlign.Center ,
+                                fontSize = 25.sp
+                            ),
+                            modifier = Modifier
+
+                                .wrapContentSize()
+
+                        )
+                    }
+                    OutlinedIconButton(
+                        onClick = {
+                            videoChannelViewModel.update_videochannelhangup(true)
+                        },
+                        border = null ,
+                        colors = IconButtonDefaults.iconButtonColors(
+                            containerColor = colorResource(id = R.color.delete)
+                        )
+                    )
+                    {
+                        Icon(
+                            painter = painterResource(id = R.drawable.baseline_close_24) ,
+                            contentDescription = "" ,
+                            modifier = Modifier
+                                .size(20.dp)
+                        )
+                    }
+
+
                 }
             }
         }

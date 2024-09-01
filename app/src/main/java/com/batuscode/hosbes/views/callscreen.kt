@@ -23,6 +23,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -47,6 +48,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstraintLayout
 import com.batuscode.hosbes.MainActivity
 import com.batuscode.hosbes.R
 import com.batuscode.hosbes.models.Participnat
@@ -82,20 +84,11 @@ fun CallScreen(historycalls:Participnat , inCallActivityViewModel: InCallActivit
      * */
     val context = LocalContext.current
     val historyCalls = historycalls
-  //  val whisperItem by voiceCallActivityVM.whisperItem.collectAsState()
 
     val WillJoin by inCallActivityViewModel.WillJoin.collectAsState()
-/*
-    val endCall by voiceCallActivityVM.showEndedCallText.collectAsState()
-    val participantJoined by voiceCallActivityVM.participantJoined.collectAsState()*/
-
     var image by remember{
         mutableStateOf<ImageBitmap?>(null)
     }
-    var backgroundImage by remember {
-        mutableStateOf<Bitmap?>(null)
-    }
-
     var callStateText by remember {
         mutableStateOf("")
     }
@@ -114,7 +107,6 @@ fun CallScreen(historycalls:Participnat , inCallActivityViewModel: InCallActivit
 
         })
 
-    val backgroundBrush = ShaderBrush(ImageShader(image!!))
 
 
     Scaffold(
@@ -123,21 +115,25 @@ fun CallScreen(historycalls:Participnat , inCallActivityViewModel: InCallActivit
     )
     { innerPadding ->
 
-        Column (
-            verticalArrangement = Arrangement.spacedBy(400.dp),
-            horizontalAlignment = Alignment.CenterHorizontally ,
-            modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxSize()
-                .background(colorResource(id = R.color.pianoblack))
-        ) {
+
+        ConstraintLayout {
+
+
+            val (ppImage , TollBar) = createRefs()
+
 
             Column ( verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
                     .padding(top = 100.dp)
                     .wrapContentSize()
-            ){
+                    .constrainAs(ppImage){
+                        top.linkTo(parent.top)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    }
+            )
+            {
 
                 if (image != null) {
                     Image(
@@ -172,17 +168,36 @@ fun CallScreen(historycalls:Participnat , inCallActivityViewModel: InCallActivit
                 }
 
                 Text(
-                    text = historyCalls?.displayName!! ,
+                    text = "historyCalls?.displayName!! ",
                     color = Color.White
                 )
                 Text(
-                    text = callStateText ,
+                    text = "callStateText" ,
                     color = Color.White
                 )
 
 
 
             }
+
+
+
+
+
+        }
+
+
+
+        Column (
+            verticalArrangement = Arrangement.spacedBy(400.dp),
+            horizontalAlignment = Alignment.CenterHorizontally ,
+            modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxSize()
+                .background(colorResource(id = R.color.pianoblack))
+        ) {
+
+
 
 
 
@@ -207,6 +222,7 @@ fun CallScreen(historycalls:Participnat , inCallActivityViewModel: InCallActivit
 
     }
 }
+/*
 
 @Preview(showBackground = true , showSystemUi = true)
 @Composable
@@ -214,4 +230,4 @@ fun CallScreenPreview(){
     HoşbeşTheme {
         CallScreen( Participnat() , InCallActivityViewModel() , "")
     }
-}
+}*/

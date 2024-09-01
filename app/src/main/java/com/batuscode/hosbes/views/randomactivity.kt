@@ -11,7 +11,10 @@ import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
 import androidx.activity.viewModels
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.ComposeView
 import androidx.lifecycle.Observer
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -46,6 +49,8 @@ class RandomActivity:JitsiMeetActivity() , JitsiMeetActivityInterface{
     lateinit var randomactivitymeetscreen:ComposeView
     lateinit var context: Context
     lateinit var mrandomActivityViewModel: RandomActivityViewModel
+
+    var fromIn by mutableStateOf(false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -159,8 +164,7 @@ class RandomActivity:JitsiMeetActivity() , JitsiMeetActivityInterface{
                     Log.d("matchstat" , "tfc false çıktı ... " )
 
                     inhandler.postDelayed({
-                        view!!.removeView(randomconnectionview)
-                        view!!.addView(randomactivitymeetscreen)
+                        fromIn = true
                     },800)
 
                 }
@@ -169,18 +173,6 @@ class RandomActivity:JitsiMeetActivity() , JitsiMeetActivityInterface{
                 Log.d("matchstat" , "live par observleendi ... sonuç boş ... ")
             }
         })
-
-
-
-/*
-
-        randomActivityViewModel.xmatched.observe(this , Observer {
-            Log.d("matchstat" , "karşılaştı observe çalişti ... " + it)
-            tfc = participant?.tfc
-
-            Log.d("matchstat" , "karşılaştı observe çalişti tfc ... " + tfc)
-        })
-*/
 
         registerForBroadcastMessages()
 
@@ -271,6 +263,10 @@ class RandomActivity:JitsiMeetActivity() , JitsiMeetActivityInterface{
     override fun onParticipantJoined(extraData: HashMap<String, Any>?) {
         super.onParticipantJoined(extraData)
         mrandomActivityViewModel.update_ParticipantJoined(true)
+        if (fromIn){
+            view!!.removeView(randomconnectionview)
+            view!!.addView(randomactivitymeetscreen)
+        }
     }
     override fun onConferenceJoined(extraData: HashMap<String, Any>?) {
         super.onConferenceJoined(extraData)

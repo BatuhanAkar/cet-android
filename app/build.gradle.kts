@@ -69,7 +69,9 @@ dependencies {
     implementation(libs.androidx.constraintlayout.compose)
     implementation("androidx.work:work-runtime-ktx:2.9.0")
     implementation("androidx.navigation:navigation-compose:2.7.7")
-
+    implementation("androidx.compose.ui:ui:1.6.8")
+    implementation("androidx.compose.material3:material3:1.2.1")
+    implementation("androidx.compose.ui:ui-tooling:1.6.8")
 
     implementation("com.github.bumptech.glide:glide:4.16.0")
     implementation(libs.androidx.appcompat)

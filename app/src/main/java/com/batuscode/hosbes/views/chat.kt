@@ -484,7 +484,39 @@ fun ChatUI(chatViewModel: ChatViewModel , mainActivityVM: MainActivityVM , inner
         }
         else {
 
-            Column (
+
+            Box(
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .background(Color.White)
+                    .fillMaxSize(),
+                contentAlignment = Alignment.Center
+
+            ) {
+                CircularProgressIndicator(
+                    strokeWidth = 5.dp ,
+                    modifier = Modifier
+                        .width(300.dp)
+                        .height(300.dp)
+                )
+
+                //TODO: eşleş butonu ...
+
+
+                Text(
+                    text = stringResource(id = R.string.youareconnectingChat) ,
+                    style = TextStyle(
+                        fontFamily = FontFamily(Font(R.font.pacifico_regular)),
+                        fontSize = 20.sp
+                    )
+                )
+
+
+            }
+
+
+
+           /* Column (
                 verticalArrangement = Arrangement.Center ,
                 horizontalAlignment = Alignment.CenterHorizontally ,
                 modifier = Modifier.fillMaxSize()
@@ -523,7 +555,7 @@ fun ChatUI(chatViewModel: ChatViewModel , mainActivityVM: MainActivityVM , inner
 
 
             }
-
+*/
         }
 
 

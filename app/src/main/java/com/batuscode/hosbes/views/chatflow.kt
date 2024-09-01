@@ -195,12 +195,19 @@ fun ChatFlow( mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel , mo
     ) {
         items(chats.value!!, key = { it.messageId!! }) { message ->
             Log.d("jokermessage", "öğe eklendi... :: " + message.messageId)
-            MessageItemView(
-                message = message,
-                type = message.type!!,
-                mainActivityVM = mainActivityVM,
-                chatViewModel
-            )
+
+            if (inWhisper == true){
+                MyMessage(mainActivityVM = mainActivityVM, type = message.type!!, message = message)
+            } else if (inWhisper == false){
+
+                MessageItemView(
+                    message = message,
+                    type = message.type!!,
+                    mainActivityVM = mainActivityVM,
+                    chatViewModel
+                )
+            }
+
         }
     }
 }
@@ -288,7 +295,7 @@ fun MessageItemView(message:Message , type:String , mainActivityVM: MainActivity
                         .clip(RoundedCornerShape(10.dp))
                         .width(40.dp)
                         .height(40.dp),
-                    contentScale = ContentScale.FillWidth
+                    contentScale = ContentScale.Crop
                 )
 
             } else {
@@ -472,6 +479,8 @@ fun dateformatHour(timestamp: Long): String {
 
     return formattedDate
 }
+
+
 @Composable
 fun MyMessage( mainActivityVM: MainActivityVM , type:String ,message: Message){
 
@@ -489,102 +498,23 @@ fun MyMessage( mainActivityVM: MainActivityVM , type:String ,message: Message){
     val placeholderImage by mainActivityVM.privateChatPlaceHolderImage.collectAsState()
     val newMediaSended by mainActivityVM.newMediaSended.collectAsState()
     val uploadingMediaProgress by mainActivityVM.mediaMessageProgress.collectAsState()
+    val selfUid = MainActivity.PreferenceManager?.getuidShared("uid")
 
-
-    Column (horizontalAlignment = Alignment.End , modifier = Modifier
-        .fillMaxWidth()
-        .padding(bottom = 20.dp, end = 8.5.dp)) {
+    Column (
+        horizontalAlignment = if (message.senderId?.equals(selfUid) == true) Alignment.End else  Alignment.Start,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 20.dp, end = 8.5.dp)) {
         Surface (
             shape = RoundedCornerShape(10.dp) ,
-            color = colorResource(id = R.color.x) ,
+            color = if (message.senderId?.equals(selfUid) == true) colorResource(id = R.color.x) else colorResource(
+                id = R.color.white
+            ),
             tonalElevation = 1.dp
         ) {
 
 
             when {
-                type.equals("media") -> {
-
-
-
-
-
-                    if (newMediaSended == true && message.messageId?.equals(mId) == true){
-
-
-                        Box {
-
-                            Image(
-                                bitmap = placeholderImage!! ,
-                                contentDescription = "" ,
-                                contentScale = ContentScale.FillBounds,
-                                modifier = Modifier
-                                    .blur(30.dp, BlurredEdgeTreatment.Rectangle)
-                                    .padding(8.dp)
-                                    .width(180.dp)
-                                    .height(220.dp)
-                            )
-
-                            if (uploadingMediaProgress != null){
-
-
-                                CircularProgressIndicator(
-                                    progress = { uploadingMediaProgress?.toFloat()!! } ,
-
-                                    modifier = Modifier
-                                        .align(Alignment.Center)
-                                )
-
-                            }
-
-                        }
-
-
-
-                        
-
-                    } else {
-
-
-                        GlideApp.with(context)
-                            .asBitmap()
-                            .load(message.message)
-                            .into(object: CustomTarget<Bitmap>(){
-                                override fun onResourceReady(
-                                    resource: Bitmap,
-                                    transition: Transition<in Bitmap>?
-                                ) {
-                                    image = resource.asImageBitmap()
-                                }
-
-                                override fun onLoadCleared(placeholder: Drawable?) {
-
-                                }
-
-
-                            })
-
-
-                        if (image != null){
-
-
-                            Image(
-                                bitmap = image!! ,
-                                contentDescription = "" ,
-                                contentScale = ContentScale.FillBounds,
-                                modifier = Modifier
-                                    .padding(8.dp)
-                                    .width(180.dp)
-                                    .height(220.dp)
-                            )
-
-                        }
-
-                    }
-
-
-
-                }
-
                 type.equals("text") -> {
 
                     Text(
@@ -608,22 +538,24 @@ fun MyMessage( mainActivityVM: MainActivityVM , type:String ,message: Message){
                 fontSize = 12.sp
             ) ,
             modifier = Modifier
-                .align(Alignment.End)
+                .align(
+                    if (message.senderId?.equals(selfUid) == true) Alignment.End else  Alignment.Start
+                )
         )
     }
 
 }
 
-/*
+
 @Preview(showBackground = true , showSystemUi = true)
 @Composable
 fun MyMessagePreview(){
     val message = Message()
     val mainActivityVM:MainActivityVM = viewModel()
     HoşbeşTheme {
-        MyMessage( mainActivityVM ,"media" , message = message)
+        MyMessage( mainActivityVM ,"text" , message = message)
     }
-}*/
+}
 
 /*
 

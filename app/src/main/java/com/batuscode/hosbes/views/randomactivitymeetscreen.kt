@@ -1,6 +1,8 @@
 package com.batuscode.hosbes.views
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.indication
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -52,9 +54,13 @@ fun RandomActivityMeetScreen(randomActivityViewModel: RandomActivityViewModel){
         }
     }
 
+    val interactionSource = remember {
+        MutableInteractionSource()
+    }
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
+            .indication(indication = null , interactionSource = interactionSource)
             .clickable {
                 isVisible = isVisible.not()
             }

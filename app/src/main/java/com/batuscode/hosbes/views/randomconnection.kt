@@ -54,10 +54,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextMotion
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -228,17 +230,108 @@ fun RandomConnection(randomActivityViewModel: RandomActivityViewModel){
 
                 })
 
-            if (rImage != null){
 
-                Image(
-                    bitmap = rImage!! ,
-                    contentDescription = "" ,
-                    contentScale = ContentScale.FillBounds,
-                    modifier = Modifier
-                        .fillMaxSize()
+            ConstraintLayout {
+
+                val (background , info ) = createRefs()
+
+
+                if (rImage != null){
+
+                    Image(
+                        bitmap = rImage!! ,
+                        contentDescription = "" ,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .blur(
+                                radiusX = 7.dp,
+                                radiusY = 7.dp,
+                                edgeTreatment = BlurredEdgeTreatment.Unbounded
+                            )
+                            .constrainAs(background) {
+                                top.linkTo(parent.top)
+                                bottom.linkTo(parent.bottom)
+                                start.linkTo(parent.start)
+                                end.linkTo(parent.end)
+                            }
                     )
 
+                }
+
+
+
+
+                ConstraintLayout(
+                    modifier = Modifier
+                        .constrainAs(info){
+                            top.linkTo(parent.top)
+                            bottom.linkTo(parent.bottom)
+                            start.linkTo(parent.start)
+                            end.linkTo(parent.end)
+                        }
+                ) {
+                    val (pp , nameSurface) = createRefs()
+
+
+                    if (rImage != null) {
+
+                        Image(
+                            bitmap = rImage!! ,
+                            contentDescription = "" ,
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier
+                                .height(120.dp)
+                                .width(120.dp)
+                                .clip(RoundedCornerShape(16.dp))
+                                .constrainAs(pp) {
+                                    top.linkTo(parent.top)
+                                    bottom.linkTo(parent.bottom)
+                                    start.linkTo(parent.start)
+                                    end.linkTo(parent.end)
+                                }
+                        )
+                    }
+
+
+
+
+                    Surface(
+                        color = colorResource(id = R.color.e).copy(0.5f) ,
+                        shadowElevation = 20.dp ,
+                        modifier = Modifier
+                            .padding(top = 10.dp)
+                            .fillMaxWidth()
+                            .constrainAs(nameSurface) {
+                                start.linkTo(parent.start)
+                                end.linkTo(parent.end)
+                                top.linkTo(pp.bottom)
+                            }
+                    ){
+
+                        if (randomParticipant?.displayName != null){
+                            Text(
+                                text = randomParticipant?.displayName!! ,
+                                textAlign = TextAlign.Center ,
+                                style = TextStyle(
+                                    fontSize = 20.sp ,
+                                    fontWeight = FontWeight.SemiBold
+                                ),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(10.dp)
+                            )
+                        }
+
+                    }
+                }
+
+
+
+
+
             }
+
 
 
         }
@@ -254,73 +347,9 @@ fun RandomConnection(randomActivityViewModel: RandomActivityViewModel){
 @Composable
 fun back(){
 
-    ConstraintLayout {
-
-        val (background , pp , name) = createRefs()
-
-        Image(
-            painter = painterResource(id = R.drawable.istockphoto_517188688_612x612) ,
-            contentDescription = "" ,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .fillMaxSize()
-                .blur(
-                    radiusX = 7.dp,
-                    radiusY = 7.dp,
-                    edgeTreatment = BlurredEdgeTreatment.Unbounded
-                )
-                .constrainAs(background) {
-                    top.linkTo(parent.top)
-                    bottom.linkTo(parent.bottom)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                }
-        )
-
-        Image(painter = painterResource(id = R.drawable.istockphoto_517188688_612x612) ,
-            contentDescription = "" ,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .height(120.dp)
-                .width(120.dp)
-                .clip(RoundedCornerShape(16.dp))
-                .constrainAs(pp) {
-                    top.linkTo(parent.top)
-                    bottom.linkTo(parent.bottom)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                }
-            )
-
-
-        Surface(
-            color = colorResource(id = R.color.e).copy(0.1f) ,
-            shadowElevation = 20.dp ,
-            modifier = Modifier
-                .padding(top = 20.dp)
-                .fillMaxWidth()
-                .constrainAs(name) {
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                    top.linkTo(pp.bottom)
-                }
-        ){
-            Text(
-                text = "" ,
-                textAlign = TextAlign.Center,
-
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(20.dp)
-            )
-        }
-
-
-    }
-
 
 }
-/*
+
 
 @Preview(showBackground = true , showSystemUi = true)
 @Composable
@@ -328,4 +357,4 @@ fun RandomConnectionPreview(){
     HoşbeşTheme {
         back()
     }
-}*/
+}
