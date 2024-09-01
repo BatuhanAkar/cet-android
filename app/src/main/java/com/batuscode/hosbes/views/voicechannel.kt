@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.tooling.preview.Preview
@@ -14,6 +15,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.batuscode.hosbes.MainActivity
 import com.batuscode.hosbes.ui.theme.HoşbeşTheme
 import com.batuscode.hosbes.utility.MainActivityVM
+import com.batuscode.hosbes.utility.VoiceChannelViewModel
 import com.facebook.react.modules.core.PermissionListener
 import org.jitsi.meet.sdk.BroadcastEvent
 import org.jitsi.meet.sdk.BroadcastIntentHelper
@@ -33,6 +35,7 @@ class VoiceChannel:JitsiMeetActivity() , JitsiMeetActivityInterface{
     lateinit var view: JitsiMeetView
     lateinit var mainActivityVM: MainActivityVM
     lateinit var corridorView: ComposeView
+    lateinit var voicechannelmeetscreen: ComposeView
 
     private fun hangUp(){
         val hangUpBroadcastIntent: Intent = BroadcastIntentHelper.buildHangUpIntent()
@@ -86,6 +89,7 @@ class VoiceChannel:JitsiMeetActivity() , JitsiMeetActivityInterface{
     override fun onConferenceJoined(extraData: HashMap<String, Any>?) {
         super.onConferenceJoined(extraData)
         view!!.removeView(corridorView!!)
+        view!!.addView(voicechannelmeetscreen)
     }
     override fun onParticipantLeft(extraData: HashMap<String, Any>?) {
         super.onParticipantLeft(extraData)
@@ -94,12 +98,25 @@ class VoiceChannel:JitsiMeetActivity() , JitsiMeetActivityInterface{
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+
+        val voiceChannelViewModel:VoiceChannelViewModel by viewModels()
+
+
+
         mainActivityVM = MainActivity.mMainActivityVM
         view = jitsiView
 
         corridorView = ComposeView(this).apply {
             setContent {
                 ConnectionCorridor(mainActivityVM = mainActivityVM)
+            }
+        }
+        
+        voicechannelmeetscreen = ComposeView(this).apply { 
+            setContent { 
+                HoşbeşTheme {
+                    VoiceChannelMeetScreen(voiceChannelViewModel = voiceChannelViewModel)
+                }
             }
         }
 
@@ -190,6 +207,7 @@ class VoiceChannel:JitsiMeetActivity() , JitsiMeetActivityInterface{
                 .setFeatureFlag("enableLayerSuspension" , true)
 
                 .setFeatureFlag("toolbox.alwaysVisible" , false)
+                .setFeatureFlag("toolbox.enabled" , false)
 
                 .setFeatureFlag("unsaferoomwarning.enabled" , false)
 
@@ -209,11 +227,46 @@ class VoiceChannel:JitsiMeetActivity() , JitsiMeetActivityInterface{
 
             join(options)
 
+            voiceChannelViewModel.voicechannelVideoMute.observe(this , Observer {
+                if (it == true){
+                    HandleVoiceChannelCameraBroadCastAction(it)
+                } else if (it == false){
+                    HandleVoiceChannelCameraBroadCastAction(it)
+                }
+            })
+
+            voiceChannelViewModel.voicechannelAudioMute.observe(this , Observer {
+                if (it == true){
+                    HandleVoiceChannelAudioBroadcastAction(it)
+                } else if (it == false){
+                    HandleVoiceChannelAudioBroadcastAction(it)
+                }
+            })
+
+            voiceChannelViewModel.voicechannelhangup.observe(this , Observer {
+                HandleVoiceChannelHangUpBroadCastAction()
+            })
+
         })
 
 
     }
+    private fun HandleVoiceChannelAudioBroadcastAction(value:Boolean){
+        val muteBroadcastActionIntent = BroadcastIntentHelper.buildSetAudioMutedIntent(value)
+        LocalBroadcastManager.getInstance(this).sendBroadcast(muteBroadcastActionIntent)
+    }
 
+    private fun HandleVoiceChannelCameraBroadCastAction(value: Boolean){
+
+        val muteBroadcastActionIntent = BroadcastIntentHelper.buildSetVideoMutedIntent(value)
+        LocalBroadcastManager.getInstance(this).sendBroadcast(muteBroadcastActionIntent)
+
+    }
+
+    private fun HandleVoiceChannelHangUpBroadCastAction(){
+        val muteBroadcastActionIntent = BroadcastIntentHelper.buildHangUpIntent()
+        LocalBroadcastManager.getInstance(this).sendBroadcast(muteBroadcastActionIntent)
+    }
 
     override fun onBackPressed() {
         super.onBackPressed()

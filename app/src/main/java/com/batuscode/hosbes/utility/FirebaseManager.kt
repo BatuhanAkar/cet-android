@@ -10,6 +10,7 @@ import android.graphics.BitmapFactory
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
+import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import android.provider.OpenableColumns
@@ -1983,7 +1984,9 @@ class FirebaseManager {
                                 randomActivityViewModel.update_xmatched(matched!!)
 
                                 if (matched == false){
-                                    listenRandomHistory(randomActivityViewModel = randomActivityViewModel)
+                                    handler.postDelayed({
+                                        listenRandomHistory(randomActivityViewModel = randomActivityViewModel)
+                                    },800)
                                 }
 
 
@@ -2068,10 +2071,6 @@ class FirebaseManager {
                             var selfUid = MainActivity.PreferenceManager?.getuidShared("uid")
                             var photo = MainActivity.PreferenceManager?.getString("photoUrl")
 
-
-                            updateMatched(false , outId)
-
-
                             // karşılaşılan kişinin karşılaşma geçmişine eklenecek ... karşılaşmayı bulan kişi bu ...
                             val rPar = RandomParticipant(displayName = name , photoUrl = photo , uid = selfUid , true , name , tfc = true , outId = null)
 
@@ -2088,6 +2087,7 @@ class FirebaseManager {
                                 .setValue(itPar)
 
 
+                            updateMatched(false , outId)
 
 /*
                             randomActivityViewModel.updateRandomParticipant(randomParticipant!!)

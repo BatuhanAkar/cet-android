@@ -108,4 +108,32 @@ class RandomActivityViewModel:ViewModel(){
         _ParticipantJoined.value = value
     }
 
+    private val _fromLobby = MutableLiveData<Boolean?>(null)
+    val fromLobby:LiveData<Boolean?> get() = _fromLobby
+
+    fun update_fromLobby(value: Boolean){
+        _fromLobby.value = value
+    }
+
+    private val _AudioMute = MutableLiveData<Boolean>(false)
+    val AudioMute : LiveData<Boolean> get() = _AudioMute
+
+    fun update_AudioMute(value: Boolean){
+        _AudioMute.value = value
+    }
+
+    private val _VideoMute = MutableLiveData<Boolean>(false)
+    val VideoMute : LiveData<Boolean> get() = _VideoMute
+
+    fun update_VideoMute(value: Boolean){
+        _VideoMute.value = value
+    }
+
+    private val _hangup = MutableLiveData<Boolean>(false)
+    val hangup : LiveData<Boolean> get() = _hangup
+
+    fun update_hangup(value: Boolean){
+        _hangup.value = value
+    }
+
 }

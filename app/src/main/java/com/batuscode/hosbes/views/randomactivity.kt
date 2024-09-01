@@ -11,6 +11,7 @@ import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
 import androidx.activity.viewModels
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.ComposeView
 import androidx.lifecycle.Observer
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -21,10 +22,13 @@ import com.batuscode.hosbes.ui.theme.HoşbeşTheme
 import com.batuscode.hosbes.utility.RandomActivityViewModel
 import com.facebook.react.modules.core.PermissionListener
 import kotlinx.coroutines.delay
+import org.jitsi.meet.sdk.BroadcastAction
 import org.jitsi.meet.sdk.BroadcastEvent
+import org.jitsi.meet.sdk.BroadcastIntentHelper
 import org.jitsi.meet.sdk.JitsiMeet
 import org.jitsi.meet.sdk.JitsiMeetActivity
 import org.jitsi.meet.sdk.JitsiMeetActivityDelegate
+import org.jitsi.meet.sdk.JitsiMeetActivityInterface
 import org.jitsi.meet.sdk.JitsiMeetConferenceOptions
 import org.jitsi.meet.sdk.JitsiMeetUserInfo
 import org.jitsi.meet.sdk.JitsiMeetView
@@ -32,13 +36,14 @@ import timber.log.Timber
 import java.net.URL
 import java.util.HashMap
 
-class RandomActivity:JitsiMeetActivity(){
+class RandomActivity:JitsiMeetActivity() , JitsiMeetActivityInterface{
 
     lateinit var view:JitsiMeetView
 
     lateinit var  prejoinView:ComposeView
     lateinit var swipeScreen:ComposeView
     lateinit var randomconnectionview:ComposeView
+    lateinit var randomactivitymeetscreen:ComposeView
     lateinit var context: Context
     lateinit var mrandomActivityViewModel: RandomActivityViewModel
 
@@ -82,6 +87,15 @@ class RandomActivity:JitsiMeetActivity(){
             }
         }
 
+
+        randomactivitymeetscreen = ComposeView(this).apply {
+            setContent {
+                HoşbeşTheme {
+                    RandomActivityMeetScreen(randomActivityViewModel = randomActivityViewModel)
+                }
+            }
+        }
+
         randomActivityViewModel.closeActivity.observe(this , Observer {
             if (it?.equals(true) == true){
                 finish()
@@ -99,64 +113,74 @@ class RandomActivity:JitsiMeetActivity(){
 
         var participant:RandomParticipant? = null
 
+
+        var tfc:Boolean? = null
+        val outhandler = Handler()
+        val inhandler = Handler()
+
         randomActivityViewModel.liverandomParticipant.observe(this , Observer {
 
             if (it != null){
 
                 Log.d("matchstat" , "live par observleendi ... " + it?.toString())
                 participant = it!!
-                randomActivityViewModel.update_xmatched(false)
+                if (participant?.tfc == true){
+
+                    randomActivityViewModel.update_fromLobby(true)
+                    Log.d("matchstat" , "tfc true çıktı ... " )
+
+                    outhandler.postDelayed({
+
+                        Log.d("matchstat" , "outhandler tetikledi ... " + it?.toString())
+                        view!!.addView(randomactivitymeetscreen)
+                        view!!.addView(randomconnectionview)
+
+
+                        val room = participant?.rm
+
+                        val userinfo = JitsiMeetUserInfo().apply {
+                            displayName = name
+                            avatar = URL(photo)
+                        }
+
+                        var options = JitsiMeetConferenceOptions.Builder()
+                            .setRoom("https://meet.recommyz.com/$room")
+                            .setUserInfo(userinfo)
+                            .build()
+
+                        Log.d("randomActivity" , "prejoin view eklendi ... ")
+
+                        join(options)
+
+                    },800)
+
+
+                } else if (participant?.tfc == false){
+                    Log.d("matchstat" , "tfc false çıktı ... " )
+
+                    inhandler.postDelayed({
+                        view!!.removeView(randomconnectionview)
+                        view!!.addView(randomactivitymeetscreen)
+                    },800)
+
+                }
             } else {
 
                 Log.d("matchstat" , "live par observleendi ... sonuç boş ... ")
             }
         })
 
-        val outhandler = Handler()
-        val inhandler = Handler()
+
+
+/*
 
         randomActivityViewModel.xmatched.observe(this , Observer {
-
             Log.d("matchstat" , "karşılaştı observe çalişti ... " + it)
-            val tfc = participant?.tfc
+            tfc = participant?.tfc
 
-
-            if (tfc == true){
-
-
-                leave()
-                outhandler.postDelayed({
-                    view!!.removeView(randomconnectionview)
-
-
-                    val room = participant?.rm
-
-                    val userinfo = JitsiMeetUserInfo().apply {
-                        displayName = name
-                        avatar = URL(photo)
-                    }
-
-                    var options = JitsiMeetConferenceOptions.Builder()
-                        .setRoom("https://meet.recommyz.com/$room")
-                        .setUserInfo(userinfo)
-                        .build()
-
-                    Log.d("randomActivity" , "prejoin view eklendi ... ")
-
-                    join(options)
-
-                },800)
-
-
-            } else if (tfc == false){
-                inhandler.postDelayed({
-                    view!!.removeView(randomconnectionview)
-                },800)
-
-            }
-
-
+            Log.d("matchstat" , "karşılaştı observe çalişti tfc ... " + tfc)
         })
+*/
 
         registerForBroadcastMessages()
 
@@ -178,6 +202,7 @@ class RandomActivity:JitsiMeetActivity(){
             .setFeatureFlag("android.screensharing.enabled" , false)
             .setFeatureFlag("overflow-menu.enabled" , false)
             .setFeatureFlag("pip-while-screensharing.enabled" , false)
+            .setFeatureFlag("lobby-mode.enabled" , true)
             .setFeatureFlag("meeting-password.enabled" , false)
             .setFeatureFlag("kick-out.enabled" , false)
             .setFeatureFlag("toolbox.enabled" , false)
@@ -211,6 +236,36 @@ class RandomActivity:JitsiMeetActivity(){
         Log.d("randomActivity" , "prejoin view eklendi ... ")
         join(options)
 
+        randomActivityViewModel.AudioMute.observe(this , Observer {
+            if (it == false){
+
+                Log.d("randomActivity" , "Audio ... " + it)
+                HandleAudioBroadcastAction(it)
+            } else if (it == true){
+
+                Log.d("randomActivity" , "Audio ... " + it)
+                HandleAudioBroadcastAction(it)
+            }
+        })
+
+        randomActivityViewModel.VideoMute.observe(this , Observer {
+            if (it == false){
+
+                Log.d("randomActivity" , "video ... " + it)
+                HandleCameraBroadCastAction(it)
+            } else if (it == true){
+
+                Log.d("randomActivity" , "video ... " + it)
+                HandleCameraBroadCastAction(it)
+            }
+        })
+
+        randomActivityViewModel.hangup.observe(this , Observer {
+            if (it == true){
+                HandleHangUpBroadCastAction()
+            }
+        })
+
     }
 
     override fun onParticipantJoined(extraData: HashMap<String, Any>?) {
@@ -221,6 +276,14 @@ class RandomActivity:JitsiMeetActivity(){
         super.onConferenceJoined(extraData)
         view!!.removeView(prejoinView)
         view!!.addView(swipeScreen)
+        mrandomActivityViewModel.fromLobby.observe(this , Observer {
+            if (it == true){
+                view!!.removeView(swipeScreen)
+                view!!.removeView(randomconnectionview)
+
+            }
+
+        })
 
         Log.d("randomActivity" , "kendi odasını oluştrudu ... ")
     }
@@ -233,9 +296,29 @@ class RandomActivity:JitsiMeetActivity(){
             when(event.type){
                 BroadcastEvent.Type.CONFERENCE_JOINED -> Timber.i("Conference joined with url%s" , event.data.get("url"))
                 BroadcastEvent.Type.PARTICIPANT_JOINED -> Timber.i("Participant joined%s" , event.data.get("name"))
+                BroadcastEvent.Type.AUDIO_MUTED_CHANGED -> Timber.i("audio muted" , event.data.get("muted"))
+                BroadcastEvent.Type.VIDEO_MUTED_CHANGED -> Timber.i("video muted" , event.data.get("muted"))
                 else -> Timber.i("Received event: %s" , event.type)
             }
         }
+    }
+
+
+    private fun HandleAudioBroadcastAction(value:Boolean){
+        val muteBroadcastActionIntent = BroadcastIntentHelper.buildSetAudioMutedIntent(value)
+        LocalBroadcastManager.getInstance(this).sendBroadcast(muteBroadcastActionIntent)
+    }
+
+    private fun HandleCameraBroadCastAction(value: Boolean){
+
+        val muteBroadcastActionIntent = BroadcastIntentHelper.buildSetVideoMutedIntent(value)
+        LocalBroadcastManager.getInstance(this).sendBroadcast(muteBroadcastActionIntent)
+
+    }
+
+    private fun HandleHangUpBroadCastAction(){
+        val muteBroadcastActionIntent = BroadcastIntentHelper.buildHangUpIntent()
+        LocalBroadcastManager.getInstance(this).sendBroadcast(muteBroadcastActionIntent)
     }
 
     private val broadcastReceiver = object : BroadcastReceiver(){
@@ -250,6 +333,7 @@ class RandomActivity:JitsiMeetActivity(){
 
         intentFilter.addAction(BroadcastEvent.Type.CONFERENCE_TERMINATED.action)
         intentFilter.addAction(BroadcastEvent.Type.AUDIO_MUTED_CHANGED.action)
+        intentFilter.addAction(BroadcastEvent.Type.VIDEO_MUTED_CHANGED.action)
 
         LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver , intentFilter)
     }

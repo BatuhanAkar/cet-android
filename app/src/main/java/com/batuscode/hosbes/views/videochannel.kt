@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -13,7 +14,9 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.lifecycle.Observer
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.batuscode.hosbes.MainActivity
+import com.batuscode.hosbes.ui.theme.HoşbeşTheme
 import com.batuscode.hosbes.utility.MainActivityVM
+import com.batuscode.hosbes.utility.VideoChannelViewModel
 import com.facebook.react.modules.core.PermissionListener
 import org.jitsi.meet.sdk.BroadcastEvent
 import org.jitsi.meet.sdk.BroadcastIntentHelper
@@ -33,6 +36,8 @@ class VideoChannel:JitsiMeetActivity() , JitsiMeetActivityInterface{
     lateinit var view:JitsiMeetView
     lateinit var mainActivityVM: MainActivityVM
     lateinit var corridorView:ComposeView
+    lateinit var videochannelmeetscreen:ComposeView
+    
     var roomName by mutableStateOf("")
 
     private fun hangUp(){
@@ -88,12 +93,15 @@ class VideoChannel:JitsiMeetActivity() , JitsiMeetActivityInterface{
         super.onConferenceJoined(extraData)
 
         view!!.removeView(corridorView!!)
+        view!!.addView(videochannelmeetscreen)
     }
     override fun onParticipantLeft(extraData: HashMap<String, Any>?) {
         super.onParticipantLeft(extraData)
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val videoChannelViewModel:VideoChannelViewModel by viewModels()
 
         mainActivityVM = MainActivity.mMainActivityVM
         view = jitsiView
@@ -104,6 +112,15 @@ class VideoChannel:JitsiMeetActivity() , JitsiMeetActivityInterface{
             }
         }
 
+        
+        videochannelmeetscreen = ComposeView(this).apply { 
+            setContent { 
+                HoşbeşTheme {
+                    VideoChannelMeetScreen(videoChannelViewModel = videoChannelViewModel)
+                }
+            }
+        }
+        
         view!!.addView(corridorView)
 
         val serverURL: URL
@@ -161,6 +178,7 @@ class VideoChannel:JitsiMeetActivity() , JitsiMeetActivityInterface{
             .setFeatureFlag("enableLayerSuspension" , true)
 
             .setFeatureFlag("toolbox.alwaysVisible" , false)
+            .setFeatureFlag("toolbox.enabled" , false)
 
             .setFeatureFlag("unsaferoomwarning.enabled" , false)
 
@@ -210,7 +228,46 @@ class VideoChannel:JitsiMeetActivity() , JitsiMeetActivityInterface{
         })
 
 
+        videoChannelViewModel.videochannelVideoMute.observe(this , Observer {
+            if (it == true){
+                HandleVideoChannelCameraBroadCastAction(it)
+            } else if (it == false){
+                HandleVideoChannelCameraBroadCastAction(it)
+            }
+        })
+
+        videoChannelViewModel.videochannelAudioMute.observe(this , Observer {
+            if (it == true){
+                HandleVideoChannelAudioBroadcastAction(it)
+            } else if (it == false){
+                HandleVideoChannelAudioBroadcastAction(it)
+            }
+        })
+
+        videoChannelViewModel.videochannelhangup.observe(this , Observer {
+            HandleVideoChannelHangUpBroadCastAction()
+        })
+
     }
+
+
+    private fun HandleVideoChannelAudioBroadcastAction(value:Boolean){
+        val muteBroadcastActionIntent = BroadcastIntentHelper.buildSetAudioMutedIntent(value)
+        LocalBroadcastManager.getInstance(this).sendBroadcast(muteBroadcastActionIntent)
+    }
+
+    private fun HandleVideoChannelCameraBroadCastAction(value: Boolean){
+
+        val muteBroadcastActionIntent = BroadcastIntentHelper.buildSetVideoMutedIntent(value)
+        LocalBroadcastManager.getInstance(this).sendBroadcast(muteBroadcastActionIntent)
+
+    }
+
+    private fun HandleVideoChannelHangUpBroadCastAction(){
+        val muteBroadcastActionIntent = BroadcastIntentHelper.buildHangUpIntent()
+        LocalBroadcastManager.getInstance(this).sendBroadcast(muteBroadcastActionIntent)
+    }
+
     override fun onBackPressed() {
         super.onBackPressed()
         LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver)

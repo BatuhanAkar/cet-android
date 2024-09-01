@@ -45,11 +45,9 @@ import com.batuscode.hosbes.utility.WhisperViewModel
 import com.batuscode.hosbes.views.Authentication
 import com.batuscode.hosbes.views.Chat
 import com.batuscode.hosbes.views.DeleteAccount
-import com.batuscode.hosbes.views.MatchConnectCorridor
 import com.batuscode.hosbes.views.OutCallActivity
 import com.batuscode.hosbes.views.PrivateRoomChat
 import com.batuscode.hosbes.views.PrivateRooms
-import com.batuscode.hosbes.views.Random
 import com.batuscode.hosbes.views.SelectUsername
 import com.batuscode.hosbes.views.SplashScreen
 import com.batuscode.hosbes.views.Whisper
@@ -262,13 +260,6 @@ class MainActivity : ComponentActivity() {
 
                         composable("deleteaccount"){
                             DeleteAccount(mainActivityVM)
-                        }
-
-                        composable("random"){
-                            Random(mainActivityVM = mainActivityVM)
-                        }
-                        composable("matchconnectcorridor"){
-                            MatchConnectCorridor(mainActivityVM = mainActivityVM)
                         }
 
                     }

@@ -454,17 +454,6 @@ class MainActivityVM:ViewModel() {
         _profileUpdating.value = state
     }
 
-
-
-
-
-
-
-
-
-
-
-
     private val _d = MutableStateFlow<Boolean??>(false)
     val d:StateFlow<Boolean?> get() = _d
 
@@ -478,6 +467,5 @@ class MainActivityVM:ViewModel() {
     fun updateUserVerified(status: Boolean){
         _userVerified.value = status
     }
-
 
 }
