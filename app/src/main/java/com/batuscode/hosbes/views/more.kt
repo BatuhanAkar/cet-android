@@ -288,7 +288,6 @@ fun MoreContent(scope: CoroutineScope , sheetState: SheetState , mainActivityVM:
             TextButton(
                 onClick = {
                           scope.launch {
-                              sheetState.hide()
                               MainActivity.navigate?.navigate("whisper")
                           }.invokeOnCompletion {
                               if (!sheetState.isVisible) mainActivityVM.updateShowMore(false)

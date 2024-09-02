@@ -10,14 +10,18 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imeNestedScroll
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -61,11 +65,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -95,7 +101,9 @@ import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -103,6 +111,7 @@ import java.util.Locale
 import kotlin.random.Random
 
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun ChatFlow( mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel , modifier: Modifier = Modifier) {
     val state = rememberLazyListState()
@@ -127,37 +136,20 @@ fun ChatFlow( mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel , mo
 
     var inPrivateRoom = MainActivity.PreferenceManager?.getSession("inPrivateRoom")
 
-    DisposableEffect(lifecycle) {
+    val keyboardIsvisible = WindowInsets.isImeVisible
+    val messageSended by mainActivityVM.messageSended.collectAsState()
 
-        val listener = ViewTreeObserver.OnGlobalLayoutListener {
-            val rect = android.graphics.Rect()
-            view.getWindowVisibleDisplayFrame(rect)
 
-            val screenHeight = view.height
-            val keypadHeight = screenHeight - rect.bottom
 
-            if (keypadHeight > screenHeight * 0.15){
-                scope.launch {
-                    if (-1 != (chats.value.size) -1){
-                        state.animateScrollToItem((chats.value.size) - 1) // son ogeye kaydır ...
-                    }
-                }
-            }
-        }
-
-        view.viewTreeObserver.addOnGlobalLayoutListener(listener)
-
-        onDispose {
-            view.viewTreeObserver.removeOnGlobalLayoutListener(listener)
-        }
-    }
-    LaunchedEffect(key1 = chats.value.size) {
+    LaunchedEffect(key1 = chats.value.size , key2 = keyboardIsvisible , key3 = messageSended) {
 
         if (-1 != (chats.value.size) - 1) {
             state.animateScrollToItem((chats.value.size) - 1) // son ogeye kaydır ...
+            if (messageSended == true){
+                mainActivityVM.updateMessageSended(false)
+            }
         }
 
-        delay(2000)
 
 
         snapshotFlow { state.firstVisibleItemIndex }
@@ -183,6 +175,7 @@ fun ChatFlow( mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel , mo
                     state.layoutInfo.visibleItemsInfo.lastOrNull()?.index == state.layoutInfo.totalItemsCount - 1
             }
 
+
     }
 
     if (isAtBottom){
@@ -191,15 +184,25 @@ fun ChatFlow( mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel , mo
 
     LazyColumn(
         state = state,
-        modifier = modifier,
+        modifier = modifier
+            .imePadding()
+            .fillMaxSize()
+            .nestedScroll(rememberNestedScrollInteropConnection()),
     ) {
         items(chats.value!!, key = { it.messageId!! }) { message ->
             Log.d("jokermessage", "öğe eklendi... :: " + message.messageId)
 
-            if (inWhisper == true){
+            if (inWhisper == true && inPrivateRoom == false){
                 MyMessage(mainActivityVM = mainActivityVM, type = message.type!!, message = message)
             } else if (inWhisper == false){
 
+                MessageItemView(
+                    message = message,
+                    type = message.type!!,
+                    mainActivityVM = mainActivityVM,
+                    chatViewModel
+                )
+            } else if (inWhisper == true && inPrivateRoom == true){
                 MessageItemView(
                     message = message,
                     type = message.type!!,
@@ -229,6 +232,7 @@ fun getColor():Color{
     return colors.get(Random.nextInt(colors.size))
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun MessageItemView(message:Message , type:String , mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
     val context: Context = LocalContext.current
@@ -261,8 +265,10 @@ fun MessageItemView(message:Message , type:String , mainActivityVM: MainActivity
 
     ConstraintLayout(
         modifier = Modifier
-            .fillMaxWidth()
+            .fillMaxSize()
             .wrapContentHeight()
+            .imePadding()
+            .nestedScroll(rememberNestedScrollInteropConnection())
     ) {
 
 
@@ -270,8 +276,6 @@ fun MessageItemView(message:Message , type:String , mainActivityVM: MainActivity
 
         Box(
             modifier = Modifier
-                .wrapContentWidth()
-                .wrapContentHeight()
                 .padding(bottom = 8.dp)
                 .width(40.dp)
                 .height(40.dp)
@@ -307,7 +311,7 @@ fun MessageItemView(message:Message , type:String , mainActivityVM: MainActivity
                         // .blur(10.dp, BlurredEdgeTreatment.Rectangle)
                         .width(40.dp)
                         .height(40.dp),
-                    contentScale = ContentScale.FillWidth
+                    contentScale = ContentScale.Crop
                 )
             }
         }
@@ -481,6 +485,7 @@ fun dateformatHour(timestamp: Long): String {
 }
 
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun MyMessage( mainActivityVM: MainActivityVM , type:String ,message: Message){
 
@@ -504,12 +509,12 @@ fun MyMessage( mainActivityVM: MainActivityVM , type:String ,message: Message){
         horizontalAlignment = if (message.senderId?.equals(selfUid) == true) Alignment.End else  Alignment.Start,
         modifier = Modifier
             .fillMaxWidth()
+            .imePadding()
+            .nestedScroll(rememberNestedScrollInteropConnection())
             .padding(bottom = 20.dp, end = 8.5.dp)) {
         Surface (
             shape = RoundedCornerShape(10.dp) ,
-            color = if (message.senderId?.equals(selfUid) == true) colorResource(id = R.color.x) else colorResource(
-                id = R.color.white
-            ),
+            color = colorResource(id = R.color.x),
             tonalElevation = 1.dp
         ) {
 

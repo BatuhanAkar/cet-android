@@ -1,17 +1,8 @@
 package com.batuscode.hosbes.views
 
-import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.drawable.Drawable
-import android.renderscript.Allocation
-import android.renderscript.Element
-import android.renderscript.RenderScript
-import android.renderscript.ScriptIntrinsicBlur
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,7 +13,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.Scaffold
@@ -39,40 +29,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.ImageShader
-import androidx.compose.ui.graphics.ShaderBrush
-import androidx.compose.ui.graphics.asAndroidBitmap
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
-import com.batuscode.hosbes.MainActivity
 import com.batuscode.hosbes.R
 import com.batuscode.hosbes.models.Participnat
 import com.batuscode.hosbes.ui.theme.HoşbeşTheme
-import com.batuscode.hosbes.utility.GlideApp
-import com.batuscode.hosbes.utility.InCallActivityViewModel
-import com.batuscode.hosbes.utility.MainActivityVM
-import com.bumptech.glide.request.target.CustomTarget
-import com.bumptech.glide.request.transition.Transition
-
+import com.batuscode.hosbes.utility.OutCallActivityViewModel
 
 @Composable
-fun CallScreen(historycalls:Participnat , inCallActivityViewModel: InCallActivityViewModel , type:String){
+fun OutCallMeetScreen(outCallActivityViewModel: OutCallActivityViewModel , historyCalls:Participnat){
 
-    /**
-     * Jitsi aktivitesinin görünümüne eklenecek olan ekran bu ... bu ekranda
-     * görünecek olan şey kullanıcı resmi , ismi , ve arama sonlandırma butonu ...
-     * */
-    val context = LocalContext.current
-    val historyCalls = historycalls
+    val WillJoin by outCallActivityViewModel.WillJoin.collectAsState()
 
-    val WillJoin by inCallActivityViewModel.WillJoin.collectAsState()
+
     var image by remember{
         mutableStateOf<ImageBitmap?>(null)
     }
@@ -82,23 +55,6 @@ fun CallScreen(historycalls:Participnat , inCallActivityViewModel: InCallActivit
     var audioMuted by remember {
         mutableStateOf(false)
     }
-
-    GlideApp.with(context)
-        .asBitmap()
-        .load(historyCalls?.photoUrl)
-        .into(object : CustomTarget<Bitmap>(){
-            override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
-                image = resource.asImageBitmap()
-            }
-
-            override fun onLoadCleared(placeholder: Drawable?) {
-            }
-
-
-        })
-
-
-
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
@@ -158,8 +114,8 @@ fun CallScreen(historycalls:Participnat , inCallActivityViewModel: InCallActivit
                 }
 
                 when(WillJoin){
-                    null -> callStateText = "Bağlaniyor ..."
-                    true -> callStateText = "Aranıyor ..."
+                    null -> ""
+                    true -> callStateText = "Bağlaniyor ..."
                     false -> callStateText = "Arama devam ediyor..."
                 }
 
@@ -201,7 +157,7 @@ fun CallScreen(historycalls:Participnat , inCallActivityViewModel: InCallActivit
                         onClick = {
                             audioMuted = audioMuted.not()
 
-                            inCallActivityViewModel.update_WcallMuteAudio(audioMuted)
+                            outCallActivityViewModel.update_WcallMuteAudio(audioMuted)
                         } ,
                         border = null ,
                         colors = IconButtonDefaults.iconButtonColors(
@@ -225,7 +181,7 @@ fun CallScreen(historycalls:Participnat , inCallActivityViewModel: InCallActivit
 
                     OutlinedIconButton(
                         onClick = {
-                            inCallActivityViewModel.update_WcallHangUp(true)
+                            outCallActivityViewModel.update_WcallHangUp(true)
                         },
                         border = null ,
                         colors = IconButtonDefaults.iconButtonColors(
@@ -282,11 +238,10 @@ fun CallScreen(historycalls:Participnat , inCallActivityViewModel: InCallActivit
     }
 }
 
-
 @Preview(showBackground = true , showSystemUi = true)
 @Composable
-fun CallScreenPreview(){
+fun OutCallMeetScreenPreview(){
     HoşbeşTheme {
-        CallScreen( Participnat() , InCallActivityViewModel() , "")
+        OutCallMeetScreen(OutCallActivityViewModel() , Participnat())
     }
 }

@@ -16,6 +16,7 @@ import com.batuscode.hosbes.models.Participnat
 import com.batuscode.hosbes.utility.OutCallActivityViewModel
 import com.facebook.react.modules.core.PermissionListener
 import org.jitsi.meet.sdk.BroadcastEvent
+import org.jitsi.meet.sdk.BroadcastIntentHelper
 import org.jitsi.meet.sdk.JitsiMeet
 import org.jitsi.meet.sdk.JitsiMeetActivity
 import org.jitsi.meet.sdk.JitsiMeetActivityDelegate
@@ -31,6 +32,8 @@ class OutCallActivity:JitsiMeetActivity(){
     private lateinit var mOutCallActivityViewModel: OutCallActivityViewModel
     private lateinit var wuid:String
 
+    lateinit var outcallmeetscreen:ComposeView
+    lateinit var incomingcallscreen:ComposeView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,13 +54,19 @@ class OutCallActivity:JitsiMeetActivity(){
         )
 
 
-        val composeView = ComposeView(this).apply {
+        incomingcallscreen = ComposeView(this).apply {
             setContent {
                 ICC(outCallActivityViewModel = mOutCallActivityViewModel , Historycalls = callHistoryItem)
             }
         }
 
-        view!!.addView(composeView)
+        outcallmeetscreen = ComposeView(this).apply {
+            setContent {
+                OutCallMeetScreen(outCallActivityViewModel = outCallActivityViewModel , historyCalls = callHistoryItem)
+            }
+        }
+
+        view!!.addView(incomingcallscreen)
 
         val serverURL: URL
         serverURL = URL("https://meet.recommyz.com")
@@ -121,6 +130,8 @@ class OutCallActivity:JitsiMeetActivity(){
 
         outCallActivityViewModel.Ljoin.observe(this , Observer {
             if (it?.equals(true) == true){
+                view!!.removeView(incomingcallscreen)
+                view!!.addView(outcallmeetscreen)
                 join(options)
 
             } else if (it?.equals(false) == true) {
@@ -130,8 +141,30 @@ class OutCallActivity:JitsiMeetActivity(){
 
         })
 
+        outCallActivityViewModel.WcallMuteAudio.observe(this , Observer {
+            if (it == true){
+                HandleMuteAudioBroadcastAction(it)
+            } else if (it == false){
+                HandleMuteAudioBroadcastAction(it)
+            }
+        })
+
+        outCallActivityViewModel.WcallHangUp.observe(this , Observer {
+            HandleHangUpBroadcastAction()
+        })
+
     }
 
+    private fun HandleHangUpBroadcastAction(){
+        val intent = BroadcastIntentHelper.buildHangUpIntent()
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent)
+    }
+
+    private fun HandleMuteAudioBroadcastAction(value: Boolean){
+        val intent = BroadcastIntentHelper.buildSetAudioMutedIntent(value)
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent)
+
+    }
 
     override fun onConferenceWillJoin(extraData: HashMap<String, Any>?) {
         super.onConferenceWillJoin(extraData)
@@ -141,6 +174,11 @@ class OutCallActivity:JitsiMeetActivity(){
     override fun onConferenceJoined(extraData: HashMap<String, Any>?) {
         super.onConferenceJoined(extraData)
         mOutCallActivityViewModel.updateWillJoin(false)
+    }
+
+    override fun onParticipantLeft(extraData: HashMap<String, Any>?) {
+        super.onParticipantLeft(extraData)
+        HandleHangUpBroadcastAction()
     }
 
     private fun onBroadcastReceived(intent: Intent?){

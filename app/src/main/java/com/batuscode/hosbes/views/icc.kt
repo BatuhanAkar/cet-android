@@ -58,11 +58,6 @@ fun ICC(outCallActivityViewModel: OutCallActivityViewModel , Historycalls:Partic
 
     val uid = MainActivity?.PreferenceManager?.getuidShared("uid")
 
-    /**
-     * gelen arama ile birlikte getirilen arama geçmişindeki son arama ...
-     * */
-
-   // val Historycalls by voiceCallActivityVM.Historycalls.collectAsState()
 
     val WillJoin by outCallActivityViewModel.WillJoin.collectAsState()
 
@@ -141,11 +136,7 @@ fun ICC(outCallActivityViewModel: OutCallActivityViewModel , Historycalls:Partic
                     )
                 }
 
-                when(WillJoin){
-                    null -> Text(text = "Gelen sesli arama...")
-                    true -> Text(text = "Bağlanıyor...")
-                    false -> Text(text = "Arama devam ediyor...")
-                }
+                Text(text = "Gelen sesli arama...")
 
             }
 
@@ -158,14 +149,7 @@ fun ICC(outCallActivityViewModel: OutCallActivityViewModel , Historycalls:Partic
 
                 IconButton(onClick = {
                     //TODO: aramayi cevapla butonu ...
-
                     outCallActivityViewModel.updateLjoin(true)
-
-
-                   // MainActivity.fm.acceptCall(ownerId = Historycalls?.uid!! , uid = uid!!)
-                  //  answerCall(MainActivity.context , calls = Historycalls!!)
-                  //  MainActivity.navigate?.popBackStack()
-
                 } ,
                     modifier = Modifier
                 ) {

@@ -65,9 +65,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -387,6 +389,7 @@ fun Chat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
 
     }
 
+@OptIn(ExperimentalLayoutApi::class)
 @RequiresApi(Build.VERSION_CODES.R)
 @Composable
 fun ChatUI(chatViewModel: ChatViewModel , mainActivityVM: MainActivityVM , innerPadding:PaddingValues){
@@ -439,11 +442,11 @@ fun ChatUI(chatViewModel: ChatViewModel , mainActivityVM: MainActivityVM , inner
 
             Log.d("chatFlow" , "created again...")
 
-            ChatFlow( mainActivityVM ,
-                chatViewModel = chatViewModel ,
+            ChatFlow(
+                mainActivityVM,
+                chatViewModel = chatViewModel,
                 modifier = Modifier
                     .fillMaxSize()
-                    .imePadding()
                     .constrainAs(
                         messageRecyclerView
                     ) {
@@ -452,8 +455,10 @@ fun ChatUI(chatViewModel: ChatViewModel , mainActivityVM: MainActivityVM , inner
                         top.linkTo(parent.top)
                         bottom.linkTo(messageTextField.top)
                         height = Dimension.fillToConstraints
+                        width = Dimension.fillToConstraints
 
-                    } ,
+
+                    },
 
                 )
 
@@ -471,6 +476,7 @@ fun ChatUI(chatViewModel: ChatViewModel , mainActivityVM: MainActivityVM , inner
                         start.linkTo(parent.start)
                         end.linkTo(parent.end)
                         width = Dimension.fillToConstraints
+
                     }
             ) {
                 if (!it.isEmpty()){

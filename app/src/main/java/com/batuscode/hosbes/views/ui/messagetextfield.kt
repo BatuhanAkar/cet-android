@@ -240,6 +240,7 @@ private fun CustomTextField( chatViewModel: ChatViewModel , mainActivityVM: Main
 
         Surface (
             modifier = Modifier
+                .wrapContentSize()
                 .constrainAs(mMessage) {
                     start.linkTo(parent.start)
                     end.linkTo(mButton.start)

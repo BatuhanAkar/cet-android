@@ -134,13 +134,32 @@ class InCallActivity:JitsiMeetActivity(){
         view!!.addView(composeView)
         join(options)
 
+
+        inCallActivityViewModel.WcallMuteAudio.observe(this , Observer {
+            if (it == true){
+                HandleMuteAudioBroadcastAction(it)
+            } else if (it == false){
+                HandleMuteAudioBroadcastAction(it)
+            }
+        })
+
+        inCallActivityViewModel.WcallHangUp.observe(this , Observer {
+            HandleHangUpBroadcastAction()
+        })
+
     }
 
-    private fun hangUp(){
-        val hangUpBroadcastIntent: Intent = BroadcastIntentHelper.buildHangUpIntent()
-        LocalBroadcastManager.getInstance(this.applicationContext).sendBroadcast(hangUpBroadcastIntent)
+
+    private fun HandleHangUpBroadcastAction(){
+        val intent = BroadcastIntentHelper.buildHangUpIntent()
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent)
     }
 
+    private fun HandleMuteAudioBroadcastAction(value: Boolean){
+        val intent = BroadcastIntentHelper.buildSetAudioMutedIntent(value)
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent)
+
+    }
     override fun onConferenceJoined(extraData: HashMap<String, Any>?) {
         super.onConferenceJoined(extraData)
         minCallActivityViewModel.updateWillJoin(true)
@@ -158,7 +177,7 @@ class InCallActivity:JitsiMeetActivity(){
 
     override fun onParticipantLeft(extraData: HashMap<String, Any>?) {
         super.onParticipantLeft(extraData)
-        hangUp()
+        HandleHangUpBroadcastAction()
     }
 
     private fun onBroadcastReceived(intent: Intent?){
