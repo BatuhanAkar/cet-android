@@ -46,7 +46,7 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun VoiceChannelMeetScreen(voiceChannelViewModel: VoiceChannelViewModel){
-    //val selectedChannel by MainActivity.mMainActivityVM.selectedChannel.collectAsState()
+    val selectedChannel by MainActivity.mMainActivityVM.selectedChannel.collectAsState()
 
     var audioMuted by remember {
         mutableStateOf(false)
@@ -159,7 +159,7 @@ fun VoiceChannelMeetScreen(voiceChannelViewModel: VoiceChannelViewModel){
                             .wrapContentSize()
                     ) {
                         Text(
-                            text = "selectedChannel!!" ,
+                            text = selectedChannel!! ,
                             style = TextStyle(
                                 fontFamily = FontFamily(Font(R.font.pacifico_regular)) ,
                                 textAlign = TextAlign.Center ,

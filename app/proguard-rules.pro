@@ -19,3 +19,13 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+-keep class org.jitsi.meet.** {*;}
+-keep class org.jitsi.meet.sdk.** {*;}
+
+-keep class org.jitsi.webrtc.** {*;}
+
+-keep class com.facebook.react.bridge.CatalystInstanceImpl {*;}
+-keep class com.facebook.react.bridge.JSCJavaScriptExecutor {*;}
+-keep class com.facebook.react.bridge.ReadableType {*;}
+

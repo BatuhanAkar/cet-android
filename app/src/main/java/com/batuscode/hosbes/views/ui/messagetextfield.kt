@@ -10,6 +10,7 @@ import android.util.Log
 import android.view.inputmethod.InputMethodManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -28,6 +29,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
@@ -238,6 +240,25 @@ private fun CustomTextField( chatViewModel: ChatViewModel , mainActivityVM: Main
 
         val (mMessage , mButton) = createRefs()
 
+
+        AnimatedVisibility(visible = isEmpty) {
+
+            OutlinedIconButton(
+                onClick = {
+
+
+
+
+                } ,
+                modifier = Modifier
+                    .padding(0.dp) ,
+                border = null
+            ) {
+                Icon(painter = painterResource(id = R.drawable.gif_box_24px), contentDescription = ""
+                )
+            }
+        }
+
         Surface (
             modifier = Modifier
                 .wrapContentSize()
@@ -285,26 +306,10 @@ private fun CustomTextField( chatViewModel: ChatViewModel , mainActivityVM: Main
         }
 
 
-        if (editMessageFieldMode == false) {
+        if (editMessageFieldMode == false)
+        {
 
-            //
-            //                            AnimatedVisibility(visible = isEmpty) {
-            //
-            //                                OutlinedIconButton(
-            //                                    onClick = {
-            //
-            //
-            //
-            //
-            //                                    } ,
-            //                                    modifier = Modifier
-            //                                        .padding(0.dp) ,
-            //                                    border = null
-            //                                ) {
-            //                                    Icon(painter = painterResource(id = R.drawable.gif_box_24px), contentDescription = ""
-            //                                    )
-            //                                }
-            //                            }
+
 
 
             // standart mesaj kutusu
