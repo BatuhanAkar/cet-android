@@ -467,6 +467,7 @@ fun ChatUI(chatViewModel: ChatViewModel , mainActivityVM: MainActivityVM , inner
                     .padding(2.dp)
                     .background(Color.White)
                     .imePadding()
+                    .fillMaxWidth()
                     .constrainAs(
                         messageTextField
                     )

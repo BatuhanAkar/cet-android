@@ -56,8 +56,8 @@ android {
 dependencies {
 
 
-    implementation("androidx.compose.runtime:runtime-livedata:1.6.8")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.2")
+    implementation(libs.androidx.runtime.livedata)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -67,13 +67,13 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.constraintlayout.compose)
-    implementation("androidx.work:work-runtime-ktx:2.9.0")
-    implementation("androidx.navigation:navigation-compose:2.7.7")
-    implementation("androidx.compose.ui:ui:1.6.8")
-    implementation("androidx.compose.material3:material3:1.2.1")
-    implementation("androidx.compose.ui:ui-tooling:1.6.8")
+    implementation(libs.androidx.work.runtime.ktx)
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.ui)
+    implementation(libs.material3)
+    implementation(libs.ui.tooling)
 
-    implementation("com.github.bumptech.glide:glide:4.16.0")
+    implementation(libs.glide)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.activity)
@@ -81,23 +81,23 @@ dependencies {
     implementation(libs.androidx.media3.common)
     implementation(libs.androidx.media3.exoplayer)
     implementation(libs.firebase.crashlytics)
-    kapt ("com.github.bumptech.glide:compiler:4.16.0")
-    implementation("com.github.bumptech.glide:okhttp3-integration:4.16.0")
+    kapt (libs.compiler)
+    implementation(libs.okhttp3.integration)
     
-    implementation("com.github.bumptech.glide:compose:1.0.0-beta01")
+    implementation(libs.compose)
 
-    implementation("com.google.accompanist:accompanist-permissions:0.35.1-alpha")
+    implementation(libs.accompanist.permissions)
 
-    implementation(platform("com.google.firebase:firebase-bom:33.2.0"))
-    implementation("com.google.firebase:firebase-auth:21.2.0")
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.auth)
     implementation(libs.firebase.database)
-    implementation("com.google.firebase:firebase-storage-ktx:21.0.0")
+    implementation(libs.firebase.storage.ktx)
     implementation(libs.firebase.firestore)
-    implementation("com.firebaseui:firebase-ui-storage:8.0.2")
+    implementation(libs.firebase.ui.storage)
     implementation("org.jitsi.react:jitsi-meet-sdk:+"){ isTransitive = true}
+    implementation("com.giphy.sdk:ui:2.3.15")
 
-
-    implementation ("com.google.firebase:firebase-functions:21.0.0")
+    implementation (libs.firebase.functions)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

@@ -154,13 +154,16 @@ class FirebaseManager {
 
 
                 Log.d("message" , "chat :: " + message.message)
-
-                when{
-                    message.type.equals("text") -> {
-                        if (!message.messageId.equals(lastChatId)){
-                            chatViewModel.pushChat(message , loadMoreChat)
-                        }
-                    }
+//
+//                when{
+//                    message.type.equals("text") -> {
+//                        if (!message.messageId.equals(lastChatId)){
+//                            chatViewModel.pushChat(message , loadMoreChat)
+//                        }
+//                    }
+//                }
+                if (!message.messageId.equals(lastChatId)){
+                    chatViewModel.pushChat(message , loadMoreChat)
                 }
 
             } else {
@@ -168,12 +171,13 @@ class FirebaseManager {
                 val message:Message = snapshot.getValue<Message>()!!
 
                 Log.d("message" , "chat :: " + message.message)
-
-                when{
-                    message.type.equals("text") -> {
-                        chatViewModel.pushChat(message , loadMoreChat)
-                    }
-                }
+//
+//                when{
+//                    message.type.equals("text") -> {
+//                        chatViewModel.pushChat(message , loadMoreChat)
+//                    }
+//                }
+                chatViewModel.pushChat(message , loadMoreChat)
 
             }
 

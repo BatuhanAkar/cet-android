@@ -2,14 +2,11 @@ package com.batuscode.hosbes.views.ui
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.drawable.Drawable
+import android.content.Intent
 import android.os.Build
 import android.os.Environment
 import android.util.Log
 import android.view.inputmethod.InputMethodManager
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.BorderStroke
@@ -26,7 +23,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -45,9 +41,11 @@ import com.batuscode.hosbes.ui.theme.HoşbeşTheme
 import com.batuscode.hosbes.utility.ChatViewModel
 import com.batuscode.hosbes.utility.FirebaseManager
 import com.batuscode.hosbes.utility.MainActivityVM
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.target.CustomTarget
-import com.bumptech.glide.request.transition.Transition
+import com.batuscode.hosbes.views.GiphyActivity
+import com.giphy.sdk.core.models.Media
+import com.giphy.sdk.ui.GPHContentType
+import com.giphy.sdk.ui.Giphy
+import com.giphy.sdk.ui.views.GiphyDialogFragment
 
 @SuppressLint("UnrememberedMutableState")
 @Composable
@@ -55,7 +53,7 @@ internal fun MessageTextField( chatViewModel: ChatViewModel , mainActivityVM: Ma
 
     val message by mainActivityVM.message.collectAsState()
 
-    val isEmpty: Boolean by derivedStateOf{ message?.text?.isEmpty() ?: true  }
+    val isEmpty: Boolean by derivedStateOf{ message?.text?.isEmpty() ?: false  }
 
     val messageSended by mainActivityVM.messageSended.collectAsState()
     val editMessageFlag by mainActivityVM.editMessageFlag.collectAsState()
@@ -107,6 +105,8 @@ private fun CustomTextField( chatViewModel: ChatViewModel , mainActivityVM: Main
 
     val whisperItem by mainActivityVM.whisperItem.collectAsState()
 
+    val fragmentManager by mainActivityVM.fragmentManager.collectAsState()
+
 
     var mediaSelected by remember {
         mutableStateOf(false)
@@ -121,108 +121,6 @@ private fun CustomTextField( chatViewModel: ChatViewModel , mainActivityVM: Main
         mainActivityVM.updatePrMessageWrited(false)
     }
 
-
-    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) {
-
-
-
-        it.let {
-            if (it != null) {
-
-
-                Log.d("pickerResult" , "image is selected...")
-                Log.d("pickerResult" , "path :: " + it)
-
-                val contentResolver = context.contentResolver
-                val mimeType = contentResolver.getType(it!!)
-
-                if (mimeType != null){
-
-                    when{
-
-                        mimeType.startsWith("image")-> {
-
-
-                            Glide.with(context)
-                                .asBitmap()
-                                .load(it)
-                                .into( object: CustomTarget<Bitmap>(){
-                                    override fun onResourceReady(
-                                        resource: Bitmap,
-                                        transition: Transition<in Bitmap>?
-                                    ) {
-
-                                        Log.d("pickerResult" , "mime type :: image")
-                                        mainActivityVM.updatePrivateChatPlaceHolderImage(resource.asImageBitmap())
-
-                                        mainActivityVM.updateNewMediaSended(true)
-                                        mainActivityVM.updateMediaUri(it)
-                                        mediaSelected = true
-
-                                    }
-
-                                    override fun onLoadCleared(placeholder: Drawable?) {
-                                        TODO("Not yet implemented")
-                                    }
-
-                                })
-
-
-
-                        }
-
-                        mimeType.startsWith("video")-> {
-
-                            Glide.with(context)
-                                .asBitmap()
-                                .load(it)
-                                .into( object: CustomTarget<Bitmap>(){
-                                    override fun onResourceReady(
-                                        resource: Bitmap,
-                                        transition: Transition<in Bitmap>?
-                                    ) {
-                                        Log.d("pickerResult" , "mime type :: video")
-
-                                        mainActivityVM.updatePrivateChatPlaceHolderImage(resource.asImageBitmap())
-
-                                        mainActivityVM.updateNewMediaSended(true)
-                                        mainActivityVM.updateMediaUri(it)
-                                        mediaSelected = true
-
-                                    }
-
-                                    override fun onLoadCleared(placeholder: Drawable?) {
-                                        TODO("Not yet implemented")
-                                    }
-
-                                })
-
-
-
-/*
-                            MainActivity.fm.writePRMedia( room!! , context , "video" , it.data)*/
-
-                        }
-
-
-
-
-                    }
-
-                }
-
-
-
-
-
-
-
-            }
-
-        }
-
-    }
-
     if (mediaSelected){
 
         Log.d("pickerResult" , "message now writing on database...")
@@ -234,39 +132,72 @@ private fun CustomTextField( chatViewModel: ChatViewModel , mainActivityVM: Main
     }
 
 
-    ConstraintLayout (
+
+    ConstraintLayout(
         modifier = modifier
-    ){
-
-        val (mMessage , mButton) = createRefs()
-
-
-        AnimatedVisibility(visible = isEmpty) {
-
-            OutlinedIconButton(
-                onClick = {
+            .padding(top = 8.dp)
+            .fillMaxWidth()
+    ) {
 
 
+        val (messageBoxSurface , gifButton , sendMessageButton) = createRefs()
 
+        AnimatedVisibility(visible = isEmpty , modifier = Modifier
+            .wrapContentSize()
+            .constrainAs(gifButton) {
+                start.linkTo(parent.start)
+                end.linkTo(messageBoxSurface.start)
+                top.linkTo(messageBoxSurface.top)
+                bottom.linkTo(messageBoxSurface.bottom)
+            }) {
+            OutlinedIconButton(onClick = {
+                val giphyDialogFragment = GiphyDialogFragment.newInstance()
+                if (fragmentManager != null){
+                    giphyDialogFragment.show(fragmentManager!! , "giphydialog")
 
-                } ,
+                    giphyDialogFragment.gifSelectionListener = object : GiphyDialogFragment.GifSelectionListener{
+                        override fun didSearchTerm(term: String) {
+                        }
+
+                        override fun onDismissed(selectedContentType: GPHContentType) {
+                        }
+
+                        override fun onGifSelected(
+                            media: Media,
+                            searchTerm: String?,
+                            selectedContentType: GPHContentType
+                        ) {
+                           var mediaId = media.id
+
+                            mainActivityVM.updateMessageSended(true)
+                            MainActivity.fm.writeMessage( "gif" , mediaId , FirebaseManager.C1)
+
+                        }
+
+                    }
+
+                }
+            } ,
+                border = null,
                 modifier = Modifier
-                    .padding(0.dp) ,
-                border = null
-            ) {
-                Icon(painter = painterResource(id = R.drawable.gif_box_24px), contentDescription = ""
-                )
+
+
+            )
+            {
+                Icon(painter = painterResource(id = R.drawable.gif_box_24px)
+                    , contentDescription = "" ,
+                    modifier = Modifier
+                        .size(50.dp)
+                    )
             }
         }
 
+        // mesaj kutusu arayüzü
         Surface (
             modifier = Modifier
-                .wrapContentSize()
-                .constrainAs(mMessage) {
-                    start.linkTo(parent.start)
-                    end.linkTo(mButton.start)
-                    top.linkTo(parent.top)
-                    bottom.linkTo(parent.bottom)
+                .constrainAs(messageBoxSurface){
+                    start.linkTo(gifButton.end)
+                    end.linkTo(sendMessageButton.start)
                     width = Dimension.fillToConstraints
                 },
             shape = RoundedCornerShape(24.dp) ,
@@ -275,16 +206,22 @@ private fun CustomTextField( chatViewModel: ChatViewModel , mainActivityVM: Main
             border = BorderStroke(1.dp , colorResource(id = R.color.e))
         )
         {
+
+
+
+            // mesaj kutusu
             Box(modifier = Modifier
+                .fillMaxWidth()
                 .background(colorResource(id = R.color.white).copy(0.1f))
-                .heightIn(min = 24.dp) ,
+                .heightIn(min = 24.dp)
+                ,
                 contentAlignment = Alignment.CenterStart
             )
             {
                 BasicTextField(
                     modifier = Modifier
-                        .background(colorResource(id = R.color.white).copy(0.1f))
                         .fillMaxWidth()
+                        .background(colorResource(id = R.color.white).copy(0.1f))
                         .padding(horizontal = 24.dp, vertical = 10.dp) ,
                     textStyle = TextStyle(
                         fontSize = 18.sp
@@ -303,29 +240,36 @@ private fun CustomTextField( chatViewModel: ChatViewModel , mainActivityVM: Main
 
                 )
             }
+
+
+
         }
 
-
+        // mesajı gönder butonu
         if (editMessageFieldMode == false)
         {
 
 
 
 
-            // standart mesaj kutusu
+            // mesajı gönder butonu
 
             Surface(
                 modifier = Modifier
                     .padding(start = 5.dp)
-                    .constrainAs(mButton) {
+                    .wrapContentSize()
+                    .constrainAs(sendMessageButton) {
                         end.linkTo(parent.end)
-                        bottom.linkTo(mMessage.bottom)
+                        top.linkTo(messageBoxSurface.top)
+                        bottom.linkTo(messageBoxSurface.bottom)
+                        width = Dimension.fillToConstraints
                     }
                 ,
                 shape = RoundedCornerShape(50.dp),
                 color = colorResource(id = R.color.d) ,
                 shadowElevation = 2.dp ,
-            ){
+            )
+            {
                 FilledIconButton(
                     onClick = {
                         if (!message.text.isEmpty()){
@@ -364,7 +308,8 @@ private fun CustomTextField( chatViewModel: ChatViewModel , mainActivityVM: Main
                         }
                     } ,
                     modifier = Modifier
-                        .padding(0.dp),
+                        .padding(0.dp)
+                        .wrapContentSize(),
                     colors = IconButtonDefaults.filledIconButtonColors(
                         containerColor = colorResource(id = R.color.d)
                     ),
@@ -391,7 +336,9 @@ private fun CustomTextField( chatViewModel: ChatViewModel , mainActivityVM: Main
             // mesajı düzenle mesaj kutusu
 
             Column (
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.CenterHorizontally ,
+                modifier = Modifier
+
             )
             {
                 TextButton(
@@ -459,13 +406,11 @@ private fun CustomTextField( chatViewModel: ChatViewModel , mainActivityVM: Main
                         contentDescription = "send" ,
                         modifier = Modifier
 
-                        )
+                    )
                 }
             }
         }
     }
-
-
 
 
 }
@@ -525,7 +470,7 @@ private fun showEmoji(context:Context){
 
 
 
-@Preview
+@Preview(showBackground = true , showSystemUi = true)
 @Composable
 fun MessageTextFieldPreview(){
     HoşbeşTheme {

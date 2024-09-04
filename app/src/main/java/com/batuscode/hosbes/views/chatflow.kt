@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.util.Log
 import android.view.ViewTreeObserver
+import android.widget.ImageView
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -26,6 +28,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -38,6 +41,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.Scaffold
@@ -49,6 +53,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -81,6 +86,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.lifecycle.Lifecycle
@@ -97,12 +103,18 @@ import com.batuscode.hosbes.utility.FirebaseManager
 import com.batuscode.hosbes.utility.GlideApp
 import com.batuscode.hosbes.utility.MainActivityVM
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.gif.GifDrawable
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
+import com.giphy.sdk.core.GPHCore
+import com.giphy.sdk.core.models.Media
+import com.giphy.sdk.core.models.enums.RenditionType
+import com.giphy.sdk.ui.views.GPHMediaView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -190,11 +202,11 @@ fun ChatFlow( mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel , mo
             .nestedScroll(rememberNestedScrollInteropConnection()),
     ) {
         items(chats.value!!, key = { it.messageId!! }) { message ->
-            Log.d("jokermessage", "öğe eklendi... :: " + message.messageId)
 
             if (inWhisper == true && inPrivateRoom == false){
                 MyMessage(mainActivityVM = mainActivityVM, type = message.type!!, message = message)
             } else if (inWhisper == false){
+                Log.d("jokermessage", "öğe eklendi... :: " + message.type)
 
                 MessageItemView(
                     message = message,
@@ -241,7 +253,7 @@ fun MessageItemView(message:Message , type:String , mainActivityVM: MainActivity
         mutableStateOf<ImageBitmap?>(null)
     }
 
-    val timeStamp by remember { mutableStateOf(  dateformatHour(message.time!!) ) }
+   // val timeStamp by remember { mutableStateOf(  dateformatHour(message.time!!) ) }
 
     val inWhisper by mainActivityVM.inWhisper.collectAsState()
 
@@ -272,8 +284,9 @@ fun MessageItemView(message:Message , type:String , mainActivityVM: MainActivity
     ) {
 
 
-        val (profileImageView , messagebody) = createRefs()
+        val (profileImageView , messagebody , divider) = createRefs()
 
+        // profile image
         Box(
             modifier = Modifier
                 .padding(bottom = 8.dp)
@@ -289,7 +302,7 @@ fun MessageItemView(message:Message , type:String , mainActivityVM: MainActivity
 
         )
         {
-            if (image != null){
+         /*   if (image != null){
 
 
                 Image(
@@ -314,15 +327,23 @@ fun MessageItemView(message:Message , type:String , mainActivityVM: MainActivity
                     contentScale = ContentScale.Crop
                 )
             }
+            */
+            Image(
+                painter = painterResource(id = R.drawable.account_circle_24px),
+                contentDescription = "",
+                modifier = Modifier
+                    .clip(RoundedCornerShape(10.dp))
+                    // .blur(10.dp, BlurredEdgeTreatment.Rectangle)
+                    .width(40.dp)
+                    .height(40.dp),
+                contentScale = ContentScale.Crop
+            )
         }
 
+        // message surface
 
         Surface (
-            shape = RectangleShape ,
-            color = if(message.senderId?.equals(uid) == true) colorResource(id = R.color.d) else colorResource(
-                id = R.color.white
-            ) ,
-            shadowElevation = 2.dp,
+            color = Color.White,
             modifier = Modifier
                 .padding(bottom = 8.dp, start = 8.dp)
                 .constrainAs(messagebody) {
@@ -338,7 +359,6 @@ fun MessageItemView(message:Message , type:String , mainActivityVM: MainActivity
 
             Column(
                 modifier = Modifier
-                    .wrapContentHeight()
                     .padding(8.dp)
 
             )
@@ -366,10 +386,10 @@ fun MessageItemView(message:Message , type:String , mainActivityVM: MainActivity
                         ) {
 
                             Text(
-                                text = message.senderName!!,
+                                text = "message.senderName!!",
                                 style = TextStyle(
                                     fontWeight = FontWeight.SemiBold ,
-                                    fontSize = 16.sp
+                                    fontSize = 18.sp
                                 ),
                                 modifier = Modifier
                                     .wrapContentWidth()
@@ -386,7 +406,7 @@ fun MessageItemView(message:Message , type:String , mainActivityVM: MainActivity
                                     .wrapContentWidth()
                             )
                             Text(
-                                text = timeStamp ,
+                                text = "12:9" ,
                                 style = TextStyle(
                                     fontSize = 12.sp
                                 ),
@@ -404,16 +424,16 @@ fun MessageItemView(message:Message , type:String , mainActivityVM: MainActivity
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             Text(
-                                text = message.senderName!!,
+                                text = "message.senderName!!",
                                 style = TextStyle(
                                     fontWeight = FontWeight.Bold ,
-                                    fontSize = 16.sp
+                                    fontSize = 20.sp
                                 ),
                                 modifier = Modifier
                                     .wrapContentWidth()
                             )
                             Text(
-                                text = timeStamp ,
+                                text = "12:9" ,
                                 style = TextStyle(
                                     fontSize = 12.sp
                                 ),
@@ -451,24 +471,73 @@ fun MessageItemView(message:Message , type:String , mainActivityVM: MainActivity
 
                 }
 
-                when
-                {
-                    type.equals("text")->{
-                        Text(
-                            text = message.message!!,
-                            style = TextStyle(
-                                fontWeight = FontWeight.SemiBold ,
-                                fontSize = 14.sp
-                            ),
-                            modifier = Modifier
+                if (type.equals("text")){
+                    Log.d("loadgif" , "text function runn...")
 
-                        )
-                    }
+                    Text(
+                        text = "message.message!!",
+                        style = TextStyle(
+                            fontWeight = FontWeight.SemiBold ,
+                            fontSize = 16.sp
+                        ),
+                        modifier = Modifier
+                            .padding(top = 4.dp)
+
+                    )
+                } else if (type.equals("gif")){
+                    Log.d("loadgif" , "function runn...")
+
+                   // gifView(mediaId = message.message!!)
                 }
+
             }
         }
+
+        HorizontalDivider(
+            thickness = 1.dp ,
+            color = colorResource(id = R.color.f).copy(0.5f) ,
+            modifier = Modifier
+                .padding(top = 8.dp)
+                .constrainAs(divider){
+                    top.linkTo(messagebody.top)
+                    start.linkTo(messagebody.start)
+                    end.linkTo(parent.end)
+                }
+        )
     }
 
+
+}
+
+@Composable
+fun gifView(mediaId:String){
+
+    var media by remember {
+        mutableStateOf<Media?>(null)
+    }
+    LaunchedEffect(mediaId) {
+        GPHCore.gifById(mediaId!!){
+                result, e -> media = result?.data
+            e?.let {
+                Log.d("loadgif" , "error :: " + e.message)
+            }
+        }
+
+    }
+    if (media != null){
+        AndroidView(factory = {
+                ctx ->
+            GPHMediaView(ctx).apply {
+                media?.let {
+                    setMedia(it , RenditionType.original)
+                }
+            }
+        } , modifier = Modifier
+            .wrapContentSize()
+            .size(120.dp)
+            .clip(RoundedCornerShape(16.dp))
+        )
+    }
 
 }
 
@@ -551,7 +620,7 @@ fun MyMessage( mainActivityVM: MainActivityVM , type:String ,message: Message){
 
 }
 
-
+/*
 @Preview(showBackground = true , showSystemUi = true)
 @Composable
 fun MyMessagePreview(){
@@ -561,8 +630,8 @@ fun MyMessagePreview(){
         MyMessage( mainActivityVM ,"text" , message = message)
     }
 }
+*/
 
-/*
 
 @Preview(showBackground = true , showSystemUi = true)
 @Composable
@@ -575,5 +644,3 @@ fun MessageItemViewPreview(){
         MessageItemView(Message(), type = "text" , mainActivityVM = mainActivityVM , chatViewModel)
     }
 }
-*/
-

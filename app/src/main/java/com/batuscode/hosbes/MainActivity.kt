@@ -19,6 +19,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -55,9 +56,10 @@ import com.batuscode.hosbes.views.WhisperChat
 import com.batuscode.hosbes.views._WhisperChat
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
+import com.giphy.sdk.ui.Giphy
 import com.google.firebase.auth.FirebaseAuth
 
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
 
 
     @SuppressLint("StaticFieldLeak")
@@ -122,9 +124,10 @@ class MainActivity : ComponentActivity() {
                 fm.loadMoreChat = false
 
                 context = this
+                Giphy.configure(context , "5eryANGrljO1uXPSf7GLEhUAU3q8zF1k")
 
 
-
+                mainActivityVM.setFragmentManager(supportFragmentManager)
                 permissionLauncher= rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission()) {}
 
                 PreferenceManager = PreferenceManager(context)

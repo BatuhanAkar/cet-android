@@ -7,6 +7,7 @@ import android.net.Uri
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -466,6 +467,13 @@ class MainActivityVM:ViewModel() {
 
     fun updateUserVerified(status: Boolean){
         _userVerified.value = status
+    }
+
+    private val _fragmentManager = MutableStateFlow<FragmentManager?>(null)
+    val fragmentManager : StateFlow<FragmentManager?> get() = _fragmentManager
+
+    fun setFragmentManager(manager: FragmentManager){
+        _fragmentManager.value = manager
     }
 
 }
