@@ -6,8 +6,10 @@ import android.graphics.drawable.Drawable
 import android.util.Log
 import android.view.ViewTreeObserver
 import android.widget.ImageView
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -244,7 +246,7 @@ fun getColor():Color{
     return colors.get(Random.nextInt(colors.size))
 }
 
-@OptIn(ExperimentalLayoutApi::class)
+@OptIn(ExperimentalLayoutApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun MessageItemView(message:Message , type:String , mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
     val context: Context = LocalContext.current
@@ -253,7 +255,7 @@ fun MessageItemView(message:Message , type:String , mainActivityVM: MainActivity
         mutableStateOf<ImageBitmap?>(null)
     }
 
-   // val timeStamp by remember { mutableStateOf(  dateformatHour(message.time!!) ) }
+    val timeStamp by remember { mutableStateOf(  dateformatHour(message.time!!) ) }
 
     val inWhisper by mainActivityVM.inWhisper.collectAsState()
 
@@ -277,10 +279,11 @@ fun MessageItemView(message:Message , type:String , mainActivityVM: MainActivity
 
     ConstraintLayout(
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxWidth()
             .wrapContentHeight()
             .imePadding()
             .nestedScroll(rememberNestedScrollInteropConnection())
+            .padding(bottom = 8.dp)
     ) {
 
 
@@ -302,14 +305,14 @@ fun MessageItemView(message:Message , type:String , mainActivityVM: MainActivity
 
         )
         {
-         /*   if (image != null){
+            if (image != null){
 
 
                 Image(
                     bitmap = image!!,
                     contentDescription = "",
                     modifier = Modifier
-                        .clip(RoundedCornerShape(10.dp))
+                        .clip(CircleShape)
                         .width(40.dp)
                         .height(40.dp),
                     contentScale = ContentScale.Crop
@@ -327,25 +330,20 @@ fun MessageItemView(message:Message , type:String , mainActivityVM: MainActivity
                     contentScale = ContentScale.Crop
                 )
             }
-            */
-            Image(
-                painter = painterResource(id = R.drawable.account_circle_24px),
-                contentDescription = "",
-                modifier = Modifier
-                    .clip(RoundedCornerShape(10.dp))
-                    // .blur(10.dp, BlurredEdgeTreatment.Rectangle)
-                    .width(40.dp)
-                    .height(40.dp),
-                contentScale = ContentScale.Crop
-            )
+
+
         }
 
         // message surface
 
         Surface (
-            color = Color.White,
+            shape = RoundedCornerShape(16.dp),
+            color = if (message.senderId?.equals(uid) == true && type.equals("text")) colorResource(id = R.color.d)
+            else if (type.equals("gif")) colorResource(
+                id = R.color.white
+            ) else colorResource(id = R.color.dy),
             modifier = Modifier
-                .padding(bottom = 8.dp, start = 8.dp)
+                .padding(8.dp)
                 .constrainAs(messagebody) {
                     start.linkTo(profileImageView.end)
                     end.linkTo(parent.end)
@@ -353,6 +351,17 @@ fun MessageItemView(message:Message , type:String , mainActivityVM: MainActivity
                     bottom.linkTo(parent.bottom)
                     width = Dimension.fillToConstraints
                 }
+                .combinedClickable(
+                    onClick = {},
+                    onLongClick = {
+
+                        if (inWhisper == false){
+                            mainActivityVM.updateWhisperUserUid(message.senderId!!)
+                            mainActivityVM.updateMessageItem(message)
+                            mainActivityVM.updateShowMessageOption(true)
+                        }
+                    }
+                )
         )
         {
 
@@ -386,7 +395,7 @@ fun MessageItemView(message:Message , type:String , mainActivityVM: MainActivity
                         ) {
 
                             Text(
-                                text = "message.senderName!!",
+                                text = message.senderName!!,
                                 style = TextStyle(
                                     fontWeight = FontWeight.SemiBold ,
                                     fontSize = 18.sp
@@ -394,7 +403,7 @@ fun MessageItemView(message:Message , type:String , mainActivityVM: MainActivity
                                 modifier = Modifier
                                     .wrapContentWidth()
                             )
-                            
+
                             Spacer(modifier = Modifier.width(8.dp))
 
                             Text(
@@ -406,7 +415,7 @@ fun MessageItemView(message:Message , type:String , mainActivityVM: MainActivity
                                     .wrapContentWidth()
                             )
                             Text(
-                                text = "12:9" ,
+                                text = timeStamp ,
                                 style = TextStyle(
                                     fontSize = 12.sp
                                 ),
@@ -423,17 +432,20 @@ fun MessageItemView(message:Message , type:String , mainActivityVM: MainActivity
                             verticalAlignment = Alignment.CenterVertically ,
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
+                            if (message.senderId?.equals(uid) == false){
+                                Text(
+                                    text = message.senderName!!,
+                                    style = TextStyle(
+                                        fontWeight = FontWeight.Bold ,
+                                        fontSize = 20.sp
+                                    ),
+                                    modifier = Modifier
+                                        .wrapContentWidth()
+                                )
+                            }
+
                             Text(
-                                text = "message.senderName!!",
-                                style = TextStyle(
-                                    fontWeight = FontWeight.Bold ,
-                                    fontSize = 20.sp
-                                ),
-                                modifier = Modifier
-                                    .wrapContentWidth()
-                            )
-                            Text(
-                                text = "12:9" ,
+                                text = timeStamp ,
                                 style = TextStyle(
                                     fontSize = 12.sp
                                 ),
@@ -444,7 +456,7 @@ fun MessageItemView(message:Message , type:String , mainActivityVM: MainActivity
 
                     }
 
-
+/*
                     if (inWhisper == false) {
                         OutlinedIconButton(
                             onClick = {
@@ -466,7 +478,7 @@ fun MessageItemView(message:Message , type:String , mainActivityVM: MainActivity
 
 
                     }
-
+*/
 
 
                 }
@@ -475,7 +487,7 @@ fun MessageItemView(message:Message , type:String , mainActivityVM: MainActivity
                     Log.d("loadgif" , "text function runn...")
 
                     Text(
-                        text = "message.message!!",
+                        text = message.message!!,
                         style = TextStyle(
                             fontWeight = FontWeight.SemiBold ,
                             fontSize = 16.sp
@@ -484,26 +496,16 @@ fun MessageItemView(message:Message , type:String , mainActivityVM: MainActivity
                             .padding(top = 4.dp)
 
                     )
-                } else if (type.equals("gif")){
+                }
+                else if (type.equals("gif")){
                     Log.d("loadgif" , "function runn...")
 
-                   // gifView(mediaId = message.message!!)
+                    gifView(mediaId = message.message!!)
                 }
 
             }
         }
 
-        HorizontalDivider(
-            thickness = 1.dp ,
-            color = colorResource(id = R.color.f).copy(0.5f) ,
-            modifier = Modifier
-                .padding(top = 8.dp)
-                .constrainAs(divider){
-                    top.linkTo(messagebody.top)
-                    start.linkTo(messagebody.start)
-                    end.linkTo(parent.end)
-                }
-        )
     }
 
 

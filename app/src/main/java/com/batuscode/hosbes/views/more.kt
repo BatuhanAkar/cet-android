@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -28,6 +29,7 @@ import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
@@ -35,11 +37,14 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.ModalBottomSheetDefaults
 import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.SheetState
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.contentColorFor
@@ -139,133 +144,88 @@ fun MoreContent(scope: CoroutineScope , sheetState: SheetState , mainActivityVM:
 
 
 
-        val (userInfo , menu , sessionControl) = createRefs()
+        val (profileImage , userInfo , menu , sessionControl) = createRefs()
 
+
+        if (imageBitmap != null){
+            Image(
+                bitmap = imageBitmap!! ,
+                contentDescription = "",
+                modifier = Modifier
+                    .clip(CircleShape)
+                    .width(120.dp)
+                    .height(120.dp)
+                    .constrainAs(profileImage) {
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                        top.linkTo(parent.top)
+
+
+                    },
+                contentScale = ContentScale.Crop
+            )
+        } 
+        else {
+            Image(
+                painter = painterResource(id = R.drawable.account_circle_24px) ,
+                contentDescription = "" ,
+                modifier = Modifier
+                    .clip(RoundedCornerShape(10.dp))
+                    .width(80.dp)
+                    .height(80.dp)
+                    .constrainAs(profileImage) {
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                        top.linkTo(parent.top)
+                    },
+                contentScale = ContentScale.FillWidth
+            )
+        }
 
 
 
         // user info
 
 
-        ElevatedCard( colors = CardDefaults.elevatedCardColors(
-            containerColor = Color.White
-        ),
+        Surface(
+            shape = RoundedCornerShape(10.dp),
+            color = Color.LightGray.copy(0.5f),
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
+                .padding(20.dp)
                 .constrainAs(userInfo) {
-                    top.linkTo(parent.top)
+                    top.linkTo(profileImage.bottom)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
-                    height = Dimension.fillToConstraints
                 }
         ) {
-
-
-            ConstraintLayout(
+            
+            Row(
+                verticalAlignment = Alignment.CenterVertically ,
+                horizontalArrangement = Arrangement.SpaceBetween ,
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.CenterHorizontally)
-                    .padding(8.dp)
-            )
-            {
-
-                val (editButton, profileImage, username) = createRefs()
-
-                if (imageBitmap != null){
-                    Image(
-                        bitmap = imageBitmap!! ,
-                        contentDescription = "",
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(10.dp))
-                            .width(80.dp)
-                            .height(80.dp)
-                            .constrainAs(profileImage) {
-                                start.linkTo(parent.start)
-                                end.linkTo(username.start)
-                                top.linkTo(parent.top)
-
-
-                            },
-                        contentScale = ContentScale.Crop
+                    .padding(15.dp)
+            ) {
+                Text(
+                    text = displayName!! ,
+                    style = TextStyle(
+                        fontWeight = FontWeight.Bold ,
+                        fontSize = 30.sp
                     )
-                } else {
-                    Image(
-                        painter = painterResource(id = R.drawable.account_circle_24px) ,
-                        contentDescription = "" ,
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(10.dp))
-                            .width(80.dp)
-                            .height(80.dp)
-                            .constrainAs(profileImage) {
-                                start.linkTo(parent.start)
-                                end.linkTo(username.start)
-                                top.linkTo(parent.top)
-
-
-                            },
-                        contentScale = ContentScale.FillWidth
                     )
-                }
-
-
+                
                 OutlinedIconButton(onClick = {
                     mainActivityVM.updateShowEditProfileCard(true)
-                },
-                    border = BorderStroke(0.dp, Color.Transparent) ,
-
-                    /*colors = ButtonDefaults.filledTonalButtonColors(
-                        containerColor = colorResource(id = R.color.blue)
-                    ) ,
-                    elevation = ButtonDefaults.buttonElevation(
-                        defaultElevation = 4.dp
+                } ,
+                    shape = RoundedCornerShape(8.dp) ,
+                    border = null,
+                    colors = IconButtonDefaults.iconButtonColors(
+                        containerColor = Color.White
                     )
-                    ,*/
-                    modifier = Modifier
-                        .constrainAs(editButton) {
-                            top.linkTo(profileImage.top)
-                            bottom.linkTo(profileImage.bottom)
-                         //   start.linkTo(parent.start)
-                            end.linkTo(parent.end)
-                         //   width = Dimension.fillToConstraints
-                        }
-
                 ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.change_circle_40px) ,
-                        contentDescription = "" ,
-                        tint = Color.Black
-                        )
-             /*       Text(
-                        text = stringResource(id = R.string.editprofilecard) ,
-                        style = TextStyle(
-                            fontWeight = FontWeight.Bold ,
-                            color = colorResource(id = R.color.swhite)
-                        )
-                    )*/
+                    Icon(imageVector = Icons.Filled.KeyboardArrowUp, contentDescription ="")
                 }
-
-
-
-
-
-                Text(
-                    text = displayName!!,
-                    style = TextStyle(
-                        fontSize = 23.sp
-                    ),
-                    textAlign = TextAlign.Start,
-                    modifier = Modifier
-                        .padding(start = 8.dp)
-                        .constrainAs(username) {
-                            start.linkTo(profileImage.end)
-                            end.linkTo(editButton.start)
-                            top.linkTo(profileImage.top)
-                            bottom.linkTo(profileImage.bottom)
-                            width = Dimension.fillToConstraints
-                        }
-                )
-
             }
 
 
@@ -294,14 +254,17 @@ fun MoreContent(scope: CoroutineScope , sheetState: SheetState , mainActivityVM:
                           }
                 } ,
                 modifier = Modifier.fillMaxWidth()
-            ) {
+                    .padding(10.dp)
+            )
+            {
 
                 Row ( modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween ) {
                     Text(
                         text = stringResource(id = R.string.hosbeslerim) ,
                         style = TextStyle(
                             fontSize = 20.sp ,
-                            fontFamily = FontFamily.SansSerif ,
+                            fontWeight = FontWeight.Bold,
+
                             color = Color.Black
                         )
                     )
@@ -310,6 +273,8 @@ fun MoreContent(scope: CoroutineScope , sheetState: SheetState , mainActivityVM:
                 }
 
             }
+
+            HorizontalDivider()
 
             // private rooms button
             TextButton(
@@ -323,14 +288,17 @@ fun MoreContent(scope: CoroutineScope , sheetState: SheetState , mainActivityVM:
 
                           } ,
                 modifier = Modifier.fillMaxWidth()
-            ) {
+                    .padding(10.dp)
+
+            )
+            {
 
                 Row ( modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween ) {
                     Text(
                         text = stringResource(id = R.string.privaterooms) ,
                         style = TextStyle(
                             fontSize = 20.sp ,
-                            fontFamily = FontFamily.SansSerif ,
+                            fontWeight = FontWeight.Bold,
                             color = Color.Black
                         )
                     )
@@ -339,6 +307,8 @@ fun MoreContent(scope: CoroutineScope , sheetState: SheetState , mainActivityVM:
                 }
 
             }
+
+            HorizontalDivider()
 
             // rastgele butonu
 
@@ -358,14 +328,17 @@ fun MoreContent(scope: CoroutineScope , sheetState: SheetState , mainActivityVM:
 
                 } ,
                 modifier = Modifier.fillMaxWidth()
-            ) {
+                    .padding(10.dp)
+
+            )
+            {
 
                 Row ( modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween ) {
                     Text(
                         text = stringResource(id = R.string.random) ,
                         style = TextStyle(
                             fontSize = 20.sp ,
-                            fontFamily = FontFamily.SansSerif ,
+                            fontWeight = FontWeight.Bold,
                             color = Color.Black
                         )
                     )
@@ -374,7 +347,12 @@ fun MoreContent(scope: CoroutineScope , sheetState: SheetState , mainActivityVM:
                 }
 
             }
+
+            HorizontalDivider()
+
         }
+
+
         Column (
             modifier = Modifier
                 .constrainAs(sessionControl){

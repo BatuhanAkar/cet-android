@@ -180,6 +180,7 @@ private fun CustomTextField( chatViewModel: ChatViewModel , mainActivityVM: Main
             } ,
                 border = null,
                 modifier = Modifier
+                    .size(40.dp)
 
 
             )
@@ -187,7 +188,7 @@ private fun CustomTextField( chatViewModel: ChatViewModel , mainActivityVM: Main
                 Icon(painter = painterResource(id = R.drawable.gif_box_24px)
                     , contentDescription = "" ,
                     modifier = Modifier
-                        .size(50.dp)
+                        .size(40.dp)
                     )
             }
         }
@@ -195,8 +196,10 @@ private fun CustomTextField( chatViewModel: ChatViewModel , mainActivityVM: Main
         // mesaj kutusu arayüzü
         Surface (
             modifier = Modifier
+                .wrapContentWidth()
                 .constrainAs(messageBoxSurface){
-                    start.linkTo(gifButton.end)
+                    if (isEmpty)start.linkTo(gifButton.end) else start.linkTo(parent.start)
+
                     end.linkTo(sendMessageButton.start)
                     width = Dimension.fillToConstraints
                 },
@@ -210,8 +213,7 @@ private fun CustomTextField( chatViewModel: ChatViewModel , mainActivityVM: Main
 
 
             // mesaj kutusu
-            Box(modifier = Modifier
-                .fillMaxWidth()
+            Box(modifier = modifier
                 .background(colorResource(id = R.color.white).copy(0.1f))
                 .heightIn(min = 24.dp)
                 ,
@@ -219,7 +221,8 @@ private fun CustomTextField( chatViewModel: ChatViewModel , mainActivityVM: Main
             )
             {
                 BasicTextField(
-                    modifier = Modifier
+                    modifier = modifier
+                        .heightIn(min = 24.dp)
                         .fillMaxWidth()
                         .background(colorResource(id = R.color.white).copy(0.1f))
                         .padding(horizontal = 24.dp, vertical = 10.dp) ,
@@ -309,6 +312,7 @@ private fun CustomTextField( chatViewModel: ChatViewModel , mainActivityVM: Main
                     } ,
                     modifier = Modifier
                         .padding(0.dp)
+                        .size(40.dp)
                         .wrapContentSize(),
                     colors = IconButtonDefaults.filledIconButtonColors(
                         containerColor = colorResource(id = R.color.d)
@@ -320,7 +324,7 @@ private fun CustomTextField( chatViewModel: ChatViewModel , mainActivityVM: Main
                         imageVector = Icons.Filled.Send ,
                         contentDescription = "send" ,
                         modifier = Modifier
-                            .size(30.dp)
+                            .size(25.dp)
                             .padding(start = 3.dp)
                     )
                 }
