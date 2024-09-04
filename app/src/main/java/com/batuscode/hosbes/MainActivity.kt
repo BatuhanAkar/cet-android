@@ -71,6 +71,7 @@ class MainActivity : AppCompatActivity() {
         var PreferenceManager:PreferenceManager? = null
         lateinit var permissionLauncher:ManagedActivityResultLauncher<String,Boolean>
         lateinit var mMainActivityVM: MainActivityVM
+        lateinit var mChatViewModel: ChatViewModel
     }
 
 
@@ -122,6 +123,7 @@ class MainActivity : AppCompatActivity() {
                 mainActivityVM.updateSelectedChannel("Hoşbeş")
 
                 fm.loadMoreChat = false
+                mChatViewModel = chatViewModel
 
                 context = this
                 Giphy.configure(context , "5eryANGrljO1uXPSf7GLEhUAU3q8zF1k")
@@ -252,11 +254,7 @@ class MainActivity : AppCompatActivity() {
                         composable("whisper"){
                             Whisper(mainActivityVM = mainActivityVM, whisperViewModel = whisperViewModel)
                         }
-                        
-                        composable("whisperchat"){
-                            WhisperChat(mainActivityVM = mainActivityVM, chatViewModel = chatViewModel)
-                        }
-                        
+
                         composable("_whisperchat"){
                             _WhisperChat(mainActivityVM = mainActivityVM, chatViewModel = chatViewModel)
                         }

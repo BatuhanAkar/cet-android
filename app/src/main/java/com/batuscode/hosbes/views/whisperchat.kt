@@ -45,6 +45,7 @@ import com.batuscode.hosbes.models.Whisper
 import com.batuscode.hosbes.ui.theme.HoşbeşTheme
 import com.batuscode.hosbes.utility.ChatViewModel
 import com.batuscode.hosbes.utility.MainActivityVM
+import com.batuscode.hosbes.utility.WhisperChatActivityViewModel
 import com.batuscode.hosbes.views.ui.MessageTextField
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
@@ -57,7 +58,7 @@ import kotlinx.coroutines.launch
 @SuppressLint("CoroutineCreationDuringComposition")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun WhisperChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
+fun WhisperChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel , whisperChatActivityViewModel: WhisperChatActivityViewModel){
     val lifecycleOwner = LocalLifecycleOwner.current
     val whisperItem by mainActivityVM.whisperItem.collectAsState()
     val showMessageOption by mainActivityVM.showMessageOption.collectAsState()
@@ -69,86 +70,6 @@ fun WhisperChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
 
     val snackBarHostState = remember{
         SnackbarHostState()
-    }
-    val scope = rememberCoroutineScope()
-
-    DisposableEffect(lifecycleOwner) {
-        val observer = LifecycleEventObserver{_,event ->
-
-            when(event){
-                Lifecycle.Event.ON_CREATE -> {
-
-                    Cscope.launch {
-                        delay(900000)
-                        chatViewModel.refreshChat() // sohbeti sıfırla ...
-
-                        mainActivityVM.updateInWhisper(true) // fısıltıda mesaj seçeneklerinin kontrolü için ...
-                        MainActivity.PreferenceManager?.saveSession("inPrivateRoom" , false)
-
-                        mainActivityVM.connectChannel("W") // kanal id güncelle ...
-
-                        // burda ilk fısıltı mı bak ...
-
-                        MainActivity.fm.detachWhisperChatListener(whisperItem?.wid!!)
-                        MainActivity.fm.pullWhisperChat(whisperItem?.wid!! , loadMoreChat!! , true)
-
-                        setReaded(whisperItem = whisperItem!!)
-
-
-                    }
-
-                    Log.d("WhisperChat" , "ON_CREATE")
-                    chatViewModel.refreshChat() // sohbeti sıfırla ...
-
-                    mainActivityVM.updateInWhisper(true) // fısıltıda mesaj seçeneklerinin kontrolü için ...
-                    MainActivity.PreferenceManager?.saveSession("inPrivateRoom" , false)
-                    mainActivityVM.connectChannel("W") // kanal id güncelle ...
-
-                    // burda ilk fısıltı mı bak ...
-
-                    MainActivity.fm.detachWhisperChatListener(whisperItem?.wid!!)
-                    MainActivity.fm.pullWhisperChat(whisperItem?.wid!! , loadMoreChat!! , false)
-
-                    setReaded(whisperItem = whisperItem!!)
-
-
-                }
-                Lifecycle.Event.ON_START -> {
-                    Log.d("WhisperChat" , "ON_START")
-
-                }
-                Lifecycle.Event.ON_RESUME -> {
-                    Log.d("WhisperChat" , "ON_RESUME")
-
-                }
-                Lifecycle.Event.ON_PAUSE -> {
-                    Log.d("WhisperChat" , "ON_PAUSE")
-                    mainActivityVM.updateLoadMoreChat(false)
-                    MainActivity.fm.loadMoreChat = false
-                }
-                Lifecycle.Event.ON_STOP -> {
-                    Log.d("WhisperChat" , "ON_STOP")
-                    mainActivityVM.updateInWhisper(false) // fısıltıda mesaj seçeneklerinin kontrolü için ...
-
-                    MainActivity.fm.detachWhisperChatListener(whisperItem?.wid!!)
-
-                }
-                Lifecycle.Event.ON_DESTROY -> {
-                    Log.d("WhisperChat" , "ON_DESTROY")
-
-                }
-                Lifecycle.Event.ON_ANY -> {
-                    Log.d("WhisperChat" , "ON_ANY")
-
-                }
-            }
-        }
-        lifecycleOwner.lifecycle.addObserver(observer)
-
-        onDispose {
-            Cscope.cancel()
-            lifecycleOwner.lifecycle.removeObserver(observer)
-        }
     }
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackBarHostState)},
@@ -170,7 +91,7 @@ fun WhisperChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
                         contentDescription = "" ,
                         modifier = Modifier
                             .clickable {
-                                MainActivity.navigate?.popBackStack()
+                                whisperChatActivityViewModel.update_finish(true)
                             }
                     )
                 } ,
@@ -278,22 +199,6 @@ fun WhisperChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
 
 }
 
-fun setReaded(whisperItem: Whisper){
-
-    // fısıltının okunup okunmadığını al son mesaj karşı tarafa ait ise okundu olarak güncelle ...
-
-    val remoteId = whisperItem.wuid
-    val lastId = whisperItem.lwuid
-
-    if ((remoteId == lastId) && whisperItem.readed == false){
-
-        // okundu işaretle ...
-
-        MainActivity.fm.updateReaded(whisperItem)
-
-    }
-
-}
 /*
 
 @Preview(showBackground = true , showSystemUi = true)

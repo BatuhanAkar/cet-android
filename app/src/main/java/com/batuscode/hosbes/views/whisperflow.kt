@@ -1,6 +1,7 @@
 package com.batuscode.hosbes.views
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.util.Log
@@ -100,9 +101,20 @@ fun WhisperView(whisper: Whisper , mainActivityVM: MainActivityVM){
             .padding(8.dp)
             .combinedClickable(
                 onClick = {
+                    val intent = Intent(context , WhisperChatActivity::class.java)
+                    intent.putExtra("wdisplayName" , whisper.wdisplayName)
+                    intent.putExtra("wphotoUrl" , whisper.wphotoUrl)
+                    intent.putExtra("wuid" , whisper.wuid)
+                    intent.putExtra("wid" , whisper.wid)
+                    intent.putExtra("lm" , whisper.lm)
+                    intent.putExtra("lt" , whisper.lt)
+                    intent.putExtra("lwuid" , whisper.lwuid)
+                    intent.putExtra("readed" , whisper.readed)
+
+                    context.startActivity(intent)
 
                     mainActivityVM.updateWhisperItem(whisper)
-                    MainActivity.navigate?.navigate("whisperchat")
+                   // MainActivity.navigate?.navigate("whisperchat")
                 } ,
                 onLongClick = {
                     mainActivityVM.updateShowMenu(true)
@@ -126,7 +138,6 @@ fun WhisperView(whisper: Whisper , mainActivityVM: MainActivityVM){
                 }
 
                 override fun onLoadCleared(placeholder: Drawable?) {
-                    TODO("Not yet implemented")
                 }
 
 

@@ -404,6 +404,13 @@ class MainActivityVM:ViewModel() {
         _loadMoreChat.value = state
     }
 
+    private val _LoadMoreChat = MutableLiveData<Boolean?>(false)
+    val LoadMoreChat:LiveData<Boolean?> get() = _LoadMoreChat
+
+    fun update_LoadMoreChat(state: Boolean){
+        _loadMoreChat.value = state
+    }
+
     private val _Incall = MutableStateFlow<Boolean?>(false)
     val incall: StateFlow<Boolean?> get() = _Incall
 

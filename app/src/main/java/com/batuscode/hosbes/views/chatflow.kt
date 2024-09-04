@@ -171,7 +171,9 @@ fun ChatFlow( mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel , mo
                 if (index == 0 && chats.value.size > 10){
                     if (inWhisper == true){
                         mainActivityVM.updateLoadMoreChat(true)
+                        mainActivityVM.update_LoadMoreChat(true)
                         MainActivity.fm.loadMoreChat = true
+
 
                         if (inPrivateRoom!!){
                             Log.d("whisperChatItems" , "chatflowda privateroomda...")
