@@ -58,6 +58,8 @@ class RandomActivity:JitsiMeetActivity() , JitsiMeetActivityInterface{
 
     var matchDefeat by mutableStateOf(false)
 
+    var _hangUp by mutableStateOf(false)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -331,6 +333,7 @@ class RandomActivity:JitsiMeetActivity() , JitsiMeetActivityInterface{
         randomActivityViewModel.hangup.observe(this , Observer {
             if (it == true){
                 HandleHangUpBroadCastAction()
+                _hangUp = it
             }
         })
 
@@ -346,7 +349,6 @@ class RandomActivity:JitsiMeetActivity() , JitsiMeetActivityInterface{
 
         when(session){
             "next" -> {
-
                 MainActivity.fm.updateOwnerMatchedStatus(uid = mUid , true)
                 view!!.removeView(randomactivitymeetscreen)
                 view!!.addView(randomconnectionview)
@@ -497,15 +499,19 @@ class RandomActivity:JitsiMeetActivity() , JitsiMeetActivityInterface{
 
     override fun onDestroy() {
         super.onDestroy()
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver)
-        JitsiMeetActivityDelegate.onHostDestroy(this)
-        MainActivity.mMainActivityVM.update_inRandom(false)
+        if (!_hangUp){
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver)
+            JitsiMeetActivityDelegate.onHostDestroy(this)
+            MainActivity.mMainActivityVM.update_inRandom(false)
+        }
 
     }
 
     override fun onStop() {
         super.onStop()
-        JitsiMeetActivityDelegate.onHostDestroy(this)
-        MainActivity.mMainActivityVM.update_inRandom(false)
+        if (!_hangUp){
+            JitsiMeetActivityDelegate.onHostDestroy(this)
+            MainActivity.mMainActivityVM.update_inRandom(false)
+        }
     }
 }
