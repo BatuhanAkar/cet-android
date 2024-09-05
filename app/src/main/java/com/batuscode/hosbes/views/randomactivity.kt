@@ -163,7 +163,6 @@ class RandomActivity:JitsiMeetActivity() , JitsiMeetActivityInterface{
 
 
                     fromIn = false
-                    leave()
 
                     randomActivityViewModel.update_fromLobby(true)
                     Log.d("matchstat" , "tfc true çıktı ... " )
