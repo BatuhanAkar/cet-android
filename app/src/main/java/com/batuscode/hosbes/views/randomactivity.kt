@@ -182,6 +182,7 @@ class RandomActivity:JitsiMeetActivity() , JitsiMeetActivityInterface{
                             var options = JitsiMeetConferenceOptions.Builder()
                                 .setRoom("https://meet.recommyz.com/$room")
                                 .setUserInfo(userinfo)
+                                .setFeatureFlag("lobby-mode.enabled" , true)
                                 .build()
 
                             Log.d("randomActivity" , "prejoin view eklendi ... ")
@@ -233,6 +234,7 @@ class RandomActivity:JitsiMeetActivity() , JitsiMeetActivityInterface{
 
         randomActivityViewModel.changeMatch.observe(this , Observer {
             if (it == true){
+                leave()
                 randomActivityViewModel.update_changeMatch(false)
                 MainActivity.fm.updateOwnerMatchedStatus(uid!! , true)
                 view!!.addView(randomconnectionview)
@@ -294,6 +296,7 @@ class RandomActivity:JitsiMeetActivity() , JitsiMeetActivityInterface{
             .build()
 
         Log.d("randomActivity" , "prejoin view eklendi ... ")
+        view!!.addView(prejoinView)
         join(options)
 
 
