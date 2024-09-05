@@ -2033,11 +2033,11 @@ class FirebaseManager {
             }
     }
 
-    fun updateRandomOwnerMatchedStatus(uid: String , state: Boolean){
+    fun updateOwnerMatchedStatus(uid: String , state: Boolean){
 
         random
             .document(uid)
-            .update("matched" , state)
+            .update("match" , state)
     }
 
     fun matchParticipants(uid: String , randomActivityViewModel: RandomActivityViewModel){

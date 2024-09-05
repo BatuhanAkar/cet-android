@@ -51,8 +51,11 @@ class RandomActivity:JitsiMeetActivity() , JitsiMeetActivityInterface{
     lateinit var randomactivitymeetscreen:ComposeView
     lateinit var context: Context
     lateinit var mrandomActivityViewModel: RandomActivityViewModel
+    lateinit var mUid: String
 
     var fromIn by mutableStateOf(false)
+
+    var matchDefeatOut by mutableStateOf(false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,6 +74,7 @@ class RandomActivity:JitsiMeetActivity() , JitsiMeetActivityInterface{
         var photo = MainActivity.PreferenceManager?.getString("photoUrl")
 
         val uid = MainActivity.PreferenceManager?.getuidShared("uid")
+        mUid = uid!!
         MainActivity.fm.addRandomParticipant(uid = uid!! , displayName = name!! , photoUrl = photo!! , randomActivityViewModel) // önce random a kaydet ...
         MainActivity.fm.ListenMatch(uid!! , randomActivityViewModel) // sonra random'ı dinle ...
         prejoinView = ComposeView(this).apply {
@@ -179,6 +183,16 @@ class RandomActivity:JitsiMeetActivity() , JitsiMeetActivityInterface{
             }
         })
 
+        randomActivityViewModel.changeMatch.observe(this , Observer {
+            if (it == true){
+                randomActivityViewModel.update_changeMatch(false)
+                leave()
+                MainActivity.fm.updateOwnerMatchedStatus(uid!! , true)
+                view!!.removeView(randomactivitymeetscreen)
+                view!!.addView(randomconnectionview)
+            }
+        })
+
         registerForBroadcastMessages()
 
         val serverURL: URL
@@ -263,6 +277,20 @@ class RandomActivity:JitsiMeetActivity() , JitsiMeetActivityInterface{
             }
         })
 
+        randomActivityViewModel.flipCamera.observe(this , Observer {
+            HandleFlipCameraBroadcastAction()
+        })
+
+    }
+
+
+    override fun onParticipantLeft(extraData: HashMap<String, Any>?) {
+        super.onParticipantLeft(extraData)
+        leave()
+        MainActivity.fm.updateOwnerMatchedStatus(uid = mUid , true)
+        view!!.removeView(randomactivitymeetscreen)
+        view!!.addView(randomconnectionview)
+
     }
 
     override fun onParticipantJoined(extraData: HashMap<String, Any>?) {
@@ -308,6 +336,11 @@ class RandomActivity:JitsiMeetActivity() , JitsiMeetActivityInterface{
     private fun HandleAudioBroadcastAction(value:Boolean){
         val muteBroadcastActionIntent = BroadcastIntentHelper.buildSetAudioMutedIntent(value)
         LocalBroadcastManager.getInstance(this).sendBroadcast(muteBroadcastActionIntent)
+    }
+
+    private fun HandleFlipCameraBroadcastAction(){
+        val flipCameraAction = BroadcastIntentHelper.buildToggleCameraIntent()
+        LocalBroadcastManager.getInstance(this).sendBroadcast(flipCameraAction)
     }
 
     private fun HandleCameraBroadCastAction(value: Boolean){

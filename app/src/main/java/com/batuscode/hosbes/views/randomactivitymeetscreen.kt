@@ -42,6 +42,9 @@ fun RandomActivityMeetScreen(randomActivityViewModel: RandomActivityViewModel){
     var cameraMuted by remember {
         mutableStateOf(false)
     }
+    var flipCamera by remember {
+        mutableStateOf(false)
+    }
 
     var isVisible by remember {
         mutableStateOf(true)
@@ -60,7 +63,7 @@ fun RandomActivityMeetScreen(randomActivityViewModel: RandomActivityViewModel){
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
-            .indication(indication = null , interactionSource = interactionSource)
+            .indication(indication = null, interactionSource = interactionSource)
             .clickable {
                 isVisible = isVisible.not()
             }
@@ -114,26 +117,6 @@ fun RandomActivityMeetScreen(randomActivityViewModel: RandomActivityViewModel){
 
                     OutlinedIconButton(
                         onClick = {
-                            randomActivityViewModel.update_hangup(true)
-                        },
-                        border = null ,
-                        colors = IconButtonDefaults.iconButtonColors(
-                            containerColor = colorResource(id = R.color.delete)
-                        ) ,
-                        modifier = Modifier
-                            .size(55.dp)
-                    )
-                    {
-                        Icon(
-                            painter = painterResource(id = R.drawable.baseline_call_end_24) ,
-                            contentDescription = "" ,
-                            modifier = Modifier
-                                .size(30.dp)
-                        )
-                    }
-
-                    OutlinedIconButton(
-                        onClick = {
                             cameraMuted = cameraMuted.not()
 
                             randomActivityViewModel.update_VideoMute(cameraMuted)
@@ -153,6 +136,63 @@ fun RandomActivityMeetScreen(randomActivityViewModel: RandomActivityViewModel){
                                 .size(30.dp)
                         )
                     }
+                    OutlinedIconButton(
+                        onClick = {
+                            flipCamera = flipCamera.not()
+
+                            randomActivityViewModel.update_flipCamera(cameraMuted)
+                        },
+                        border = null ,
+                        colors = IconButtonDefaults.iconButtonColors(
+                            containerColor = Color.White
+                        )
+                    )
+                    {
+                        Icon(
+                            painter = painterResource(id = R.drawable.flip_camera_ios_48px),
+                            contentDescription = "" ,
+                            modifier = Modifier
+                                .size(35.dp)
+                        )
+                    }
+                    OutlinedIconButton(
+                        onClick = {
+
+                            randomActivityViewModel.update_changeMatch(true)
+                        },
+                        border = null ,
+                        colors = IconButtonDefaults.iconButtonColors(
+                            containerColor = Color.White
+                        )
+                    )
+                    {
+                        Icon(
+                            painter = painterResource(id = R.drawable.find_replace_48px),
+                            contentDescription = "" ,
+                            modifier = Modifier
+                                .size(40.dp)
+                        )
+                    }
+                    OutlinedIconButton(
+                        onClick = {
+                            randomActivityViewModel.update_hangup(true)
+                        },
+                        border = null ,
+                        colors = IconButtonDefaults.iconButtonColors(
+                            containerColor = colorResource(id = R.color.delete)
+                        ) ,
+                        modifier = Modifier
+                            .size(55.dp)
+                    )
+                    {
+                        Icon(
+                            painter = painterResource(id = R.drawable.exit_to_app_48px) ,
+                            contentDescription = "" ,
+                            modifier = Modifier
+                                .size(35.dp)
+                        )
+                    }
+
                 }
             }
         }

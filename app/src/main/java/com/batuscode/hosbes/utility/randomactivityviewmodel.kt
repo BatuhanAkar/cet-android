@@ -136,4 +136,18 @@ class RandomActivityViewModel:ViewModel(){
         _hangup.value = value
     }
 
+    private val _flipCamera = MutableLiveData<Boolean>(false)
+    val flipCamera : LiveData<Boolean> get() = _flipCamera
+
+    fun  update_flipCamera(value: Boolean){
+        _flipCamera.value = value
+    }
+
+    private val _changeMatch = MutableLiveData<Boolean>(false)
+    val changeMatch : LiveData<Boolean> get() = _changeMatch
+
+    fun update_changeMatch(value: Boolean){
+        _changeMatch.value = value
+    }
+
 }
