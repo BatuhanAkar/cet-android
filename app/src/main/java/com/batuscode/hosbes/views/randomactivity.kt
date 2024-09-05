@@ -133,6 +133,7 @@ class RandomActivity:JitsiMeetActivity() , JitsiMeetActivityInterface{
             if (it?.equals(true) == true){
                 MainActivity.fm.updateMatchRequest(true , uid)
                 Log.d("randomActivity" , "ekran kaydırıldı random connection view eklendi ... ")
+                randomActivityViewModel.update_session("next")
                 view!!.removeView(swipeScreen)
                 view!!.addView(randomconnectionview)
             }
@@ -162,110 +163,66 @@ class RandomActivity:JitsiMeetActivity() , JitsiMeetActivityInterface{
 
 
                     fromIn = false
+                    leave()
 
-                    when(session){
-                        "first" -> {
-                            leave()
+                    randomActivityViewModel.update_fromLobby(true)
+                    Log.d("matchstat" , "tfc true çıktı ... " )
 
-                            randomActivityViewModel.update_fromLobby(true)
-                            Log.d("matchstat" , "tfc true çıktı ... " )
+                    outhandler.postDelayed(
+                        {
 
-                            outhandler.postDelayed(
-                                {
+                            Log.d("matchstat" , "outhandler tetikledi ... " + it?.toString())
 
-                                    Log.d("matchstat" , "outhandler tetikledi ... " + it?.toString())
+                            val room = participant?.rm
 
-                                    val room = participant?.rm
+                            val userinfo = JitsiMeetUserInfo().apply {
+                                displayName = name
+                                avatar = URL(photo)
+                            }
 
-                                    val userinfo = JitsiMeetUserInfo().apply {
-                                        displayName = name
-                                        avatar = URL(photo)
-                                    }
+                            var options = JitsiMeetConferenceOptions.Builder()
+                                .setRoom("https://meet.recommyz.com/$room")
+                                .setUserInfo(userinfo)
+                                .build()
 
-                                    var options = JitsiMeetConferenceOptions.Builder()
-                                        .setRoom("https://meet.recommyz.com/$room")
-                                        .setUserInfo(userinfo)
-                                        .build()
+                            Log.d("randomActivity" , "prejoin view eklendi ... ")
 
-                                    Log.d("randomActivity" , "prejoin view eklendi ... ")
+                            join(options)
 
-                                    join(options)
-
-                                } ,
-                                800
-                            )
-                        }
-                        "next" -> {
-
-                            randomActivityViewModel.update_fromLobby(true)
-                            Log.d("matchstat" , "tfc true çıktı ... " )
-
-                            outhandler.postDelayed(
-                                {
-
-                                    Log.d("matchstat" , "outhandler tetikledi ... " + it?.toString())
-
-
-
-                                    val room = participant?.rm
-
-                                    val userinfo = JitsiMeetUserInfo().apply {
-                                        displayName = name
-                                        avatar = URL(photo)
-                                    }
-
-                                    var options = JitsiMeetConferenceOptions.Builder()
-                                        .setRoom("https://meet.recommyz.com/$room")
-                                        .setUserInfo(userinfo)
-                                        .build()
-
-                                    Log.d("randomActivity" , "prejoin view eklendi ... ")
-
-                                    join(options)
-
-                                } ,
-                                800
-                            )
-                        }
-                    }
-
-
+                        } ,
+                        800
+                    )
 
 
                 } else if (participant?.tfc == false){
                     Log.d("matchstat" , "tfc false çıktı ... " )
                     fromIn = true
 
-                    when(session){
-                        "next" -> {
-                            inhandler.postDelayed(
-                                {
+                    inhandler.postDelayed(
+                        {
 
-                                    randomActivityViewModel.update_fromLobby(true)
+                            randomActivityViewModel.update_fromLobby(true)
 
 
 
-                                    val room = participant?.rm
+                            val room = participant?.rm
 
-                                    val userinfo = JitsiMeetUserInfo().apply {
-                                        displayName = name
-                                        avatar = URL(photo)
-                                    }
+                            val userinfo = JitsiMeetUserInfo().apply {
+                                displayName = name
+                                avatar = URL(photo)
+                            }
 
-                                    var options = JitsiMeetConferenceOptions.Builder()
-                                        .setRoom("https://meet.recommyz.com/$room")
-                                        .setUserInfo(userinfo)
-                                        .build()
+                            var options = JitsiMeetConferenceOptions.Builder()
+                                .setRoom("https://meet.recommyz.com/$room")
+                                .setUserInfo(userinfo)
+                                .build()
 
-                                    Log.d("randomActivity" , "prejoin view eklendi ... ")
+                            Log.d("randomActivity" , "prejoin view eklendi ... ")
 
-                                    join(options)
-                                } ,
-                                800
-                            )
-
-                        }
-                    }
+                            join(options)
+                        } ,
+                        800
+                    )
 
 
                 }
@@ -338,7 +295,6 @@ class RandomActivity:JitsiMeetActivity() , JitsiMeetActivityInterface{
             .setRoom("https://meet.recommyz.com/$name")
             .setUserInfo(userinfo)
             .build()
-        view!!.addView(prejoinView)
 
         Log.d("randomActivity" , "prejoin view eklendi ... ")
         join(options)
@@ -396,53 +352,48 @@ class RandomActivity:JitsiMeetActivity() , JitsiMeetActivityInterface{
 
     override fun onParticipantJoined(extraData: HashMap<String, Any>?) {
         super.onParticipantJoined(extraData)
-        mrandomActivityViewModel.update_ParticipantJoined(true)
-        if (fromIn){
-            view!!.removeView(randomconnectionview)
-            view!!.addView(randomactivitymeetscreen)
+
+
+        when(session){
+            "next" -> {
+
+                if (fromIn){
+                    view!!.removeView(randomconnectionview)
+                    view!!.addView(randomactivitymeetscreen)
+                }
+
+            }
         }
     }
+
+    override fun onConferenceWillJoin(extraData: HashMap<String, Any>?) {
+        super.onConferenceWillJoin(extraData)
+        when(session){
+            "first" -> {
+                view!!.addView(prejoinView)
+            }
+        }
+
+    }
+
     override fun onConferenceJoined(extraData: HashMap<String, Any>?) {
         super.onConferenceJoined(extraData)
 
         when(session){
             "first" -> {
-
                 /**
                  * İlk sefer girişte ...
                  * */
                 view!!.removeView(prejoinView)
                 view!!.addView(swipeScreen)
-
-
-                if (!fromIn){
-                    mrandomActivityViewModel.fromLobby.observe(this , Observer {
-                        if (it == true){
-                            when(session){
-                                "first" -> {
-
-                                    view!!.removeView(randomconnectionview)
-                                    view!!.addView(randomactivitymeetscreen)
-
-                                }
-
-                                "next" -> {
-
-                                    view!!.removeView(randomconnectionview)
-                                }
-                            }
-
-                        }
-
-                    })
-
-                }
-
-
-
             }
 
             "next" -> {
+
+                if (!fromIn){
+                    view!!.removeView(randomconnectionview)
+                    view!!.addView(randomactivitymeetscreen)
+                }
 
             }
         }
