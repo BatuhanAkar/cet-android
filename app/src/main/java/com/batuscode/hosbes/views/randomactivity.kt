@@ -499,7 +499,7 @@ class RandomActivity:JitsiMeetActivity() , JitsiMeetActivityInterface{
 
     override fun onDestroy() {
         super.onDestroy()
-        if (!_hangUp){
+        if (_hangUp){
             LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver)
             JitsiMeetActivityDelegate.onHostDestroy(this)
             MainActivity.mMainActivityVM.update_inRandom(false)
@@ -509,7 +509,7 @@ class RandomActivity:JitsiMeetActivity() , JitsiMeetActivityInterface{
 
     override fun onStop() {
         super.onStop()
-        if (!_hangUp){
+        if (_hangUp){
             JitsiMeetActivityDelegate.onHostDestroy(this)
             MainActivity.mMainActivityVM.update_inRandom(false)
         }
