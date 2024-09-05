@@ -97,7 +97,6 @@ dependencies {
     implementation("org.jitsi.react:jitsi-meet-sdk:10.1.2"){
         isTransitive = true
         exclude(module= "react-native-giphy")
-
     }
     implementation("com.giphy.sdk:ui:2.3.15")
 

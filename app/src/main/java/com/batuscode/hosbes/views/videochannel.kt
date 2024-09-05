@@ -165,7 +165,8 @@ class VideoChannel:JitsiMeetActivity() , JitsiMeetActivityInterface{
 
             .setFeatureFlag("settings.enabled" , false)
 
-            .setFeatureFlag("filmstrip.enabled" , true)
+            .setFeatureFlag("filmstrip.enabled" , false)
+            .setFeatureFlag("calender.enabled" , false)
 
 
             .setFeatureFlag("disableSimulcast" , false)
@@ -220,6 +221,7 @@ class VideoChannel:JitsiMeetActivity() , JitsiMeetActivityInterface{
                 .setRoom("https://meet.recommyz.com/$name")
                 .setUserInfo(userinfo)
                 .setVideoMuted(false)
+                .setFeatureFlag("calender.enabled" , false)
 
                 .build()
 
