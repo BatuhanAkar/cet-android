@@ -376,7 +376,6 @@ class RandomActivity:JitsiMeetActivity() , JitsiMeetActivityInterface{
         super.onConferenceWillJoin(extraData)
         when(session){
             "first" -> {
-                view!!.addView(prejoinView)
             }
         }
 
