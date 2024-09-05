@@ -43,6 +43,7 @@ import java.util.HashMap
 
 class RandomActivity:JitsiMeetActivity() , JitsiMeetActivityInterface{
 
+    var session by mutableStateOf("")
     lateinit var view:JitsiMeetView
 
     lateinit var  prejoinView:ComposeView
@@ -55,7 +56,7 @@ class RandomActivity:JitsiMeetActivity() , JitsiMeetActivityInterface{
 
     var fromIn by mutableStateOf(false)
 
-    var matchDefeatOut by mutableStateOf(false)
+    var matchDefeat by mutableStateOf(false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,6 +66,11 @@ class RandomActivity:JitsiMeetActivity() , JitsiMeetActivityInterface{
         Log.d("randomActivity" , "aktivite oluşturuldu ... ")
 
         val randomActivityViewModel:RandomActivityViewModel by viewModels()
+
+        randomActivityViewModel.session.observe(this , Observer {
+            session = it
+        })
+
         mrandomActivityViewModel = randomActivityViewModel
         context = this
         view = jitsiView
@@ -110,12 +116,19 @@ class RandomActivity:JitsiMeetActivity() , JitsiMeetActivityInterface{
             }
         }
 
+        /**
+         * KAYDIRMA ÖNCESİNDEKİ RASTGELEDEN ÇIKMA OLAYI ...
+         * */
         randomActivityViewModel.closeActivity.observe(this , Observer {
             if (it?.equals(true) == true){
                 finish()
             }
         })
 
+
+        /**
+         * İLK SWİPE OLAYI ...
+         * */
         randomActivityViewModel.swiped.observe(this , Observer {
             if (it?.equals(true) == true){
                 MainActivity.fm.updateMatchRequest(true , uid)
@@ -132,6 +145,10 @@ class RandomActivity:JitsiMeetActivity() , JitsiMeetActivityInterface{
         val outhandler = Handler()
         val inhandler = Handler()
 
+        /**
+         * KARŞILAŞMA SONUCUNDA LISTEN MATCH DEN TETİKLENEREK GEÇMİŞTEKİ SON KİŞİ GELMİŞTİR ...
+         * */
+
         randomActivityViewModel.liverandomParticipant.observe(this , Observer {
 
             if (it != null){
@@ -140,41 +157,116 @@ class RandomActivity:JitsiMeetActivity() , JitsiMeetActivityInterface{
                 participant = it!!
                 if (participant?.tfc == true){
 
-                    randomActivityViewModel.update_fromLobby(true)
-                    Log.d("matchstat" , "tfc true çıktı ... " )
 
-                    outhandler.postDelayed({
-
-                        Log.d("matchstat" , "outhandler tetikledi ... " + it?.toString())
-                        view!!.addView(randomactivitymeetscreen)
-                        view!!.addView(randomconnectionview)
+                    fromIn = false
 
 
-                        val room = participant?.rm
+                    when(session){
+                        "first" -> {
+                            leave()
 
-                        val userinfo = JitsiMeetUserInfo().apply {
-                            displayName = name
-                            avatar = URL(photo)
+                            randomActivityViewModel.update_fromLobby(true)
+                            Log.d("matchstat" , "tfc true çıktı ... " )
+
+                            outhandler.postDelayed(
+                                {
+
+                                    Log.d("matchstat" , "outhandler tetikledi ... " + it?.toString())
+
+
+
+                                    val room = participant?.rm
+
+                                    val userinfo = JitsiMeetUserInfo().apply {
+                                        displayName = name
+                                        avatar = URL(photo)
+                                    }
+
+                                    var options = JitsiMeetConferenceOptions.Builder()
+                                        .setRoom("https://meet.recommyz.com/$room")
+                                        .setUserInfo(userinfo)
+                                        .build()
+
+                                    Log.d("randomActivity" , "prejoin view eklendi ... ")
+
+                                    join(options)
+
+                                } ,
+                                800
+                            )
                         }
+                        "next" -> {
 
-                        var options = JitsiMeetConferenceOptions.Builder()
-                            .setRoom("https://meet.recommyz.com/$room")
-                            .setUserInfo(userinfo)
-                            .build()
+                            randomActivityViewModel.update_fromLobby(true)
+                            Log.d("matchstat" , "tfc true çıktı ... " )
 
-                        Log.d("randomActivity" , "prejoin view eklendi ... ")
+                            outhandler.postDelayed(
+                                {
 
-                        join(options)
+                                    Log.d("matchstat" , "outhandler tetikledi ... " + it?.toString())
 
-                    },800)
+
+
+                                    val room = participant?.rm
+
+                                    val userinfo = JitsiMeetUserInfo().apply {
+                                        displayName = name
+                                        avatar = URL(photo)
+                                    }
+
+                                    var options = JitsiMeetConferenceOptions.Builder()
+                                        .setRoom("https://meet.recommyz.com/$room")
+                                        .setUserInfo(userinfo)
+                                        .build()
+
+                                    Log.d("randomActivity" , "prejoin view eklendi ... ")
+
+                                    join(options)
+
+                                } ,
+                                800
+                            )
+                        }
+                    }
+
+
 
 
                 } else if (participant?.tfc == false){
                     Log.d("matchstat" , "tfc false çıktı ... " )
+                    fromIn = true
 
-                    inhandler.postDelayed({
-                        fromIn = true
-                    },800)
+                    when(session){
+                        "next" -> {
+                            inhandler.postDelayed(
+                                {
+
+                                    randomActivityViewModel.update_fromLobby(true)
+
+
+
+                                    val room = participant?.rm
+
+                                    val userinfo = JitsiMeetUserInfo().apply {
+                                        displayName = name
+                                        avatar = URL(photo)
+                                    }
+
+                                    var options = JitsiMeetConferenceOptions.Builder()
+                                        .setRoom("https://meet.recommyz.com/$room")
+                                        .setUserInfo(userinfo)
+                                        .build()
+
+                                    Log.d("randomActivity" , "prejoin view eklendi ... ")
+
+                                    join(options)
+                                } ,
+                                800
+                            )
+
+                        }
+                    }
+
 
                 }
             } else {
@@ -185,15 +277,19 @@ class RandomActivity:JitsiMeetActivity() , JitsiMeetActivityInterface{
 
         randomActivityViewModel.changeMatch.observe(this , Observer {
             if (it == true){
+                randomActivityViewModel.update_session("next")
                 randomActivityViewModel.update_changeMatch(false)
                 leave()
                 MainActivity.fm.updateOwnerMatchedStatus(uid!! , true)
-                view!!.removeView(randomactivitymeetscreen)
                 view!!.addView(randomconnectionview)
             }
         })
 
         registerForBroadcastMessages()
+
+        /**
+         * AKTİVİTE İLK BAŞLADIĞINDA KLASİK GİRİŞİ YAP ...
+         * */
 
         val serverURL: URL
         serverURL = URL("https://meet.recommyz.com")
@@ -246,6 +342,11 @@ class RandomActivity:JitsiMeetActivity() , JitsiMeetActivityInterface{
 
         Log.d("randomActivity" , "prejoin view eklendi ... ")
         join(options)
+
+
+        /**
+         * Kullanıcı isteklerini işle ...
+         * */
 
         randomActivityViewModel.AudioMute.observe(this , Observer {
             if (it == false){
@@ -303,16 +404,44 @@ class RandomActivity:JitsiMeetActivity() , JitsiMeetActivityInterface{
     }
     override fun onConferenceJoined(extraData: HashMap<String, Any>?) {
         super.onConferenceJoined(extraData)
-        view!!.removeView(prejoinView)
-        view!!.addView(swipeScreen)
         mrandomActivityViewModel.fromLobby.observe(this , Observer {
             if (it == true){
-                view!!.removeView(swipeScreen)
-                view!!.removeView(randomconnectionview)
+                when(session){
+                    "first" -> {
+
+                        view!!.removeView(randomconnectionview)
+                        view!!.addView(randomactivitymeetscreen)
+
+                    }
+
+                    "next" -> {
+
+                        view!!.removeView(randomconnectionview)
+                    }
+                }
 
             }
 
         })
+        when(session){
+            "first" -> {
+
+                /**
+                 * İlk sefer girişte ...
+                 * */
+                view!!.removeView(prejoinView)
+                view!!.addView(swipeScreen)
+
+
+
+            }
+
+            "next" -> {
+
+            }
+        }
+
+
 
         Log.d("randomActivity" , "kendi odasını oluştrudu ... ")
     }

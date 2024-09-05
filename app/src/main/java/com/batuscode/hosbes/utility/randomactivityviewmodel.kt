@@ -150,4 +150,11 @@ class RandomActivityViewModel:ViewModel(){
         _changeMatch.value = value
     }
 
+    private val _session = MutableLiveData<String>("first")
+    val session : LiveData<String> get() = _session
+
+    fun update_session(value: String){
+        _session.value = value
+    }
+
 }
