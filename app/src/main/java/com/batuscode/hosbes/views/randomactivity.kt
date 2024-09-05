@@ -233,9 +233,7 @@ class RandomActivity:JitsiMeetActivity() , JitsiMeetActivityInterface{
 
         randomActivityViewModel.changeMatch.observe(this , Observer {
             if (it == true){
-                randomActivityViewModel.update_session("next")
                 randomActivityViewModel.update_changeMatch(false)
-                leave()
                 MainActivity.fm.updateOwnerMatchedStatus(uid!! , true)
                 view!!.addView(randomconnectionview)
             }
@@ -342,10 +340,16 @@ class RandomActivity:JitsiMeetActivity() , JitsiMeetActivityInterface{
 
     override fun onParticipantLeft(extraData: HashMap<String, Any>?) {
         super.onParticipantLeft(extraData)
-        leave()
-        MainActivity.fm.updateOwnerMatchedStatus(uid = mUid , true)
-        view!!.removeView(randomactivitymeetscreen)
-        view!!.addView(randomconnectionview)
+
+        when(session){
+            "next" -> {
+
+                MainActivity.fm.updateOwnerMatchedStatus(uid = mUid , true)
+                view!!.removeView(randomactivitymeetscreen)
+                view!!.addView(randomconnectionview)
+            }
+        }
+
 
     }
 
