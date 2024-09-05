@@ -155,11 +155,13 @@ class RandomActivity:JitsiMeetActivity() , JitsiMeetActivityInterface{
 
                 Log.d("matchstat" , "live par observleendi ... " + it?.toString())
                 participant = it!!
+
+
+
                 if (participant?.tfc == true){
 
 
                     fromIn = false
-
 
                     when(session){
                         "first" -> {
@@ -172,8 +174,6 @@ class RandomActivity:JitsiMeetActivity() , JitsiMeetActivityInterface{
                                 {
 
                                     Log.d("matchstat" , "outhandler tetikledi ... " + it?.toString())
-
-
 
                                     val room = participant?.rm
 
@@ -404,25 +404,7 @@ class RandomActivity:JitsiMeetActivity() , JitsiMeetActivityInterface{
     }
     override fun onConferenceJoined(extraData: HashMap<String, Any>?) {
         super.onConferenceJoined(extraData)
-        mrandomActivityViewModel.fromLobby.observe(this , Observer {
-            if (it == true){
-                when(session){
-                    "first" -> {
 
-                        view!!.removeView(randomconnectionview)
-                        view!!.addView(randomactivitymeetscreen)
-
-                    }
-
-                    "next" -> {
-
-                        view!!.removeView(randomconnectionview)
-                    }
-                }
-
-            }
-
-        })
         when(session){
             "first" -> {
 
@@ -431,6 +413,30 @@ class RandomActivity:JitsiMeetActivity() , JitsiMeetActivityInterface{
                  * */
                 view!!.removeView(prejoinView)
                 view!!.addView(swipeScreen)
+
+
+                if (!fromIn){
+                    mrandomActivityViewModel.fromLobby.observe(this , Observer {
+                        if (it == true){
+                            when(session){
+                                "first" -> {
+
+                                    view!!.removeView(randomconnectionview)
+                                    view!!.addView(randomactivitymeetscreen)
+
+                                }
+
+                                "next" -> {
+
+                                    view!!.removeView(randomconnectionview)
+                                }
+                            }
+
+                        }
+
+                    })
+
+                }
 
 
 
