@@ -237,7 +237,20 @@ class RandomActivity:JitsiMeetActivity() , JitsiMeetActivityInterface{
         randomActivityViewModel.changeMatch.observe(this , Observer {
             if (it == true){
                 _hangUp = false
-                leave()
+
+
+                val userinfo = JitsiMeetUserInfo().apply {
+                    displayName = name
+                    avatar = URL(photo)
+                }
+
+                var options = JitsiMeetConferenceOptions.Builder()
+                    .setRoom("https://meet.recommyz.com/$name")
+                    .setUserInfo(userinfo)
+                    .build()
+
+                Log.d("randomActivity" , "prejoin view eklendi ... ")
+                join(options)
                 randomActivityViewModel.update_changeMatch(false)
                 MainActivity.fm.updateOwnerMatchedStatus(uid!! , true)
                 view!!.addView(randomconnectionview)
