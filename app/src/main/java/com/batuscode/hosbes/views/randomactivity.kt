@@ -236,6 +236,7 @@ class RandomActivity:JitsiMeetActivity() , JitsiMeetActivityInterface{
 
         randomActivityViewModel.changeMatch.observe(this , Observer {
             if (it == true){
+                _hangUp = false
                 leave()
                 randomActivityViewModel.update_changeMatch(false)
                 MainActivity.fm.updateOwnerMatchedStatus(uid!! , true)
