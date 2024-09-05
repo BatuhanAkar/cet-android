@@ -137,10 +137,11 @@ private fun CustomTextField( chatViewModel: ChatViewModel , mainActivityVM: Main
         modifier = modifier
             .padding(top = 8.dp)
             .fillMaxWidth()
-    ) {
+    )
+    {
 
 
-        val (messageBoxSurface , gifButton , sendMessageButton) = createRefs()
+        val (messageBoxSurface , gifButton , sendMessageButton , editMessageButtons) = createRefs()
 
         AnimatedVisibility(visible = isEmpty , modifier = Modifier
             .wrapContentSize()
@@ -149,7 +150,8 @@ private fun CustomTextField( chatViewModel: ChatViewModel , mainActivityVM: Main
                 end.linkTo(messageBoxSurface.start)
                 top.linkTo(messageBoxSurface.top)
                 bottom.linkTo(messageBoxSurface.bottom)
-            }) {
+            })
+        {
             OutlinedIconButton(onClick = {
                 val giphyDialogFragment = GiphyDialogFragment.newInstance()
                 if (fragmentManager != null){
@@ -200,7 +202,8 @@ private fun CustomTextField( chatViewModel: ChatViewModel , mainActivityVM: Main
                 .constrainAs(messageBoxSurface){
                     if (isEmpty)start.linkTo(gifButton.end) else start.linkTo(parent.start)
 
-                    end.linkTo(sendMessageButton.start)
+                    if (editMessageFieldMode == false) end.linkTo(sendMessageButton.start)
+                    else end.linkTo(editMessageButtons.start)
                     width = Dimension.fillToConstraints
                 },
             shape = RoundedCornerShape(24.dp) ,
@@ -342,6 +345,12 @@ private fun CustomTextField( chatViewModel: ChatViewModel , mainActivityVM: Main
             Column (
                 horizontalAlignment = Alignment.CenterHorizontally ,
                 modifier = Modifier
+                    .constrainAs(editMessageButtons){
+                        end.linkTo(parent.end)
+                        top.linkTo(messageBoxSurface.top)
+                        bottom.linkTo(messageBoxSurface.bottom)
+                        start.linkTo(messageBoxSurface.end)
+                    }
 
             )
             {

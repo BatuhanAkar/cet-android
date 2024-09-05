@@ -23,7 +23,9 @@ import com.batuscode.hosbes.models.Participnat
 import com.batuscode.hosbes.models.RandomParticipant
 import com.batuscode.hosbes.ui.theme.HoşbeşTheme
 import com.batuscode.hosbes.utility.RandomActivityViewModel
+import com.facebook.react.ReactInstanceManager
 import com.facebook.react.modules.core.PermissionListener
+import com.th3rdwave.safeareacontext.getReactContext
 import kotlinx.coroutines.delay
 import org.jitsi.meet.sdk.BroadcastAction
 import org.jitsi.meet.sdk.BroadcastEvent
@@ -55,6 +57,8 @@ class RandomActivity:JitsiMeetActivity() , JitsiMeetActivityInterface{
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+
+
         Log.d("randomActivity" , "aktivite oluşturuldu ... ")
 
         val randomActivityViewModel:RandomActivityViewModel by viewModels()
@@ -62,6 +66,7 @@ class RandomActivity:JitsiMeetActivity() , JitsiMeetActivityInterface{
         context = this
         view = jitsiView
 
+        MainActivity.mMainActivityVM.update_inRandom(true)
         var name = MainActivity.PreferenceManager?.getString("displayName")
         var photo = MainActivity.PreferenceManager?.getString("photoUrl")
 
@@ -357,6 +362,8 @@ class RandomActivity:JitsiMeetActivity() , JitsiMeetActivityInterface{
         super.onBackPressed()
         LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver)
         JitsiMeetActivityDelegate.onBackPressed()
+        MainActivity.mMainActivityVM.update_inRandom(false)
+
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -368,11 +375,13 @@ class RandomActivity:JitsiMeetActivity() , JitsiMeetActivityInterface{
         super.onDestroy()
         LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver)
         JitsiMeetActivityDelegate.onHostDestroy(this)
+        MainActivity.mMainActivityVM.update_inRandom(false)
 
     }
 
     override fun onStop() {
         super.onStop()
         JitsiMeetActivityDelegate.onHostDestroy(this)
+        MainActivity.mMainActivityVM.update_inRandom(false)
     }
 }

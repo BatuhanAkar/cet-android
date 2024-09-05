@@ -483,4 +483,10 @@ class MainActivityVM:ViewModel() {
         _fragmentManager.value = manager
     }
 
+    private val _inRandom = MutableStateFlow<Boolean>(false)
+    val inRandom : MutableStateFlow<Boolean> get() = _inRandom
+
+    fun update_inRandom(value: Boolean){
+        _inRandom.value = value
+    }
 }

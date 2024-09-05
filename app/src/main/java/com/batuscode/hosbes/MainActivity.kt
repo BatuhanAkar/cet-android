@@ -75,7 +75,6 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-
     var handler = Handler(Looper.getMainLooper())
 
     val FATG:String = "authentication00"

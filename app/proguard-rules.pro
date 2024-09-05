@@ -28,4 +28,5 @@
 -keep class com.facebook.react.bridge.CatalystInstanceImpl {*;}
 -keep class com.facebook.react.bridge.JSCJavaScriptExecutor {*;}
 -keep class com.facebook.react.bridge.ReadableType {*;}
-
+-keep class kotlin.** {*;}
+-keep class com.giphy.sdk.** {*;}

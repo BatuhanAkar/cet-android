@@ -315,6 +315,8 @@ fun MoreContent(scope: CoroutineScope , sheetState: SheetState , mainActivityVM:
             TextButton(
                 onClick = {
 
+                    mainActivityVM.update_inRandom(true)
+
                     val intent = Intent(context , RandomActivity::class.java)
                     context.startActivity(intent)
 /*

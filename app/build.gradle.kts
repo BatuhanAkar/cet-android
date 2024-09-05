@@ -94,8 +94,13 @@ dependencies {
     implementation(libs.firebase.storage.ktx)
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.ui.storage)
-    implementation("org.jitsi.react:jitsi-meet-sdk:+"){ isTransitive = true}
+    implementation("org.jitsi.react:jitsi-meet-sdk:10.1.2"){
+        isTransitive = true
+        exclude(module= "react-native-giphy")
+
+    }
     implementation("com.giphy.sdk:ui:2.3.15")
+
 
     implementation (libs.firebase.functions)
 

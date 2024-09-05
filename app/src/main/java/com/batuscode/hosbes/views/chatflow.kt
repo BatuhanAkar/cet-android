@@ -257,6 +257,7 @@ fun MessageItemView(message:Message , type:String , mainActivityVM: MainActivity
         mutableStateOf<ImageBitmap?>(null)
     }
 
+    val inRandom by mainActivityVM.inRandom.collectAsState()
     val timeStamp by remember { mutableStateOf(  dateformatHour(message.time!!) ) }
 
     val inWhisper by mainActivityVM.inWhisper.collectAsState()
@@ -357,7 +358,7 @@ fun MessageItemView(message:Message , type:String , mainActivityVM: MainActivity
                     onClick = {},
                     onLongClick = {
 
-                        if (inWhisper == false){
+                        if (inWhisper == false) {
                             mainActivityVM.updateWhisperUserUid(message.senderId!!)
                             mainActivityVM.updateMessageItem(message)
                             mainActivityVM.updateShowMessageOption(true)
@@ -396,16 +397,17 @@ fun MessageItemView(message:Message , type:String , mainActivityVM: MainActivity
                             horizontalArrangement = Arrangement.Center
                         ) {
 
-                            Text(
-                                text = message.senderName!!,
-                                style = TextStyle(
-                                    fontWeight = FontWeight.SemiBold ,
-                                    fontSize = 18.sp
-                                ),
-                                modifier = Modifier
-                                    .wrapContentWidth()
-                            )
-
+                            if (message.senderId?.equals(uid) == false) {
+                                Text(
+                                    text = message.senderName!!,
+                                    style = TextStyle(
+                                        fontWeight = FontWeight.SemiBold,
+                                        fontSize = 18.sp
+                                    ),
+                                    modifier = Modifier
+                                        .wrapContentWidth()
+                                )
+                            }
                             Spacer(modifier = Modifier.width(8.dp))
 
                             Text(
