@@ -318,6 +318,7 @@ fun MoreContent(scope: CoroutineScope , sheetState: SheetState , mainActivityVM:
                     mainActivityVM.update_inRandom(true)
 
                     val intent = Intent(context , RandomActivity::class.java)
+                    intent.putExtra("session" , "first")
                     context.startActivity(intent)
 /*
 
