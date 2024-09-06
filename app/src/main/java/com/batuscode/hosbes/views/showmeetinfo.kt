@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -53,6 +54,8 @@ fun ShowMeetInfo(mainActivityVM: MainActivityVM){
      * karşılaşma bulundu ise ...
      * */
 
+
+
     GlideApp
         .with(context)
         .asBitmap()
@@ -73,104 +76,113 @@ fun ShowMeetInfo(mainActivityVM: MainActivityVM){
         })
 
 
-    ConstraintLayout {
-
-        val (background , info ) = createRefs()
-
-
-        if (rImage != null){
-
-            Image(
-                bitmap = rImage!! ,
-                contentDescription = "" ,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .blur(
-                        radiusX = 7.dp,
-                        radiusY = 7.dp,
-                        edgeTreatment = BlurredEdgeTreatment.Unbounded
-                    )
-                    .constrainAs(background) {
-                        top.linkTo(parent.top)
-                        bottom.linkTo(parent.bottom)
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                    }
-            )
-
-        }
-
-
-
+    Scaffold {
+        innerPadding ->
 
         ConstraintLayout(
             modifier = Modifier
-                .constrainAs(info){
-                    top.linkTo(parent.top)
-                    bottom.linkTo(parent.bottom)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                }
+                .fillMaxSize()
+                .padding(innerPadding)
         ) {
-            val (pp , nameSurface) = createRefs()
+
+            val (background , info ) = createRefs()
 
 
-            if (rImage != null) {
+            if (rImage != null){
 
                 Image(
                     bitmap = rImage!! ,
                     contentDescription = "" ,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
-                        .height(120.dp)
-                        .width(120.dp)
-                        .clip(RoundedCornerShape(16.dp))
-                        .constrainAs(pp) {
+                        .fillMaxSize()
+                        .blur(
+                            radiusX = 7.dp,
+                            radiusY = 7.dp,
+                            edgeTreatment = BlurredEdgeTreatment.Unbounded
+                        )
+                        .constrainAs(background) {
                             top.linkTo(parent.top)
                             bottom.linkTo(parent.bottom)
                             start.linkTo(parent.start)
                             end.linkTo(parent.end)
                         }
                 )
+
             }
 
 
 
 
-            Surface(
-                color = colorResource(id = R.color.e).copy(0.5f) ,
-                shadowElevation = 20.dp ,
+            ConstraintLayout(
                 modifier = Modifier
-                    .padding(top = 10.dp)
-                    .fillMaxWidth()
-                    .constrainAs(nameSurface) {
+                    .constrainAs(info){
+                        top.linkTo(parent.top)
+                        bottom.linkTo(parent.bottom)
                         start.linkTo(parent.start)
                         end.linkTo(parent.end)
-                        top.linkTo(pp.bottom)
                     }
-            ){
+            ) {
+                val (pp , nameSurface) = createRefs()
 
-                if (randomParticipant?.displayName != null){
-                    Text(
-                        text = randomParticipant?.displayName!! ,
-                        textAlign = TextAlign.Center ,
-                        style = TextStyle(
-                            fontSize = 20.sp ,
-                            fontWeight = FontWeight.SemiBold
-                        ),
+
+                if (rImage != null) {
+
+                    Image(
+                        bitmap = rImage!! ,
+                        contentDescription = "" ,
+                        contentScale = ContentScale.Crop,
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(10.dp)
+                            .height(120.dp)
+                            .width(120.dp)
+                            .clip(RoundedCornerShape(16.dp))
+                            .constrainAs(pp) {
+                                top.linkTo(parent.top)
+                                bottom.linkTo(parent.bottom)
+                                start.linkTo(parent.start)
+                                end.linkTo(parent.end)
+                            }
                     )
                 }
 
+
+
+
+                Surface(
+                    color = colorResource(id = R.color.e).copy(0.5f) ,
+                    shadowElevation = 20.dp ,
+                    modifier = Modifier
+                        .padding(top = 10.dp)
+                        .fillMaxWidth()
+                        .constrainAs(nameSurface) {
+                            start.linkTo(parent.start)
+                            end.linkTo(parent.end)
+                            top.linkTo(pp.bottom)
+                        }
+                ){
+
+                    if (randomParticipant?.displayName != null){
+                        Text(
+                            text = randomParticipant?.displayName!! ,
+                            textAlign = TextAlign.Center ,
+                            style = TextStyle(
+                                fontSize = 20.sp ,
+                                fontWeight = FontWeight.SemiBold
+                            ),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(10.dp)
+                        )
+                    }
+
+                }
             }
+
+
+
+
+
         }
-
-
-
-
 
     }
 
