@@ -147,13 +147,6 @@ class RandomActivity:JitsiMeetActivity() , JitsiMeetActivityInterface{
                 Log.d("randomActivity" , "ekran kaydırıldı random connection view eklendi ... ")
 
                 /**
-                 * artık ilk oturum değil ...
-                 * */
-
-
-                randomActivityViewModel.update_session("next")
-
-                /**
                  * ilk oturum kaydırma ekranını sil ...
                  * */
 
@@ -162,9 +155,11 @@ class RandomActivity:JitsiMeetActivity() , JitsiMeetActivityInterface{
                 /**
                  * Karşılaşma arama aktivitesini başlat ...
                  * */
-                val intent = Intent(context , RandomConnectionActivity::class.java)
-                context.startActivity(intent)
-                finish()
+
+                val intent = Intent(this , RandomConnectionActivity::class.java)
+                startActivity(intent)
+                leave()
+
             }
         })
 

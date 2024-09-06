@@ -66,6 +66,9 @@
         <activity android:name=".views.WhisperChatActivity"
             android:theme="@style/Theme.AppCompat.DayNight.NoActionBar"
             android:exported="false"/>
+        <activity android:name=".views.RandomConnectionActivity"
+            android:theme="@style/Theme.AppCompat.DayNight.NoActionBar"
+            android:exported="false"/>
 
 
         <service android:name=".utility.SessionService" />
