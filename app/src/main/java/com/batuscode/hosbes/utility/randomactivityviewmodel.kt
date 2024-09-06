@@ -22,19 +22,7 @@ class RandomActivityViewModel:ViewModel(){
         _swiped.value = value
     }
 
-    private val _randomParticipant = MutableStateFlow<RandomParticipant?>(null)
-    val randomParticipant: StateFlow<RandomParticipant?> get() = _randomParticipant
 
-    fun updateRandomParticipant(randomParticipant: RandomParticipant){
-        _randomParticipant.value = randomParticipant
-    }
-
-    private val _matched = MutableStateFlow<Boolean?>(null)
-    val matched:StateFlow<Boolean?> get() = _matched
-
-    fun updateMatched(state: Boolean?){
-        _matched.value = state
-    }
 
     private val _xmatched = MutableLiveData<Boolean?>(false)
     val xmatched:LiveData<Boolean?> get() = _xmatched
@@ -94,12 +82,7 @@ class RandomActivityViewModel:ViewModel(){
         _X.value = status
     }
 
-    private val _liverandomParticipant = MutableLiveData<RandomParticipant?>(null)
-    val liverandomParticipant:LiveData<RandomParticipant?> get() = _liverandomParticipant
 
-    fun updateliveRandomParticipant(liverandomParticipant: RandomParticipant){
-        _liverandomParticipant.value = liverandomParticipant
-    }
 
     private val _ParticipantJoined = MutableLiveData<Boolean>(false)
     val ParticipantJoined:LiveData<Boolean> get() = _ParticipantJoined

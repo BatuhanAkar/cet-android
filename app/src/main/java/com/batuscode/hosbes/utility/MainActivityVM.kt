@@ -489,4 +489,16 @@ class MainActivityVM:ViewModel() {
     fun update_inRandom(value: Boolean){
         _inRandom.value = value
     }
+
+
+    /**
+     * Rastgele modunda randomactivity de randomconnection view için gerekli ...
+     * */
+
+    private val _randomParticipant = MutableStateFlow<RandomParticipant?>(null)
+    val randomParticipant: StateFlow<RandomParticipant?> get() = _randomParticipant
+
+    fun updateRandomParticipant(randomParticipant: RandomParticipant){
+        _randomParticipant.value = randomParticipant
+    }
 }

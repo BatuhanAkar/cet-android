@@ -69,15 +69,15 @@ import com.batuscode.hosbes.models.RandomParticipant
 import com.batuscode.hosbes.ui.theme.HoşbeşTheme
 import com.batuscode.hosbes.utility.GlideApp
 import com.batuscode.hosbes.utility.RandomActivityViewModel
+import com.batuscode.hosbes.utility.RandomConnectionActivityViewModel
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 
 @Composable
-fun RandomConnection(randomActivityViewModel: RandomActivityViewModel){
+fun RandomConnection(randomConnectionActivityViewModel: RandomConnectionActivityViewModel){
 
-    val context = LocalContext.current
     val uid = MainActivity.PreferenceManager?.getuidShared("uid")
     val colors = listOf( colorResource(id = R.color.de) , colorResource(id = R.color.dr) , colorResource(
         id = R.color.dt
@@ -133,7 +133,7 @@ fun RandomConnection(randomActivityViewModel: RandomActivityViewModel){
             when(event){
                 Lifecycle.Event.ON_CREATE -> {
                     handler.postDelayed({
-                        MainActivity.fm.matchParticipants(uid = uid!! , randomActivityViewModel = randomActivityViewModel)
+                        MainActivity.fm.matchParticipants(uid = uid!!)
                     },200)
                 }
                 Lifecycle.Event.ON_START -> {}
@@ -155,12 +155,8 @@ fun RandomConnection(randomActivityViewModel: RandomActivityViewModel){
     }
 
 
-    val match by randomActivityViewModel.matched.collectAsState()
-    val randomParticipant by randomActivityViewModel.randomParticipant.collectAsState()
+    val match by randomConnectionActivityViewModel.matched.collectAsState()
 
-    var rImage by remember {
-        mutableStateOf<ImageBitmap?>(null)
-    }
 
     Scaffold(
         modifier = Modifier
@@ -170,173 +166,32 @@ fun RandomConnection(randomActivityViewModel: RandomActivityViewModel){
     ) {
         innerPadding ->
 
+        Box (
+            modifier = Modifier
+                .fillMaxSize()
+                .drawBehind {
 
+                    drawRect(color = animatedColor, style = Fill)
+                }
+                .padding(innerPadding)
 
-        /**
-         * karşılaşma arama düzeni ...
-         *
-         * */
-
-
-        if (match == true){
-            Box (
+        )
+        {
+            Text(
+                text = "Senin için birileri var mı etrafa bakınıyorum." ,
+                style = TextStyle(
+                    fontFamily = FontFamily(Font(R.font.pacifico_regular)) ,
+                    textMotion = TextMotion.Animated
+                ),
                 modifier = Modifier
-                    .fillMaxSize()
-                    .drawBehind {
-
-                        drawRect(color = animatedColor, style = Fill)
+                    .graphicsLayer {
+                        scaleX = scale
+                        scaleY = scale
+                        transformOrigin = TransformOrigin.Center
                     }
-                    .padding(innerPadding)
-
+                    .align(Alignment.Center)
             )
-            {
-                Text(
-                    text = "Senin için birileri var mı etrafa bakınıyorum." ,
-                    style = TextStyle(
-                        fontFamily = FontFamily(Font(R.font.pacifico_regular)) ,
-                        textMotion = TextMotion.Animated
-                    ),
-                    modifier = Modifier
-                        .graphicsLayer {
-                            scaleX = scale
-                            scaleY = scale
-                            transformOrigin = TransformOrigin.Center
-                        }
-                        .align(Alignment.Center)
-                )
-            }
-        } else if (match == false){
-
-            /**
-             * karşılaşma bulundu ise ...
-             * */
-
-            GlideApp
-                .with(context)
-                .asBitmap()
-                .load(randomParticipant?.photoUrl)
-                .into(object : CustomTarget<Bitmap>(){
-                    override fun onResourceReady(
-                        resource: Bitmap,
-                        transition: Transition<in Bitmap>?
-                    ) {
-                        rImage = resource.asImageBitmap()
-                    }
-
-                    override fun onLoadCleared(placeholder: Drawable?) {
-
-                    }
-
-
-                })
-
-
-            ConstraintLayout {
-
-                val (background , info ) = createRefs()
-
-
-                if (rImage != null){
-
-                    Image(
-                        bitmap = rImage!! ,
-                        contentDescription = "" ,
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .blur(
-                                radiusX = 7.dp,
-                                radiusY = 7.dp,
-                                edgeTreatment = BlurredEdgeTreatment.Unbounded
-                            )
-                            .constrainAs(background) {
-                                top.linkTo(parent.top)
-                                bottom.linkTo(parent.bottom)
-                                start.linkTo(parent.start)
-                                end.linkTo(parent.end)
-                            }
-                    )
-
-                }
-
-
-
-
-                ConstraintLayout(
-                    modifier = Modifier
-                        .constrainAs(info){
-                            top.linkTo(parent.top)
-                            bottom.linkTo(parent.bottom)
-                            start.linkTo(parent.start)
-                            end.linkTo(parent.end)
-                        }
-                ) {
-                    val (pp , nameSurface) = createRefs()
-
-
-                    if (rImage != null) {
-
-                        Image(
-                            bitmap = rImage!! ,
-                            contentDescription = "" ,
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier
-                                .height(120.dp)
-                                .width(120.dp)
-                                .clip(RoundedCornerShape(16.dp))
-                                .constrainAs(pp) {
-                                    top.linkTo(parent.top)
-                                    bottom.linkTo(parent.bottom)
-                                    start.linkTo(parent.start)
-                                    end.linkTo(parent.end)
-                                }
-                        )
-                    }
-
-
-
-
-                    Surface(
-                        color = colorResource(id = R.color.e).copy(0.5f) ,
-                        shadowElevation = 20.dp ,
-                        modifier = Modifier
-                            .padding(top = 10.dp)
-                            .fillMaxWidth()
-                            .constrainAs(nameSurface) {
-                                start.linkTo(parent.start)
-                                end.linkTo(parent.end)
-                                top.linkTo(pp.bottom)
-                            }
-                    ){
-
-                        if (randomParticipant?.displayName != null){
-                            Text(
-                                text = randomParticipant?.displayName!! ,
-                                textAlign = TextAlign.Center ,
-                                style = TextStyle(
-                                    fontSize = 20.sp ,
-                                    fontWeight = FontWeight.SemiBold
-                                ),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(10.dp)
-                            )
-                        }
-
-                    }
-                }
-
-
-
-
-
-            }
-
-
-
         }
-
-
 
 
 

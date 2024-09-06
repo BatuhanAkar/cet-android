@@ -1829,7 +1829,7 @@ class FirebaseManager {
      * TODO: rastgele katılımcısı ekle ...
      * */
 
-    fun addRandomParticipant(uid:String , displayName:String , photoUrl:String , randomActivityViewModel: RandomActivityViewModel){
+    fun addRandomParticipant(uid:String , displayName:String , photoUrl:String){
         val participant = RandomParticipant(
             displayName, photoUrl, uid , null,null,null,null
         )
@@ -1843,12 +1843,6 @@ class FirebaseManager {
             "displayName" to displayName ,
             "photoUrl" to photoUrl
         )
-/*
-        Random_History
-            .child("lobby")
-            .child(uid)
-            .setValue(true)*/
-
 
         random
             .document(uid)
@@ -1941,14 +1935,14 @@ class FirebaseManager {
                 if (it.isSuccessful){
                   //  mainActivityVM.update_c(true)
                     randomParticipant?.rm = roomName
-                    randomActivityViewModel.updateliveRandomParticipant(randomParticipant)
+                  //  randomActivityViewModel.updateliveRandomParticipant(randomParticipant)
                 }
             }
     }
 
 
 
-    fun listenRandomHistory(randomActivityViewModel: RandomActivityViewModel){
+    fun listenRandomHistory(randomConnectionActivityViewModel: RandomConnectionActivityViewModel){
         val selfUid = MainActivity.PreferenceManager?.getuidShared("uid")
 
         Random_History
@@ -1958,9 +1952,9 @@ class FirebaseManager {
                 if (it.isSuccessful){
                     val random = it.result.children.last().getValue(RandomParticipant::class.java)
 
-                    randomActivityViewModel.updateRandomParticipant(random!!)
-                    randomActivityViewModel.updateliveRandomParticipant(random)
-                    randomActivityViewModel.update_x(true)
+                    MainActivity.mMainActivityVM.updateRandomParticipant(random!!)
+                    randomConnectionActivityViewModel.updateliveRandomParticipant(random)
+                   // randomActivityViewModel.update_x(true)
 
                 }
             }
@@ -1968,7 +1962,7 @@ class FirebaseManager {
 
     }
 
-    fun ListenMatch(Ouid: String , randomActivityViewModel: RandomActivityViewModel){
+    fun ListenMatch(Ouid: String , randomConnectionActivityViewModel: RandomConnectionActivityViewModel){
        listenMatch = random
             .addSnapshotListener{
                 snapshot , e ->
@@ -1984,12 +1978,13 @@ class FirebaseManager {
                             if (uid?.equals(Ouid!!) == true) {
 
                                 var matched = dc.document.getBoolean("match")
-                                randomActivityViewModel.updateMatched(matched)
-                                randomActivityViewModel.update_xmatched(matched!!)
+                                randomConnectionActivityViewModel.updateMatched(matched)
+                                // randomActivityViewModel.update_xmatched(matched!!)
 
                                 if (matched == false){
                                     handler.postDelayed({
-                                        listenRandomHistory(randomActivityViewModel = randomActivityViewModel)
+                                        listenRandomHistory(randomConnectionActivityViewModel =
+                                        randomConnectionActivityViewModel)
                                     },800)
                                 }
 
@@ -2024,8 +2019,8 @@ class FirebaseManager {
                 if (it.isSuccessful){
                     var randomParticipant = it.result.toObject(RandomParticipant::class.java)
                     if (randomParticipant != null){
-                        randomActivityViewModel.updateRandomParticipant(randomParticipant!!)
-                        randomActivityViewModel.updateliveRandomParticipant(randomParticipant!!)
+                     //   randomActivityViewModel.updateRandomParticipant(randomParticipant!!)
+                     //   randomActivityViewModel.updateliveRandomParticipant(randomParticipant!!)
                         randomActivityViewModel.update_x(true)
                         randomActivityViewModel.update_X(true)
                     }
@@ -2040,7 +2035,7 @@ class FirebaseManager {
             .update("match" , state)
     }
 
-    fun matchParticipants(uid: String , randomActivityViewModel: RandomActivityViewModel){
+    fun matchParticipants(uid: String){
         /**
          * eşleme isteği true olan ve kişinin kendi id sine eşit olmayan rastgele kişiyi getir ...
          * */

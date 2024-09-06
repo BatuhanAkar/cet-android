@@ -52,6 +52,7 @@ class RandomActivity:JitsiMeetActivity() , JitsiMeetActivityInterface{
     lateinit var randomactivitymeetscreen:ComposeView
     lateinit var context: Context
     lateinit var mrandomActivityViewModel: RandomActivityViewModel
+    lateinit var showMeetInfoScreen:ComposeView
     lateinit var mUid: String
 
     var fromIn by mutableStateOf(false)
@@ -69,22 +70,21 @@ class RandomActivity:JitsiMeetActivity() , JitsiMeetActivityInterface{
 
         val randomActivityViewModel:RandomActivityViewModel by viewModels()
 
-        randomActivityViewModel.session.observe(this , Observer {
-            session = it
-        })
+        /**
+         * Rastgele aktivitesinin her start aldığı noktadan geçirilen oturum parametresini al ...
+         * */
+        session = intent.getStringExtra("session").toString()
 
         mrandomActivityViewModel = randomActivityViewModel
         context = this
         view = jitsiView
 
         MainActivity.mMainActivityVM.update_inRandom(true)
-        var name = MainActivity.PreferenceManager?.getString("displayName")
-        var photo = MainActivity.PreferenceManager?.getString("photoUrl")
 
-        val uid = MainActivity.PreferenceManager?.getuidShared("uid")
-        mUid = uid!!
-        MainActivity.fm.addRandomParticipant(uid = uid!! , displayName = name!! , photoUrl = photo!! , randomActivityViewModel) // önce random a kaydet ...
-        MainActivity.fm.ListenMatch(uid!! , randomActivityViewModel) // sonra random'ı dinle ...
+
+
+
+
         prejoinView = ComposeView(this).apply {
             setContent {
                 HoşbeşTheme {
@@ -100,15 +100,14 @@ class RandomActivity:JitsiMeetActivity() , JitsiMeetActivityInterface{
                 }
             }
         }
-
-        randomconnectionview = ComposeView(this).apply {
-            setContent {
+        
+        showMeetInfoScreen = ComposeView(this).apply { 
+            setContent { 
                 HoşbeşTheme {
-                    RandomConnection(randomActivityViewModel = randomActivityViewModel)
+                    ShowMeetInfo(mainActivityVM = MainActivity.mMainActivityVM)
                 }
             }
         }
-
 
         randomactivitymeetscreen = ComposeView(this).apply {
             setContent {
@@ -128,111 +127,47 @@ class RandomActivity:JitsiMeetActivity() , JitsiMeetActivityInterface{
         })
 
 
+        val uid = MainActivity.PreferenceManager?.getuidShared("uid")
+        var name = MainActivity.PreferenceManager?.getString("displayName")
+        var photo = MainActivity.PreferenceManager?.getString("photoUrl")
+
+
         /**
          * İLK SWİPE OLAYI ...
          * */
         randomActivityViewModel.swiped.observe(this , Observer {
             if (it?.equals(true) == true){
-                MainActivity.fm.updateMatchRequest(true , uid)
+
+                /**
+                 * sola kaydırdı ve kendi karşılaşma isteğini true olarak güncelledi ...
+                 * */
+
+                MainActivity.fm.updateMatchRequest(true , uid!!)
+
                 Log.d("randomActivity" , "ekran kaydırıldı random connection view eklendi ... ")
+
+                /**
+                 * artık ilk oturum değil ...
+                 * */
+
+
                 randomActivityViewModel.update_session("next")
+
+                /**
+                 * ilk oturum kaydırma ekranını sil ...
+                 * */
+
                 view!!.removeView(swipeScreen)
-                view!!.addView(randomconnectionview)
+
+                /**
+                 * Karşılaşma arama aktivitesini başlat ...
+                 * */
+                val intent = Intent(context , RandomConnectionActivity::class.java)
+                context.startActivity(intent)
+                finish()
             }
         })
 
-        var participant:RandomParticipant? = null
-
-
-        var tfc:Boolean? = null
-        val outhandler = Handler()
-        val inhandler = Handler()
-
-        /**
-         * KARŞILAŞMA SONUCUNDA LISTEN MATCH DEN TETİKLENEREK GEÇMİŞTEKİ SON KİŞİ GELMİŞTİR ...
-         * */
-
-        randomActivityViewModel.liverandomParticipant.observe(this , Observer {
-
-            if (it != null){
-
-                Log.d("matchstat" , "live par observleendi ... " + it?.toString())
-                participant = it!!
-
-
-
-                if (participant?.tfc == true){
-
-
-                    fromIn = false
-
-                    randomActivityViewModel.update_fromLobby(true)
-                    Log.d("matchstat" , "tfc true çıktı ... " )
-
-                    outhandler.postDelayed(
-                        {
-
-                            Log.d("matchstat" , "outhandler tetikledi ... " + it?.toString())
-
-                            val room = participant?.rm
-
-                            val userinfo = JitsiMeetUserInfo().apply {
-                                displayName = name
-                                avatar = URL(photo)
-                            }
-
-                            var options = JitsiMeetConferenceOptions.Builder()
-                                .setRoom("https://meet.recommyz.com/$room")
-                                .setUserInfo(userinfo)
-                                .setFeatureFlag("lobby-mode.enabled" , true)
-                                .build()
-
-                            Log.d("randomActivity" , "prejoin view eklendi ... ")
-
-                            join(options)
-
-                        } ,
-                        800
-                    )
-
-
-                } else if (participant?.tfc == false){
-                    Log.d("matchstat" , "tfc false çıktı ... " )
-                    fromIn = true
-
-                    inhandler.postDelayed(
-                        {
-
-                            randomActivityViewModel.update_fromLobby(true)
-
-
-
-                            val room = participant?.rm
-
-                            val userinfo = JitsiMeetUserInfo().apply {
-                                displayName = name
-                                avatar = URL(photo)
-                            }
-
-                            var options = JitsiMeetConferenceOptions.Builder()
-                                .setRoom("https://meet.recommyz.com/$room")
-                                .setUserInfo(userinfo)
-                                .build()
-
-                            Log.d("randomActivity" , "prejoin view eklendi ... ")
-
-                            join(options)
-                        } ,
-                        800
-                    )
-
-
-                }
-            } else {
-
-                Log.d("matchstat" , "live par observleendi ... sonuç boş ... ")
-            }
-        })
 
         randomActivityViewModel.changeMatch.observe(this , Observer {
             if (it == true){
@@ -259,61 +194,62 @@ class RandomActivity:JitsiMeetActivity() , JitsiMeetActivityInterface{
 
         registerForBroadcastMessages()
 
+        setDefaultMeetingOptions()
+
+
+
         /**
          * AKTİVİTE İLK BAŞLADIĞINDA KLASİK GİRİŞİ YAP ...
          * */
 
-        val serverURL: URL
-        serverURL = URL("https://meet.recommyz.com")
-        var defaultOptions = JitsiMeetConferenceOptions.Builder()
-            .setServerURL(serverURL)
-            .setFeatureFlag("welcomepage.enabled" , false)
-            .setFeatureFlag("prejoinpage.enabled" , false)
-            .setFeatureFlag("tile-view.enabled" , true)
-            .setFeatureFlag("prejoinpage.enabled" , false)
-            .setFeatureFlag("invite.enabled" , false)
-            .setFeatureFlag("add-people.enabled" , false)
-            .setFeatureFlag("car-mode.enabled" , false)
-            .setFeatureFlag("close-captions.enabled" , false)
-            .setFeatureFlag("help.enabled" , false)
-            .setFeatureFlag("ios.screensharing.enabled" , false)
-            .setFeatureFlag("ios.recording.enabled" , false)
-            .setFeatureFlag("android.screensharing.enabled" , false)
-            .setFeatureFlag("overflow-menu.enabled" , false)
-            .setFeatureFlag("pip-while-screensharing.enabled" , false)
-            .setFeatureFlag("lobby-mode.enabled" , true)
-            .setFeatureFlag("meeting-password.enabled" , false)
-            .setFeatureFlag("kick-out.enabled" , false)
-            .setFeatureFlag("toolbox.enabled" , false)
 
-            .setFeatureFlag("meeting-name.enabled" , false)
-            .setFeatureFlag("settings.enabled" , false)
+        when(session){
+            "first" -> {
 
 
-            .setFeatureFlag("invite-dial-in.enabled" , false)
-            .setFeatureFlag("server-url-change.enabled" , false)
-            .setFeatureFlag("security-options.enabled" , false)
+
+                val userinfo = JitsiMeetUserInfo().apply {
+                    displayName = name
+                    avatar = URL(photo)
+                }
+
+                var options = JitsiMeetConferenceOptions.Builder()
+                    .setRoom("https://meet.recommyz.com/$name")
+                    .setUserInfo(userinfo)
+                    .build()
+
+                Log.d("randomActivity" , "prejoin view eklendi ... ")
+                view!!.addView(prejoinView)
+                join(options)
+            }
+
+            "next" -> {
+
+               val Rname = intent.getStringExtra("displayName")
+               val photoUrl = intent.getStringExtra("photoUrl")
+               val uid = intent.getStringExtra("uid")
+               val match = intent.getBooleanExtra("match" , false)
+               val rm = intent.getStringExtra("rm")
+               val tfc = intent.getBooleanExtra("tfc" , false)
+               val outId = intent.getStringExtra("outId")
 
 
-            .setFeatureFlag("welcomepage.enabled" , false)
-            .build()
+                val userinfo = JitsiMeetUserInfo().apply {
+                    displayName = name
+                    avatar = URL(photo)
+                }
 
-        JitsiMeet.setDefaultConferenceOptions(defaultOptions)
+                var options = JitsiMeetConferenceOptions.Builder()
+                    .setRoom("https://meet.recommyz.com/$rm")
+                    .setUserInfo(userinfo)
+                    .build()
 
+                Log.d("randomActivity" , "prejoin view eklendi ... ")
+                view!!.addView(showMeetInfoScreen)
+                join(options)
 
-        val userinfo = JitsiMeetUserInfo().apply {
-            displayName = name
-            avatar = URL(photo)
+            }
         }
-
-        var options = JitsiMeetConferenceOptions.Builder()
-            .setRoom("https://meet.recommyz.com/$name")
-            .setUserInfo(userinfo)
-            .build()
-
-        Log.d("randomActivity" , "prejoin view eklendi ... ")
-        view!!.addView(prejoinView)
-        join(options)
 
 
         /**
@@ -360,41 +296,14 @@ class RandomActivity:JitsiMeetActivity() , JitsiMeetActivityInterface{
 
     override fun onParticipantLeft(extraData: HashMap<String, Any>?) {
         super.onParticipantLeft(extraData)
-
-        when(session){
-            "next" -> {
-                MainActivity.fm.updateOwnerMatchedStatus(uid = mUid , true)
-                view!!.removeView(randomactivitymeetscreen)
-                view!!.addView(randomconnectionview)
-            }
-        }
-
-
     }
 
     override fun onParticipantJoined(extraData: HashMap<String, Any>?) {
         super.onParticipantJoined(extraData)
-
-
-        when(session){
-            "next" -> {
-
-                if (fromIn){
-                    view!!.removeView(randomconnectionview)
-                    view!!.addView(randomactivitymeetscreen)
-                }
-
-            }
-        }
     }
 
     override fun onConferenceWillJoin(extraData: HashMap<String, Any>?) {
         super.onConferenceWillJoin(extraData)
-        when(session){
-            "first" -> {
-            }
-        }
-
     }
 
     override fun onConferenceJoined(extraData: HashMap<String, Any>?) {
@@ -410,12 +319,8 @@ class RandomActivity:JitsiMeetActivity() , JitsiMeetActivityInterface{
             }
 
             "next" -> {
-
-                if (!fromIn){
-                    view!!.removeView(randomconnectionview)
-                    view!!.addView(randomactivitymeetscreen)
-                }
-
+                view!!.removeView(showMeetInfoScreen)
+                view!!.addView(randomactivitymeetscreen)
             }
         }
 
@@ -527,5 +432,45 @@ class RandomActivity:JitsiMeetActivity() , JitsiMeetActivityInterface{
             JitsiMeetActivityDelegate.onHostDestroy(this)
             MainActivity.mMainActivityVM.update_inRandom(false)
         }
+    }
+
+    private fun setDefaultMeetingOptions(){
+
+        val serverURL: URL
+        serverURL = URL("https://meet.recommyz.com")
+        var defaultOptions = JitsiMeetConferenceOptions.Builder()
+            .setServerURL(serverURL)
+            .setFeatureFlag("welcomepage.enabled" , false)
+            .setFeatureFlag("prejoinpage.enabled" , false)
+            .setFeatureFlag("tile-view.enabled" , true)
+            .setFeatureFlag("prejoinpage.enabled" , false)
+            .setFeatureFlag("invite.enabled" , false)
+            .setFeatureFlag("add-people.enabled" , false)
+            .setFeatureFlag("car-mode.enabled" , false)
+            .setFeatureFlag("close-captions.enabled" , false)
+            .setFeatureFlag("help.enabled" , false)
+            .setFeatureFlag("ios.screensharing.enabled" , false)
+            .setFeatureFlag("ios.recording.enabled" , false)
+            .setFeatureFlag("android.screensharing.enabled" , false)
+            .setFeatureFlag("overflow-menu.enabled" , false)
+            .setFeatureFlag("pip-while-screensharing.enabled" , false)
+            .setFeatureFlag("lobby-mode.enabled" , true)
+            .setFeatureFlag("meeting-password.enabled" , false)
+            .setFeatureFlag("kick-out.enabled" , false)
+            .setFeatureFlag("toolbox.enabled" , false)
+
+            .setFeatureFlag("meeting-name.enabled" , false)
+            .setFeatureFlag("settings.enabled" , false)
+
+
+            .setFeatureFlag("invite-dial-in.enabled" , false)
+            .setFeatureFlag("server-url-change.enabled" , false)
+            .setFeatureFlag("security-options.enabled" , false)
+
+
+            .setFeatureFlag("welcomepage.enabled" , false)
+            .build()
+
+        JitsiMeet.setDefaultConferenceOptions(defaultOptions)
     }
 }
