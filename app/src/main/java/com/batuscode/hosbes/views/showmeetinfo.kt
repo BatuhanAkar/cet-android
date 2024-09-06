@@ -8,11 +8,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -40,6 +42,7 @@ import com.batuscode.hosbes.utility.GlideApp
 import com.batuscode.hosbes.utility.MainActivityVM
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
+import kotlinx.coroutines.delay
 
 @Composable
 fun ShowMeetInfo(mainActivityVM: MainActivityVM){
@@ -83,7 +86,8 @@ fun ShowMeetInfo(mainActivityVM: MainActivityVM){
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-        ) {
+        )
+        {
 
             val (background , info ) = createRefs()
 
@@ -123,7 +127,7 @@ fun ShowMeetInfo(mainActivityVM: MainActivityVM){
                         end.linkTo(parent.end)
                     }
             ) {
-                val (pp , nameSurface) = createRefs()
+                val (pp , nameSurface , timer) = createRefs()
 
 
                 if (rImage != null) {
@@ -159,7 +163,8 @@ fun ShowMeetInfo(mainActivityVM: MainActivityVM){
                             end.linkTo(parent.end)
                             top.linkTo(pp.bottom)
                         }
-                ){
+                )
+                {
 
                     if (randomParticipant?.displayName != null){
                         Text(
@@ -176,6 +181,22 @@ fun ShowMeetInfo(mainActivityVM: MainActivityVM){
                     }
 
                 }
+
+                Text(
+                    text = com.batuscode.hosbes.views.timer(startValue = 10).toString() ,
+                    style = TextStyle(
+                        fontWeight = FontWeight.Bold ,
+                        fontSize = 30.sp
+                    ) ,
+                    modifier = Modifier
+                        .wrapContentSize()
+                        .constrainAs(timer){
+                            start.linkTo(parent.start)
+                            end.linkTo(parent.end)
+                            top.linkTo(nameSurface.bottom)
+
+                        }
+                )
             }
 
 
@@ -189,6 +210,23 @@ fun ShowMeetInfo(mainActivityVM: MainActivityVM){
 
 }
 
+@Composable
+fun timer(
+    startValue: Int
+):Int {
+    var currentValue by remember {
+        mutableStateOf(startValue)
+    }
+
+    LaunchedEffect(Unit) {
+        while (currentValue > 0){
+            delay(1000L)
+            currentValue -= 1
+        }
+    }
+
+    return currentValue
+}
 @Preview(showBackground = true , showSystemUi = true)
 @Composable
 fun ShowMeetInfoPreview(){
