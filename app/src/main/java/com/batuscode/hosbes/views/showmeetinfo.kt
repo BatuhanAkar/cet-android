@@ -230,6 +230,7 @@ fun timerCountDown(
             delay(1000L)
             currentValue -= 1
         }
+        complated()
     }
 
     return currentValue
