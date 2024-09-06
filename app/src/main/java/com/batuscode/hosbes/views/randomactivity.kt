@@ -164,26 +164,18 @@ class RandomActivity:JitsiMeetActivity() , JitsiMeetActivityInterface{
         })
 
 
+        /**
+         * Görüşme değiştirme ...
+         * */
         randomActivityViewModel.changeMatch.observe(this , Observer {
             if (it == true){
-                _hangUp = false
 
-
-                val userinfo = JitsiMeetUserInfo().apply {
-                    displayName = name
-                    avatar = URL(photo)
-                }
-
-                var options = JitsiMeetConferenceOptions.Builder()
-                    .setRoom("https://meet.recommyz.com/$name")
-                    .setUserInfo(userinfo)
-                    .build()
-
-                Log.d("randomActivity" , "prejoin view eklendi ... ")
-                join(options)
                 randomActivityViewModel.update_changeMatch(false)
-                MainActivity.fm.updateOwnerMatchedStatus(uid!! , true)
-                view!!.addView(randomconnectionview)
+                MainActivity.fm.updateMatchRequest(true , uid!!)
+
+                val intent = Intent(this , RandomConnectionActivity::class.java)
+                startActivity(intent)
+                leave()
             }
         })
 
@@ -291,6 +283,19 @@ class RandomActivity:JitsiMeetActivity() , JitsiMeetActivityInterface{
 
     override fun onParticipantLeft(extraData: HashMap<String, Any>?) {
         super.onParticipantLeft(extraData)
+        if (!_hangUp){
+            /**
+             * Kişi rastgele modundan çıkmak istemedi ise yeni karşılaşmalara it ...
+             * */
+            val uid = MainActivity.PreferenceManager?.getuidShared("uid")
+
+            MainActivity.fm.updateMatchRequest(true , uid!!)
+
+            val intent = Intent(this , RandomConnectionActivity::class.java)
+            startActivity(intent)
+        } else {
+            HandleHangUpBroadCastAction()
+        }
     }
 
     override fun onParticipantJoined(extraData: HashMap<String, Any>?) {
