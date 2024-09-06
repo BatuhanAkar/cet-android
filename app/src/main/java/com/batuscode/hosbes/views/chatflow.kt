@@ -87,6 +87,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -295,7 +296,6 @@ fun MessageItemView(message:Message , type:String , mainActivityVM: MainActivity
         // profile image
         Box(
             modifier = Modifier
-                .padding(bottom = 8.dp)
                 .width(40.dp)
                 .height(40.dp)
                 .constrainAs(profileImageView) {
@@ -344,9 +344,9 @@ fun MessageItemView(message:Message , type:String , mainActivityVM: MainActivity
             color = if (message.senderId?.equals(uid) == true && type.equals("text")) colorResource(id = R.color.d)
             else if (type.equals("gif")) colorResource(
                 id = R.color.white
-            ) else colorResource(id = R.color.dy),
+            ) else colorResource(id = R.color.de),
             modifier = Modifier
-                .padding(8.dp)
+                .padding( start = 8.dp , end = 8.dp)
                 .constrainAs(messagebody) {
                     start.linkTo(profileImageView.end)
                     end.linkTo(parent.end)
@@ -402,7 +402,7 @@ fun MessageItemView(message:Message , type:String , mainActivityVM: MainActivity
                                     text = message.senderName!!,
                                     style = TextStyle(
                                         fontWeight = FontWeight.SemiBold,
-                                        fontSize = 18.sp
+                                        fontSize = 14.sp
                                     ),
                                     modifier = Modifier
                                         .wrapContentWidth()
@@ -441,7 +441,7 @@ fun MessageItemView(message:Message , type:String , mainActivityVM: MainActivity
                                     text = message.senderName!!,
                                     style = TextStyle(
                                         fontWeight = FontWeight.Bold ,
-                                        fontSize = 20.sp
+                                        fontSize = 14.sp
                                     ),
                                     modifier = Modifier
                                         .wrapContentWidth()
@@ -493,8 +493,10 @@ fun MessageItemView(message:Message , type:String , mainActivityVM: MainActivity
                     Text(
                         text = message.message!!,
                         style = TextStyle(
-                            fontWeight = FontWeight.SemiBold ,
-                            fontSize = 16.sp
+                            fontWeight = FontWeight.W400 ,
+                            fontSize = 14.sp ,
+                            lineHeight = 1.4.em
+
                         ),
                         modifier = Modifier
                             .padding(top = 4.dp)

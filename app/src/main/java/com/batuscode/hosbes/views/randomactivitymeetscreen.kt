@@ -62,9 +62,12 @@ fun RandomActivityMeetScreen(randomActivityViewModel: RandomActivityViewModel){
     }
     ConstraintLayout(
         modifier = Modifier
+            .padding(bottom = 120.dp)
             .fillMaxSize()
-            .indication(indication = null, interactionSource = interactionSource)
-            .clickable {
+            .clickable(
+                indication = null ,
+                interactionSource = interactionSource
+            ) {
                 isVisible = isVisible.not()
             }
     ){
@@ -79,7 +82,7 @@ fun RandomActivityMeetScreen(randomActivityViewModel: RandomActivityViewModel){
                 modifier = Modifier
                     .padding(20.dp)
                     .constrainAs(mainScreen) {
-                        bottom.linkTo(parent.bottom)
+                        top.linkTo(parent.top)
                         start.linkTo(parent.start)
                         end.linkTo(parent.end)
                     }

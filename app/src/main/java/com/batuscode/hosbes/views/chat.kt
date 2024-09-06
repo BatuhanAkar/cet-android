@@ -28,6 +28,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
@@ -374,7 +375,10 @@ fun Chat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
                         )
                     }
 
-                }
+                } ,
+                modifier = Modifier
+                    .height(80.dp)
+                    .wrapContentHeight()
             )
         }
 
@@ -464,7 +468,6 @@ fun ChatUI(chatViewModel: ChatViewModel , mainActivityVM: MainActivityVM , inner
 
             MessageTextField ( chatViewModel , mainActivityVM = mainActivityVM ,
                 modifier = Modifier
-                    .padding(2.dp)
                     .background(Color.White)
                     .imePadding()
                     .fillMaxWidth()

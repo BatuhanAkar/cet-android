@@ -1866,6 +1866,10 @@ class FirebaseManager {
         random
             .document(uid)
             .update("match" , state)
+
+        random
+            .document(uid)
+            .update("outId" , null)
     }
 
     fun declineMatch(status:Boolean? , ruid:String , mainActivityVM: MainActivityVM){
@@ -1906,14 +1910,20 @@ class FirebaseManager {
             .update("meeting" , status)
     }
 
-    fun updateMatched(state: Boolean , uid:String){
+    fun updateMatched(state: Boolean , outId:String){
         val selfUid = MainActivity.PreferenceManager?.getuidShared("uid")
         random
-            .document(uid)
+            .document(outId)
             .update("match" , state)
         random
             .document(selfUid!!)
             .update("match" , state)
+        random
+            .document(outId)
+            .update("outId" , selfUid)
+        random
+            .document(selfUid!!)
+            .update("outId" , outId)
 
 
     }
@@ -1942,15 +1952,16 @@ class FirebaseManager {
 
 
 
-    fun listenRandomHistory(randomConnectionActivityViewModel: RandomConnectionActivityViewModel){
+    fun listenRandomHistory(randomConnectionActivityViewModel: RandomConnectionActivityViewModel , outId: String){
         val selfUid = MainActivity.PreferenceManager?.getuidShared("uid")
 
         Random_History
             .child(selfUid!!)
+            .child(outId)
             .get()
             .addOnCompleteListener {
                 if (it.isSuccessful){
-                    val random = it.result.children.last().getValue(RandomParticipant::class.java)
+                    val random = it.result.getValue(RandomParticipant::class.java)
 
                     MainActivity.mMainActivityVM.updateRandomParticipant(random!!)
                     randomConnectionActivityViewModel.updateliveRandomParticipant(random)
@@ -1981,10 +1992,12 @@ class FirebaseManager {
                                 randomConnectionActivityViewModel.updateMatched(matched)
                                 // randomActivityViewModel.update_xmatched(matched!!)
 
-                                if (matched == false){
+                                var outId = dc.document.getString("outId")
+
+                                if (matched == false && outId != null){
                                     handler.postDelayed({
                                         listenRandomHistory(randomConnectionActivityViewModel =
-                                        randomConnectionActivityViewModel)
+                                        randomConnectionActivityViewModel , outId = outId!!)
                                     },800)
                                 }
 

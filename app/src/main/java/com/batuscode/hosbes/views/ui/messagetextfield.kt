@@ -135,8 +135,11 @@ private fun CustomTextField( chatViewModel: ChatViewModel , mainActivityVM: Main
 
     ConstraintLayout(
         modifier = modifier
-            .padding(top = 8.dp)
+            .background(Color.Transparent)
+            .padding(top = 3.dp)
             .fillMaxWidth()
+            .wrapContentHeight()
+            .heightIn(min = 30.dp)
     )
     {
 
@@ -145,6 +148,7 @@ private fun CustomTextField( chatViewModel: ChatViewModel , mainActivityVM: Main
 
         AnimatedVisibility(visible = isEmpty , modifier = Modifier
             .wrapContentSize()
+            .background(Color.Transparent)
             .constrainAs(gifButton) {
                 start.linkTo(parent.start)
                 end.linkTo(messageBoxSurface.start)
@@ -198,8 +202,12 @@ private fun CustomTextField( chatViewModel: ChatViewModel , mainActivityVM: Main
         // mesaj kutusu arayüzü
         Surface (
             modifier = Modifier
-                .wrapContentWidth()
+                .fillMaxWidth()
+                .background(Color.Transparent)
+                .padding(horizontal = 4.dp)
                 .constrainAs(messageBoxSurface){
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
                     if (isEmpty)start.linkTo(gifButton.end) else start.linkTo(parent.start)
 
                     if (editMessageFieldMode == false) end.linkTo(sendMessageButton.start)
@@ -207,7 +215,7 @@ private fun CustomTextField( chatViewModel: ChatViewModel , mainActivityVM: Main
                     width = Dimension.fillToConstraints
                 },
             shape = RoundedCornerShape(24.dp) ,
-            color = colorResource(id = R.color.white) ,
+            color = Color.Transparent ,
             shadowElevation = 2.dp ,
             border = BorderStroke(1.dp , colorResource(id = R.color.e))
         )
@@ -217,8 +225,8 @@ private fun CustomTextField( chatViewModel: ChatViewModel , mainActivityVM: Main
 
             // mesaj kutusu
             Box(modifier = modifier
-                .background(colorResource(id = R.color.white).copy(0.1f))
-                .heightIn(min = 24.dp)
+                .background(Color.Transparent)
+                .heightIn(min = 20.dp)
                 ,
                 contentAlignment = Alignment.CenterStart
             )
@@ -227,8 +235,8 @@ private fun CustomTextField( chatViewModel: ChatViewModel , mainActivityVM: Main
                     modifier = modifier
                         .heightIn(min = 24.dp)
                         .fillMaxWidth()
-                        .background(colorResource(id = R.color.white).copy(0.1f))
-                        .padding(horizontal = 24.dp, vertical = 10.dp) ,
+                        .background(Color.Transparent)
+                        .padding(horizontal = 20.dp, vertical = 8.dp) ,
                     textStyle = TextStyle(
                         fontSize = 18.sp
                     ),
@@ -263,6 +271,7 @@ private fun CustomTextField( chatViewModel: ChatViewModel , mainActivityVM: Main
             Surface(
                 modifier = Modifier
                     .padding(start = 5.dp)
+                    .background(Color.Transparent)
                     .wrapContentSize()
                     .constrainAs(sendMessageButton) {
                         end.linkTo(parent.end)

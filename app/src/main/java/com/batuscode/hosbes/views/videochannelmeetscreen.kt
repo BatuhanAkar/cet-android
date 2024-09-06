@@ -74,8 +74,10 @@ fun VideoChannelMeetScreen(videoChannelViewModel: VideoChannelViewModel){
         modifier = Modifier
             .fillMaxSize()
             .padding(bottom = 120.dp)
-            .indication(indication = null , interactionSource = interactionSource)
-            .clickable {
+            .clickable(
+                indication = null ,
+                interactionSource = interactionSource
+            ) {
                 isVisible = isVisible.not()
             }
     ){

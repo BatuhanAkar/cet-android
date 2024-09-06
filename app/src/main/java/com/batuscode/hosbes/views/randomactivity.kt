@@ -188,6 +188,9 @@ class RandomActivity:JitsiMeetActivity() , JitsiMeetActivityInterface{
         randomActivityViewModel.countTimerComplated.observe(this , Observer {
             if (it == true){
                 timerComplated = it
+
+                view!!.removeView(showMeetInfoScreen)
+                view!!.addView(randomactivitymeetscreen)
             }
         })
 
