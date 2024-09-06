@@ -293,6 +293,7 @@ class RandomActivity:JitsiMeetActivity() , JitsiMeetActivityInterface{
 
             val intent = Intent(this , RandomConnectionActivity::class.java)
             startActivity(intent)
+            leave()
         } else {
             val uid = MainActivity.PreferenceManager?.getuidShared("uid")
             MainActivity.fm.removeRandomParticipant(uid!!)
