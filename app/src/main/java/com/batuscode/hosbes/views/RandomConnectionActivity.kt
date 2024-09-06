@@ -40,10 +40,6 @@ class RandomConnectionActivity:AppCompatActivity(){
 
         val uid = MainActivity.PreferenceManager?.getuidShared("uid")
 
-        /**
-         * Rastgele katılımcıyı ekle ...
-         * */
-        MainActivity.fm.addRandomParticipant(uid = uid!! , displayName = name!! , photoUrl = photo!!) // önce random a kaydet ...
 
         /**
          * Karşılaşma lobisindeki match (karşılaşma) durumunun güncellemelerini dinlemeye başla ...
