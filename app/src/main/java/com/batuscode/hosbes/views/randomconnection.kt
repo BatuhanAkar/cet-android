@@ -141,7 +141,6 @@ fun RandomConnection(randomConnectionActivityViewModel: RandomConnectionActivity
                 Lifecycle.Event.ON_PAUSE -> {}
                 Lifecycle.Event.ON_STOP -> {}
                 Lifecycle.Event.ON_DESTROY -> {
-                    MainActivity.fm.removeRandomParticipant(uid!!)
                 }
                 Lifecycle.Event.ON_ANY -> {}
             }

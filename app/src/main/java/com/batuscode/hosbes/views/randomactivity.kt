@@ -294,6 +294,8 @@ class RandomActivity:JitsiMeetActivity() , JitsiMeetActivityInterface{
             val intent = Intent(this , RandomConnectionActivity::class.java)
             startActivity(intent)
         } else {
+            val uid = MainActivity.PreferenceManager?.getuidShared("uid")
+            MainActivity.fm.removeRandomParticipant(uid!!)
             HandleHangUpBroadCastAction()
         }
     }
