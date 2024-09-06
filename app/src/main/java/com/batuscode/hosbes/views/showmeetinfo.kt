@@ -40,12 +40,13 @@ import com.batuscode.hosbes.R
 import com.batuscode.hosbes.ui.theme.HoşbeşTheme
 import com.batuscode.hosbes.utility.GlideApp
 import com.batuscode.hosbes.utility.MainActivityVM
+import com.batuscode.hosbes.utility.RandomActivityViewModel
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import kotlinx.coroutines.delay
 
 @Composable
-fun ShowMeetInfo(mainActivityVM: MainActivityVM){
+fun ShowMeetInfo(mainActivityVM: MainActivityVM , randomActivityViewModel: RandomActivityViewModel){
     val context = LocalContext.current
 
     val randomParticipant by mainActivityVM.randomParticipant.collectAsState()
@@ -182,15 +183,20 @@ fun ShowMeetInfo(mainActivityVM: MainActivityVM){
 
                 }
 
+
+                var time = timerCountDown(startValue = 10){
+                    randomActivityViewModel.update_countTimerComplated(true)
+                }
+
                 Text(
-                    text = com.batuscode.hosbes.views.timer(startValue = 10).toString() ,
+                    text = time.toString() ,
                     style = TextStyle(
                         fontWeight = FontWeight.Bold ,
                         fontSize = 30.sp
                     ) ,
                     modifier = Modifier
                         .wrapContentSize()
-                        .constrainAs(timer){
+                        .constrainAs(timer) {
                             start.linkTo(parent.start)
                             end.linkTo(parent.end)
                             top.linkTo(nameSurface.bottom)
@@ -211,8 +217,9 @@ fun ShowMeetInfo(mainActivityVM: MainActivityVM){
 }
 
 @Composable
-fun timer(
-    startValue: Int
+fun timerCountDown(
+    startValue: Int ,
+    complated: () -> Unit
 ):Int {
     var currentValue by remember {
         mutableStateOf(startValue)
@@ -231,6 +238,6 @@ fun timer(
 @Composable
 fun ShowMeetInfoPreview(){
     HoşbeşTheme {
-        ShowMeetInfo(MainActivityVM())
+        ShowMeetInfo(MainActivityVM() , RandomActivityViewModel())
     }
 }

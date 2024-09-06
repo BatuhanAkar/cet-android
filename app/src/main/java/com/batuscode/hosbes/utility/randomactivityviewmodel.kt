@@ -140,4 +140,11 @@ class RandomActivityViewModel:ViewModel(){
         _session.value = value
     }
 
+    private val _countTimerComplated = MutableLiveData<Boolean>(false)
+    val countTimerComplated : LiveData<Boolean> get() = _countTimerComplated
+
+    fun update_countTimerComplated(value: Boolean){
+        _countTimerComplated.value = value
+    }
+
 }

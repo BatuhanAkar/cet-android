@@ -61,6 +61,8 @@ class RandomActivity:JitsiMeetActivity() , JitsiMeetActivityInterface{
 
     var _hangUp by mutableStateOf(false)
 
+    var timerComplated by mutableStateOf(false)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -104,7 +106,7 @@ class RandomActivity:JitsiMeetActivity() , JitsiMeetActivityInterface{
         showMeetInfoScreen = ComposeView(this).apply { 
             setContent { 
                 HoşbeşTheme {
-                    ShowMeetInfo(mainActivityVM = MainActivity.mMainActivityVM)
+                    ShowMeetInfo(mainActivityVM = MainActivity.mMainActivityVM , randomActivityViewModel = randomActivityViewModel)
                 }
             }
         }
@@ -176,6 +178,16 @@ class RandomActivity:JitsiMeetActivity() , JitsiMeetActivityInterface{
                 val intent = Intent(this , RandomConnectionActivity::class.java)
                 startActivity(intent)
                 leave()
+            }
+        })
+
+        /**
+         * Karşılaştırma bilgi sayfasındaki sayacın bitip bitmediğini gözlemle ...
+         * */
+
+        randomActivityViewModel.countTimerComplated.observe(this , Observer {
+            if (it == true){
+                timerComplated = it
             }
         })
 
@@ -330,8 +342,10 @@ class RandomActivity:JitsiMeetActivity() , JitsiMeetActivityInterface{
             }
 
             "next" -> {
-                view!!.removeView(showMeetInfoScreen)
-                view!!.addView(randomactivitymeetscreen)
+                if (timerComplated){
+                    view!!.removeView(showMeetInfoScreen)
+                    view!!.addView(randomactivitymeetscreen)
+                }
             }
         }
 
