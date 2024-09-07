@@ -186,8 +186,35 @@ private fun CustomTextField( chatViewModel: ChatViewModel , mainActivityVM: Main
                             ) {
                                 var mediaId = media.id
 
-                                mainActivityVM.updateMessageSended(true)
-                                MainActivity.fm.writeMessage( "gif" , mediaId , FirebaseManager.C1)
+
+                                if (channelId == "C1"){
+                                    mainActivityVM.updateMessageSended(true)
+                                    MainActivity.fm.writeMessage( "gif" , mediaId , FirebaseManager.C1)
+
+                                } else if (channelId == "C2") {
+                                    mainActivityVM.updateMessageSended(true)
+                                    MainActivity.fm.writeMessage( "gif" , mediaId , FirebaseManager.C2)
+
+                                } else if (channelId == "P1"){
+                                    mainActivityVM.updateMessageSended(true)
+                                    MainActivity.fm.writePRMessage( mainActivityVM , "gif" , mediaId , FirebaseManager.P1 , room = room!!)
+                                } else if (channelId == "W"){
+                                    mainActivityVM.updateMessageSended(true)
+
+                                    if (_whisper == true){
+                                        Log.d("whisperchat" , "message sended ...")
+                                        mainActivityVM.update_whisper(false)
+                                        // ilk defa mesaj yollandı bayrağını true ayarla .... mesajı yolla ...
+                                        MainActivity.fm.writeWhisperMessage(user = user!! , "gif" , mediaId , mainActivityVM)
+                                    } else {
+                                        MainActivity.fm.writeWMessage( whisperItem?.wuid!! , whisperItem?.wid!! , "gif" , mediaId)
+                                    }
+
+
+                                }
+
+
+
 
                             }
 

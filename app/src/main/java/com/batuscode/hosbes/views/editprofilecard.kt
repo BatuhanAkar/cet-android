@@ -1,10 +1,13 @@
 package com.batuscode.hosbes.views
 
 import android.Manifest
+import android.Manifest.permission.READ_MEDIA_IMAGES
+import android.Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
@@ -13,6 +16,7 @@ import android.provider.MediaStore
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
@@ -92,6 +96,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.PermissionChecker.PERMISSION_GRANTED
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.batuscode.hosbes.MainActivity
 import com.batuscode.hosbes.R
@@ -243,16 +248,27 @@ fun Content(mainActivityVM: MainActivityVM){
 
     }
 
-    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-
-        it.data.let {
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) {
+        it.let {
             if (it != null) {
 
-                Log.d("pickerResult" , "path :: " + it.data)
+                Log.d("pickerResult" , "path :: " + it)
 
-                Glide.with(context)
+                val options = BitmapFactory.Options().apply {
+                    inSampleSize = 4 // Görüntü boyutunu 1/4 oranında küçült
+                }
+                newPP = BitmapFactory.decodeStream(context.contentResolver.openInputStream(it), null, options)?.asImageBitmap()
+
+                if (newPP != null) {
+
+                    mainActivityVM.updatenewPhoto(newPP!!.asAndroidBitmap())
+                    changeImage = true
+                }
+
+
+             /*   Glide.with(context)
                     .asBitmap()
-                    .load(it.data)
+                    .load(it)
                     .into(object:CustomTarget<Bitmap>(){
                         override fun onResourceReady(
                             resource: Bitmap,
@@ -270,14 +286,28 @@ fun Content(mainActivityVM: MainActivityVM){
                         }
 
 
-                    })
+                    })*/
 
             }
 
         }
 
+
+
     }
 
+    val requestPermissions = rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+        // Handle permission requests results
+        // See the permission example in the Android platform samples: https://github.com/android/platform-samples
+        permissions.forEach { (permission, isGranted) ->
+            if (isGranted) {
+
+                val pickRequest = PickVisualMediaRequest(mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly)
+                launcher.launch(pickRequest)
+            } else {
+            }
+        }
+    }
     if (showPermissionDialog == true){
 
         AlertDialog(
@@ -296,7 +326,8 @@ fun Content(mainActivityVM: MainActivityVM){
                         )
                         val uri:Uri = Uri.fromParts("package" , context.packageName , null)
                         intent.setData(uri)
-                        launcher.launch(intent)
+                        val pickRequest = PickVisualMediaRequest(mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly)
+                        launcher.launch(pickRequest)
 
                               } ,
                 )
@@ -379,23 +410,18 @@ fun Content(mainActivityVM: MainActivityVM){
 
             OutlinedIconButton(
                 onClick = {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+                        (ContextCompat.checkSelfPermission(MainActivity.context, READ_MEDIA_IMAGES) == PERMISSION_GRANTED)
+                    )
+                    {
+                        // Full access on Android 13 (API level 33) or higher
 
-                    if (checkPermisson()){
-
-
-                        val intent = Intent(
-                            Intent.ACTION_PICK,
-                            MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-                        )
-                        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                        launcher.launch(intent)
-
+                        val pickRequest = PickVisualMediaRequest(mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly)
+                        launcher.launch(pickRequest)
                     } else {
-
-                        mainActivityVM.updateShowPermissionDialog(true)
-
-
+                        requestPermissions.launch(arrayOf(READ_MEDIA_IMAGES))
                     }
+
 
 
                 } ,
@@ -501,12 +527,8 @@ fun Content(mainActivityVM: MainActivityVM){
 }
 
 
-fun checkPermisson() : Boolean{
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R){
-        return Environment.isExternalStorageManager()
-    } else {
-        return false
-    }
+fun checkPermisson(){
+
 }
 
 @Composable

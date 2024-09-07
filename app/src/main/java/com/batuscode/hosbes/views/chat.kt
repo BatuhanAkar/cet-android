@@ -366,9 +366,9 @@ fun Chat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
                         Image(
                             bitmap = imageBitmap!! ,
                             contentDescription = "" ,
-                            contentScale = ContentScale.FillWidth,
+                            contentScale = ContentScale.Crop,
                             modifier = Modifier
-                                .clip(RoundedCornerShape(10.dp))
+                                .clip(CircleShape)
                                 .width(30.dp)
                                 .height(30.dp)
                                 .clickable {

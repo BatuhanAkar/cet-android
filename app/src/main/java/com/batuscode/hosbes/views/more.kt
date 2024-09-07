@@ -385,7 +385,7 @@ fun MoreContent(scope: CoroutineScope , sheetState: SheetState , mainActivityVM:
                         text = stringResource(id = R.string.deleteaccount) ,
                         style = TextStyle(
                             fontSize = 20.sp ,
-                            fontFamily = FontFamily.SansSerif ,
+                            fontWeight = FontWeight.Bold,
                             color = Color.Black
                         )
                     )
