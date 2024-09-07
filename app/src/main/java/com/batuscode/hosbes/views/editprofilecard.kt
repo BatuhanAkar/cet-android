@@ -1,34 +1,25 @@
 package com.batuscode.hosbes.views
 
-import android.Manifest
 import android.Manifest.permission.READ_MEDIA_IMAGES
-import android.Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
-import android.annotation.SuppressLint
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.drawable.Drawable
+import android.graphics.Matrix
 import android.net.Uri
 import android.os.Build
-import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
@@ -36,24 +27,15 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.ModalBottomSheetDefaults
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
@@ -75,7 +57,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
@@ -85,36 +66,23 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.PermissionChecker.PERMISSION_GRANTED
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.batuscode.hosbes.MainActivity
 import com.batuscode.hosbes.R
-import com.batuscode.hosbes.R.color.blue
 import com.batuscode.hosbes.ui.theme.HoşbeşTheme
-import com.batuscode.hosbes.utility.FirebaseManager
 import com.batuscode.hosbes.utility.MainActivityVM
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.target.CustomTarget
-import com.bumptech.glide.request.transition.Transition
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.PermissionState
-import com.google.accompanist.permissions.isGranted
-import com.google.accompanist.permissions.rememberPermissionState
-import com.google.accompanist.permissions.shouldShowRationale
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import java.security.AccessController.getContext
+import kotlinx.coroutines.flow.MutableStateFlow
 
 
 @RequiresApi(Build.VERSION_CODES.R)
@@ -179,6 +147,9 @@ fun Content(mainActivityVM: MainActivityVM){
 
 
 
+    var bitmap by remember {
+        mutableStateOf<Bitmap?>(null)
+    }
     var newUsername by remember {
         mutableStateOf(String())
     }
@@ -247,23 +218,32 @@ fun Content(mainActivityVM: MainActivityVM){
         MainActivity.fm.updateOnDbUserPhotoUrl(photoUrl = photoUrl , mainActivityVM)
 
     }
-
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) {
         it.let {
             if (it != null) {
+                val inputStream = context.contentResolver.openInputStream(it)
 
+                inputStream?.let {
+                    val options = BitmapFactory.Options().apply {
+                        inSampleSize = 4 // Görüntü boyutunu 1/4 oranında küçült
+                    }
+                    bitmap = BitmapFactory.decodeStream(it, null, options)
+                    val matrix = Matrix().apply { postRotate(90f) }
+
+                    if (bitmap != null) {
+                       newPP =  Bitmap.createBitmap(bitmap!!, 0, 0, bitmap!!.width, bitmap!!.height, matrix, true).asImageBitmap()
+                    }
+
+                    if (newPP != null) {
+
+                        mainActivityVM.updatenewPhoto(newPP!!.asAndroidBitmap())
+                        changeImage = true
+                    }
+
+                }
                 Log.d("pickerResult" , "path :: " + it)
 
-                val options = BitmapFactory.Options().apply {
-                    inSampleSize = 4 // Görüntü boyutunu 1/4 oranında küçült
-                }
-                newPP = BitmapFactory.decodeStream(context.contentResolver.openInputStream(it), null, options)?.asImageBitmap()
 
-                if (newPP != null) {
-
-                    mainActivityVM.updatenewPhoto(newPP!!.asAndroidBitmap())
-                    changeImage = true
-                }
 
 
              /*   Glide.with(context)
@@ -511,11 +491,11 @@ fun Content(mainActivityVM: MainActivityVM){
                         .padding(start = 4.dp)
                         .offset(y = dot1offset))
                     Text(text = "." , modifier = Modifier
-                                .padding(start = 4.dp)
-                                .offset(y = dot2offset))
+                        .padding(start = 4.dp)
+                        .offset(y = dot2offset))
                     Text(text = "." , modifier = Modifier
-                                .padding(start = 4.dp)
-                                .offset(y = dot3offset))
+                        .padding(start = 4.dp)
+                        .offset(y = dot3offset))
                 }
             }
 
