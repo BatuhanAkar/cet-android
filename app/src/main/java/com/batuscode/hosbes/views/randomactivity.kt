@@ -241,10 +241,12 @@ class RandomActivity:JitsiMeetActivity() , JitsiMeetActivityInterface{
                     avatar = URL(photo)
                 }
 
+
+
+
                 var options = JitsiMeetConferenceOptions.Builder()
                     .setRoom("https://meet.recommyz.com/$rm")
                     .setUserInfo(userinfo)
-                    .setConfigOverride("disableP2P" , false)
                     .build()
 
                 Log.d("randomActivity" , "prejoin view eklendi ... ")

@@ -24,7 +24,7 @@
 -keep class org.jitsi.meet.sdk.** {*;}
 
 -keep class org.jitsi.webrtc.** {*;}
-
+-keep class org.jitsi.meet.sdk.ExternalAPIModule {*;}
 -keep class com.facebook.react.bridge.CatalystInstanceImpl {*;}
 -keep class com.facebook.react.bridge.JSCJavaScriptExecutor {*;}
 -keep class com.facebook.react.bridge.ReadableType {*;}
