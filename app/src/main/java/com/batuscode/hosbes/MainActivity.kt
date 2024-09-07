@@ -20,6 +20,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -114,6 +115,7 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContent {
             HoşbeşTheme(false , false ) {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
 
                 val authViewModel: AuthViewModel = viewModel()
                 val mainActivityVM: MainActivityVM by viewModels()

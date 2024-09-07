@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
@@ -304,9 +305,9 @@ fun PrivateRoomChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewMode
 
             MessageTextField ( chatViewModel , mainActivityVM = mainActivityVM ,
                 modifier = Modifier
-                    .padding(2.dp)
                     .background(Color.White)
                     .imePadding()
+                    .fillMaxWidth()
                     .constrainAs(
                         messageTextField
                     )

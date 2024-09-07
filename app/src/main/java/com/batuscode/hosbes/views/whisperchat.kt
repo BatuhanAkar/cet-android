@@ -7,6 +7,7 @@ import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -177,9 +178,9 @@ fun WhisperChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel , 
 
             MessageTextField ( chatViewModel , mainActivityVM = mainActivityVM ,
                 modifier = Modifier
-                    .padding(2.dp)
                     .background(Color.White)
                     .imePadding()
+                    .fillMaxWidth()
                     .constrainAs(
                         messageTextField
                     )
