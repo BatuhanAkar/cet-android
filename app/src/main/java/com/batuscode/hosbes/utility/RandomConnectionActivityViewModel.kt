@@ -27,4 +27,11 @@ class RandomConnectionActivityViewModel:ViewModel(){
     fun updateliveRandomParticipant(liverandomParticipant: RandomParticipant){
         _liverandomParticipant.value = liverandomParticipant
     }
+
+    private val _closeActivity = MutableLiveData<Boolean>(false)
+    val closeActivity : LiveData<Boolean> get() = _closeActivity
+
+    fun update_closeActivity(value:Boolean){
+        _closeActivity.value = value
+    }
 }

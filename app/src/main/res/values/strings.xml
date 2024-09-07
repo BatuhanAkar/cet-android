@@ -60,4 +60,5 @@
     <string name="formatchclickbutton">En güzel dostluklar rastgele başlar...</string>
     <string name="editprofilecard">Düzenle</string>
     <string name="create">Oluştur</string>
+    <string name="connectagain">Tekrar bağlan</string>
 </resources>

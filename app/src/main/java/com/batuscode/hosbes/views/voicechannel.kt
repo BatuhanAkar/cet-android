@@ -244,7 +244,11 @@ class VoiceChannel:JitsiMeetActivity() , JitsiMeetActivityInterface{
             })
 
             voiceChannelViewModel.voicechannelhangup.observe(this , Observer {
-                HandleVoiceChannelHangUpBroadCastAction()
+                if (it == true){
+                    mainActivityVM.update_VoiceChannelRefused(true)
+                    voiceChannelViewModel.update_voicechannelhangup(false)
+                    HandleVoiceChannelHangUpBroadCastAction()
+                }
             })
 
         })

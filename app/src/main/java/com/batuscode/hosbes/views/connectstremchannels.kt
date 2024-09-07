@@ -95,7 +95,7 @@ fun ConnectStremChannels(mainActivityVM: MainActivityVM){
         if (showMore == true){
             More(mainActivityVM = mainActivityVM)
         }
-
+/*
         Text(
             text = if (selectedChannel?.equals("Goygoy") == true) stringResource(id = R.string.connectvideochannel) else  stringResource(id = R.string.connectvoicechannel),
             style = TextStyle(
@@ -106,7 +106,7 @@ fun ConnectStremChannels(mainActivityVM: MainActivityVM){
             modifier = Modifier
                 .weight(1f , false)
             
-        )
+        )*/
 
         OutlinedButton(onClick = {
             /**
@@ -114,14 +114,12 @@ fun ConnectStremChannels(mainActivityVM: MainActivityVM){
              * */
 
             if (streamChannelType?.equals("video") == true){
-                val intent = Intent(context , VideoChannel::class.java)
-                context.startActivity(intent)
+                mainActivityVM.update_VideoChannelRefused(false)
             } else if (streamChannelType?.equals("voice") == true){
-                val intent = Intent(context , VoiceChannel::class.java)
-                context.startActivity(intent)
+                mainActivityVM.update_VoiceChannelRefused(false)
             }
         }) {
-            Text(text = stringResource(id = R.string.connect))
+            Text(text = stringResource(id = R.string.connectagain))
         }
 
 

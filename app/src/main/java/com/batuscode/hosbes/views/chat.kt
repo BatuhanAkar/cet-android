@@ -2,6 +2,7 @@ package com.batuscode.hosbes.views
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.os.Build
 import android.util.Log
 import androidx.activity.viewModels
@@ -134,7 +135,12 @@ fun Chat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
 
     val Cscope = CoroutineScope(Dispatchers.Default)
 
-    val inVoiceChannel by mainActivityVM.inVoiceChannel.collectAsState()
+    val inStreamChannel by mainActivityVM.inStreamChannel.collectAsState()
+
+    val VideoChannelRefused by mainActivityVM.VideoChannelRefused.collectAsState()
+    val VoiceChannelRefused by mainActivityVM.VoiceChannelRefused.collectAsState()
+    val streamChannelType by mainActivityVM.streamChannelType.collectAsState()
+
 
     DisposableEffect(lifecycle) {
         val observe = LifecycleEventObserver { _, event ->
@@ -283,9 +289,6 @@ fun Chat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
                         }
 
                     }
-
-
-
                 }
                 Lifecycle.Event.ON_START -> {
 
@@ -383,17 +386,39 @@ fun Chat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
         }
 
     ){innerPadding ->
-        if (inVoiceChannel == false){
+        if (inStreamChannel == false){
             ChatUI(chatViewModel = chatViewModel, mainActivityVM = mainActivityVM, innerPadding = innerPadding)
-        } else if (inVoiceChannel == true){
-            ConnectStremChannels(mainActivityVM = mainActivityVM)
+        } else if (inStreamChannel == true){
+
+            if (streamChannelType == "video"){
+
+                if (VideoChannelRefused == false){
+
+                    val intent = Intent(context , VideoChannel::class.java)
+                    context.startActivity(intent)
+                } else {
+                    ConnectStremChannels(mainActivityVM = mainActivityVM)
+                }
+
+            } else if (streamChannelType == "voice"){
+
+
+                if (VoiceChannelRefused == false){
+                    val intent = Intent(context , VoiceChannel::class.java)
+                    context.startActivity(intent)
+                } else{
+                    ConnectStremChannels(mainActivityVM = mainActivityVM)
+                }
+            }
+
+
+
         }
 
     }
 
     }
 
-@OptIn(ExperimentalLayoutApi::class)
 @RequiresApi(Build.VERSION_CODES.R)
 @Composable
 fun ChatUI(chatViewModel: ChatViewModel , mainActivityVM: MainActivityVM , innerPadding:PaddingValues){

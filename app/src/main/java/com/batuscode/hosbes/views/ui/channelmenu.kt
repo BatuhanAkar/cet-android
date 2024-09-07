@@ -281,7 +281,9 @@ fun changeChannel(selectedChannelId:String , chatViewModel: ChatViewModel , main
     var handler = Handler(Looper.getMainLooper())
 
     if (selectedChannelId.equals("Mavi Boncuk")){
-        mainActivityVM.updateInVoiceChannel(false)
+        mainActivityVM.update_VoiceChannelRefused(false)
+        mainActivityVM.update_VideoChannelRefused(false)
+        mainActivityVM.updateInStreamChannel(false)
 
         MainActivity.fm.removeChatEventListener(FirebaseManager.C1)
         MainActivity.fm.removeChatEventListener(FirebaseManager.C1)
@@ -307,7 +309,9 @@ fun changeChannel(selectedChannelId:String , chatViewModel: ChatViewModel , main
         } , 2000)
 
     } else if (selectedChannelId.equals("Hoşbeş")) {
-        mainActivityVM.updateInVoiceChannel(false)
+        mainActivityVM.update_VoiceChannelRefused(false)
+        mainActivityVM.update_VideoChannelRefused(false)
+        mainActivityVM.updateInStreamChannel(false)
 
         MainActivity.fm.removeChatEventListener(FirebaseManager.C2)
 
@@ -330,13 +334,15 @@ fun changeChannel(selectedChannelId:String , chatViewModel: ChatViewModel , main
 
 
     } else if (selectedChannelId.equals("Goygoy")){
-        mainActivityVM.updateInVoiceChannel(true)
+        mainActivityVM.update_VoiceChannelRefused(false)
+        mainActivityVM.updateInStreamChannel(true)
         mainActivityVM.updateSelectedChannel("Goygoy")
         mainActivityVM.updateStreamChannelType("video")
         mainActivityVM.updateChannelName("Goygoy")
 
     } else if (selectedChannelId.equals("Dırdır")){
-        mainActivityVM.updateInVoiceChannel(true)
+        mainActivityVM.update_VideoChannelRefused(false)
+        mainActivityVM.updateInStreamChannel(true)
         mainActivityVM.updateSelectedChannel("Dırdır")
         mainActivityVM.updateStreamChannelType("voice")
         mainActivityVM.updateChannelName("Dırdır")

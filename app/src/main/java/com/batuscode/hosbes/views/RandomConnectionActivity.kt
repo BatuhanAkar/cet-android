@@ -47,6 +47,17 @@ class RandomConnectionActivity:AppCompatActivity(){
 
         MainActivity.fm.ListenMatch(uid!! , randomConnectionActivityViewModel) // sonra random'ı dinle ...
 
+        /**
+         * Aktivite durumunu gözlemle ...
+         * */
+
+        randomConnectionActivityViewModel.closeActivity.observe(this , Observer {
+            if (it == true){
+                MainActivity.fm.updateMatchRequest(false , uid!!)
+                MainActivity.fm.removeRandomParticipant(uid!!)
+                finish()
+            }
+        })
 
         /**
          * KARŞILAŞMA BULUNDU LISTEN MATCH DEN TETİKLENEREK GEÇMİŞTEKİ SON KİŞİ GELMİŞTİR ...

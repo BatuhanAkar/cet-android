@@ -22,6 +22,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
@@ -131,112 +132,100 @@ private fun CustomTextField( chatViewModel: ChatViewModel , mainActivityVM: Main
         mediaSelected = false
     }
 
-
-
-    ConstraintLayout(
+    // mesaj kutusu arayüzü
+    Surface (
         modifier = modifier
             .background(Color.Transparent)
             .padding(top = 3.dp)
-            .fillMaxWidth()
-            .wrapContentHeight()
-            .heightIn(min = 30.dp)
+            .heightIn(min = 30.dp),
+        shape = RoundedCornerShape(24.dp) ,
+        color = Color.Transparent ,
+        shadowElevation = 0.dp ,
+        border = BorderStroke(1.dp , colorResource(id = R.color.e))
     )
     {
+// mesaj kutusu
 
-
-        val (messageBoxSurface , gifButton , sendMessageButton , editMessageButtons) = createRefs()
-
-        AnimatedVisibility(visible = isEmpty , modifier = Modifier
-            .wrapContentSize()
-            .background(Color.Transparent)
-            .constrainAs(gifButton) {
-                start.linkTo(parent.start)
-                end.linkTo(messageBoxSurface.start)
-                top.linkTo(messageBoxSurface.top)
-                bottom.linkTo(messageBoxSurface.bottom)
-            })
+        ConstraintLayout(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp)
+                .shadow(elevation = 0.dp, RoundedCornerShape(24.dp))
+        )
         {
-            OutlinedIconButton(onClick = {
-                val giphyDialogFragment = GiphyDialogFragment.newInstance()
-                if (fragmentManager != null){
-                    giphyDialogFragment.show(fragmentManager!! , "giphydialog")
 
-                    giphyDialogFragment.gifSelectionListener = object : GiphyDialogFragment.GifSelectionListener{
-                        override fun didSearchTerm(term: String) {
-                        }
+            val ( emojiButton , gifButton , messageBox , sendButton) = createRefs()
 
-                        override fun onDismissed(selectedContentType: GPHContentType) {
-                        }
+            AnimatedVisibility(visible = isEmpty , modifier = Modifier
+                .wrapContentSize()
+                .background(Color.Transparent)
+                .constrainAs(gifButton) {
+                    start.linkTo(parent.start)
+                    end.linkTo(messageBox.start)
+                    top.linkTo(messageBox.top)
+                    bottom.linkTo(messageBox.bottom)
+                })
+            {
+                OutlinedIconButton(onClick = {
+                    val giphyDialogFragment = GiphyDialogFragment.newInstance()
+                    if (fragmentManager != null){
+                        giphyDialogFragment.show(fragmentManager!! , "giphydialog")
 
-                        override fun onGifSelected(
-                            media: Media,
-                            searchTerm: String?,
-                            selectedContentType: GPHContentType
-                        ) {
-                           var mediaId = media.id
+                        giphyDialogFragment.gifSelectionListener = object : GiphyDialogFragment.GifSelectionListener{
+                            override fun didSearchTerm(term: String) {
+                            }
 
-                            mainActivityVM.updateMessageSended(true)
-                            MainActivity.fm.writeMessage( "gif" , mediaId , FirebaseManager.C1)
+                            override fun onDismissed(selectedContentType: GPHContentType) {
+                            }
+
+                            override fun onGifSelected(
+                                media: Media,
+                                searchTerm: String?,
+                                selectedContentType: GPHContentType
+                            ) {
+                                var mediaId = media.id
+
+                                mainActivityVM.updateMessageSended(true)
+                                MainActivity.fm.writeMessage( "gif" , mediaId , FirebaseManager.C1)
+
+                            }
 
                         }
 
                     }
-
-                }
-            } ,
-                border = null,
-                modifier = Modifier
-                    .size(40.dp)
-
-
-            )
-            {
-                Icon(painter = painterResource(id = R.drawable.gif_box_24px)
-                    , contentDescription = "" ,
+                } ,
+                    border = null,
                     modifier = Modifier
                         .size(40.dp)
+
+
+                )
+                {
+                    Icon(painter = painterResource(id = R.drawable.gif_box_24px)
+                        , contentDescription = "" ,
+                        modifier = Modifier
+                            .size(40.dp)
                     )
+                }
             }
-        }
 
-        // mesaj kutusu arayüzü
-        Surface (
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Color.Transparent)
-                .padding(horizontal = 4.dp)
-                .constrainAs(messageBoxSurface){
-                    top.linkTo(parent.top)
-                    bottom.linkTo(parent.bottom)
-                    if (isEmpty)start.linkTo(gifButton.end) else start.linkTo(parent.start)
-
-                    if (editMessageFieldMode == false) end.linkTo(sendMessageButton.start)
-                    else end.linkTo(editMessageButtons.start)
-                    width = Dimension.fillToConstraints
-                },
-            shape = RoundedCornerShape(24.dp) ,
-            color = Color.Transparent ,
-            shadowElevation = 2.dp ,
-            border = BorderStroke(1.dp , colorResource(id = R.color.e))
-        )
-        {
-
-
-
-            // mesaj kutusu
-            Box(modifier = modifier
-                .background(Color.Transparent)
-                .heightIn(min = 20.dp)
-                ,
-                contentAlignment = Alignment.CenterStart
-            )
-            {
+            Box(
+                modifier = Modifier
+                    .constrainAs(messageBox) {
+                        if (isEmpty) start.linkTo(gifButton.end) else start.linkTo(parent.start)
+                        if (isEmpty) end.linkTo(emojiButton.start) else end.linkTo(sendButton.start)
+                        top.linkTo(parent.top)
+                        bottom.linkTo(parent.bottom)
+                        width = Dimension.fillToConstraints
+                    }
+            ) {
                 BasicTextField(
-                    modifier = modifier
+                    modifier = Modifier
                         .heightIn(min = 24.dp)
                         .fillMaxWidth()
+                        .padding(horizontal = 10.dp, vertical = 8.dp)
                         .background(Color.Transparent)
-                        .padding(horizontal = 20.dp, vertical = 8.dp) ,
+                    ,
                     textStyle = TextStyle(
                         fontSize = 18.sp
                     ),
@@ -256,183 +245,208 @@ private fun CustomTextField( chatViewModel: ChatViewModel , mainActivityVM: Main
             }
 
 
+            AnimatedVisibility(visible = isEmpty) {
+                OutlinedIconButton(onClick = {
 
-        }
-
-        // mesajı gönder butonu
-        if (editMessageFieldMode == false)
-        {
-
-
-
-
-            // mesajı gönder butonu
-
-            Surface(
-                modifier = Modifier
-                    .padding(start = 5.dp)
-                    .background(Color.Transparent)
-                    .wrapContentSize()
-                    .constrainAs(sendMessageButton) {
-                        end.linkTo(parent.end)
-                        top.linkTo(messageBoxSurface.top)
-                        bottom.linkTo(messageBoxSurface.bottom)
-                        width = Dimension.fillToConstraints
-                    }
-                ,
-                shape = RoundedCornerShape(50.dp),
-                color = colorResource(id = R.color.d) ,
-                shadowElevation = 2.dp ,
-            )
-            {
-                FilledIconButton(
-                    onClick = {
-                        if (!message.text.isEmpty()){
-                            Log.d("sendbutton :: " , message.text)
-
-
-                            if (channelId == "C1"){
-                                mainActivityVM.updateMessageSended(true)
-                                MainActivity.fm.writeMessage( "text" , message.text , FirebaseManager.C1)
-
-                            } else if (channelId == "C2") {
-                                mainActivityVM.updateMessageSended(true)
-                                MainActivity.fm.writeMessage( "text" , message.text , FirebaseManager.C2)
-
-                            } else if (channelId == "P1"){
-                                mainActivityVM.updateMessageSended(true)
-                                MainActivity.fm.writePRMessage( mainActivityVM , "text" , message.text , FirebaseManager.P1 , room = room!!)
-                            } else if (channelId == "W"){
-                                mainActivityVM.updateMessageSended(true)
-
-                                if (_whisper == true){
-                                    Log.d("whisperchat" , "message sended ...")
-                                    mainActivityVM.update_whisper(false)
-                                    // ilk defa mesaj yollandı bayrağını true ayarla .... mesajı yolla ...
-                                    MainActivity.fm.writeWhisperMessage(user = user!! , "text" , message.text , mainActivityVM)
-                                } else {
-                                    MainActivity.fm.writeWMessage( whisperItem?.wuid!! , whisperItem?.wid!! , "text" , message.text)
-                                }
-
-
-                            }
-
-                        } else {
-                            Log.d("sendbutton :: " , "12")
-
-                        }
-                    } ,
+                } ,
+                    border = null,
                     modifier = Modifier
-                        .padding(0.dp)
                         .size(40.dp)
-                        .wrapContentSize(),
-                    colors = IconButtonDefaults.filledIconButtonColors(
-                        containerColor = colorResource(id = R.color.d)
-                    ),
-                    shape = RoundedCornerShape(50.dp)
-
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Send ,
-                        contentDescription = "send" ,
-                        modifier = Modifier
-                            .size(25.dp)
-                            .padding(start = 3.dp)
-                    )
-                }
-            }
-
-
-
-
-
-        }
-        else {
-
-            // mesajı düzenle mesaj kutusu
-
-            Column (
-                horizontalAlignment = Alignment.CenterHorizontally ,
-                modifier = Modifier
-                    .constrainAs(editMessageButtons){
-                        end.linkTo(parent.end)
-                        top.linkTo(messageBoxSurface.top)
-                        bottom.linkTo(messageBoxSurface.bottom)
-                        start.linkTo(messageBoxSurface.end)
-                    }
-
-            )
-            {
-                TextButton(
-                    onClick = {
-                        if (!message.text.isEmpty()){
-                            Log.d("sendbutton :: " , message.text)
-
-
-                            if (channelId == "C1"){
-                                mainActivityVM.updateMessageSended(true)
-                                mainActivityVM.updateEditMessageFieldMode(false)
-
-                                MainActivity.fm.editMessage( "text", message.text , messageItem!! , FirebaseManager.C1)
-
-                            } else if (channelId == "C2") {
-                                mainActivityVM.updateMessageSended(true)
-                                mainActivityVM.updateEditMessageFieldMode(false)
-
-                                MainActivity.fm.editMessage( "text" , message.text , messageItem!! , FirebaseManager.C2)
-
-                            } else if (channelId == "P1"){
-                                mainActivityVM.updateMessageSended(true)
-                                mainActivityVM.updateEditMessageFieldMode(false)
-
-                                MainActivity.fm.editPrMessage( "text" , messageItem!! , message.text , FirebaseManager.P1 , room = room!!)
-                            } else if (channelId == "W"){
-                                mainActivityVM.updateMessageSended(true)
-                                mainActivityVM.updateEditMessageFieldMode(false)
-
-                                if (_whisper == true){
-                                    Log.d("whisperchat" , "message sended ...")
-                                    mainActivityVM.update_whisper(false)
-                                    // ilk defa mesaj yollandı bayrağını true ayarla .... mesajı yolla ...
-                                    MainActivity.fm.writeWhisperMessage(user = user!! , "text" , message.text , mainActivityVM)
-                                } else {
-                                    MainActivity.fm.editWMessage( whisperItem!! , message.text , FirebaseManager.W_C,messageItem!! , "text")
-                                }
-
-                            }
-
-                        } else {
-                            Log.d("sendbutton :: " , "12")
+                        .constrainAs(emojiButton){
+                            top.linkTo(messageBox.top)
+                            bottom.linkTo(messageBox.bottom)
+                            end.linkTo(parent.end)
 
                         }
-                    } ,
-                    modifier = Modifier
-                        .padding(0.dp) ,
-                    border = null
-                ) {
-                    Text(text = stringResource(id = R.string.editSend))
-                }
 
-                OutlinedIconButton(
-                    onClick = {
-                        mainActivityVM.updateEditMessageFlag(false)
-                        mainActivityVM.updateEditMessageFieldMode(false)
-                        mainActivityVM.updateMessage(TextFieldValue(""))
-                    } ,
-                    modifier = Modifier
-                        .padding(0.dp),
-                    border = null ,
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Close ,
-                        contentDescription = "send" ,
+
+                )
+                {
+                    Icon(painter = painterResource(id = R.drawable.emoji_24px)
+                        , contentDescription = "" ,
                         modifier = Modifier
-
+                            .size(40.dp)
                     )
                 }
             }
+            // mesajı gönder butonu
+            if (editMessageFieldMode == false)
+            {
+
+
+
+
+                // mesajı gönder butonu
+
+                AnimatedVisibility(visible = !isEmpty ,
+                    modifier = Modifier
+                        .background(Color.Transparent)
+                        .wrapContentSize()
+                        .constrainAs(sendButton) {
+                            start.linkTo(emojiButton.end)
+                            end.linkTo(parent.end)
+                            top.linkTo(messageBox.top)
+                            bottom.linkTo(messageBox.bottom)
+                            width = Dimension.fillToConstraints
+                        }) {
+
+                    FilledIconButton(
+                        onClick = {
+                            if (!message.text.isEmpty()){
+                                Log.d("sendbutton :: " , message.text)
+
+
+                                if (channelId == "C1"){
+                                    mainActivityVM.updateMessageSended(true)
+                                    MainActivity.fm.writeMessage( "text" , message.text , FirebaseManager.C1)
+
+                                } else if (channelId == "C2") {
+                                    mainActivityVM.updateMessageSended(true)
+                                    MainActivity.fm.writeMessage( "text" , message.text , FirebaseManager.C2)
+
+                                } else if (channelId == "P1"){
+                                    mainActivityVM.updateMessageSended(true)
+                                    MainActivity.fm.writePRMessage( mainActivityVM , "text" , message.text , FirebaseManager.P1 , room = room!!)
+                                } else if (channelId == "W"){
+                                    mainActivityVM.updateMessageSended(true)
+
+                                    if (_whisper == true){
+                                        Log.d("whisperchat" , "message sended ...")
+                                        mainActivityVM.update_whisper(false)
+                                        // ilk defa mesaj yollandı bayrağını true ayarla .... mesajı yolla ...
+                                        MainActivity.fm.writeWhisperMessage(user = user!! , "text" , message.text , mainActivityVM)
+                                    } else {
+                                        MainActivity.fm.writeWMessage( whisperItem?.wuid!! , whisperItem?.wid!! , "text" , message.text)
+                                    }
+
+
+                                }
+
+                            } else {
+                                Log.d("sendbutton :: " , "12")
+
+                            }
+                        } ,
+                        modifier = Modifier
+                            .padding(0.dp)
+                            .wrapContentSize(),
+                        colors = IconButtonDefaults.filledIconButtonColors(
+                            containerColor = Color.Transparent
+                        ),
+
+                        )
+                    {
+                        Icon(
+                            imageVector = Icons.Filled.Send ,
+                            contentDescription = "send" ,
+                            modifier = Modifier
+                                .size(25.dp)
+                                .padding(start = 3.dp)
+                        )
+                    }
+                }
+
+
+
+            }
+            else {
+
+                // mesajı düzenle mesaj kutusu
+
+                Column (
+                    horizontalAlignment = Alignment.CenterHorizontally ,
+                    modifier = Modifier
+                        .constrainAs(sendButton){
+                            end.linkTo(parent.end)
+                            top.linkTo(messageBox.top)
+                            bottom.linkTo(messageBox.bottom)
+                            start.linkTo(messageBox.end)
+                        }
+
+                )
+                {
+                    TextButton(
+                        onClick = {
+                            if (!message.text.isEmpty()){
+                                Log.d("sendbutton :: " , message.text)
+
+
+                                if (channelId == "C1"){
+                                    mainActivityVM.updateMessageSended(true)
+                                    mainActivityVM.updateEditMessageFieldMode(false)
+
+                                    MainActivity.fm.editMessage( "text", message.text , messageItem!! , FirebaseManager.C1)
+
+                                } else if (channelId == "C2") {
+                                    mainActivityVM.updateMessageSended(true)
+                                    mainActivityVM.updateEditMessageFieldMode(false)
+
+                                    MainActivity.fm.editMessage( "text" , message.text , messageItem!! , FirebaseManager.C2)
+
+                                } else if (channelId == "P1"){
+                                    mainActivityVM.updateMessageSended(true)
+                                    mainActivityVM.updateEditMessageFieldMode(false)
+
+                                    MainActivity.fm.editPrMessage( "text" , messageItem!! , message.text , FirebaseManager.P1 , room = room!!)
+                                } else if (channelId == "W"){
+                                    mainActivityVM.updateMessageSended(true)
+                                    mainActivityVM.updateEditMessageFieldMode(false)
+
+                                    if (_whisper == true){
+                                        Log.d("whisperchat" , "message sended ...")
+                                        mainActivityVM.update_whisper(false)
+                                        // ilk defa mesaj yollandı bayrağını true ayarla .... mesajı yolla ...
+                                        MainActivity.fm.writeWhisperMessage(user = user!! , "text" , message.text , mainActivityVM)
+                                    } else {
+                                        MainActivity.fm.editWMessage( whisperItem!! , message.text , FirebaseManager.W_C,messageItem!! , "text")
+                                    }
+
+                                }
+
+                            } else {
+                                Log.d("sendbutton :: " , "12")
+
+                            }
+                        } ,
+                        modifier = Modifier
+                            .padding(0.dp) ,
+                        border = null
+                    ) {
+                        Text(text = stringResource(id = R.string.editSend))
+                    }
+
+                    OutlinedIconButton(
+                        onClick = {
+                            mainActivityVM.updateEditMessageFlag(false)
+                            mainActivityVM.updateEditMessageFieldMode(false)
+                            mainActivityVM.updateMessage(TextFieldValue(""))
+                        } ,
+                        modifier = Modifier
+                            .padding(0.dp),
+                        border = null ,
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Close ,
+                            contentDescription = "send" ,
+                            modifier = Modifier
+
+                        )
+                    }
+                }
+            }
+
         }
+
+
+
+
+
+
+
+
     }
+
+
 
 
 }

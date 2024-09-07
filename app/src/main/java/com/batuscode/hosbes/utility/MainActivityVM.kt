@@ -433,12 +433,11 @@ class MainActivityVM:ViewModel() {
 
 
 
+    private val _inStreamChannel = MutableStateFlow<Boolean?>(false)
+    val inStreamChannel:StateFlow<Boolean?> get() = _inStreamChannel
 
-    private val _inVoiceChannel = MutableStateFlow<Boolean?>(false)
-    val inVoiceChannel:StateFlow<Boolean?> get() = _inVoiceChannel
-
-    fun updateInVoiceChannel(state: Boolean){
-        _inVoiceChannel.value = state
+    fun updateInStreamChannel(state: Boolean){
+        _inStreamChannel.value = state
     }
 
     private val _streamChannelType = MutableStateFlow<String?>(null)
@@ -501,4 +500,22 @@ class MainActivityVM:ViewModel() {
     fun updateRandomParticipant(randomParticipant: RandomParticipant){
         _randomParticipant.value = randomParticipant
     }
+
+    /**
+     * VideoChannel refused işlemi için connect again kontrolü ...
+     * */
+    private val _VideoChannelRefused = MutableStateFlow<Boolean>(false)
+    val VideoChannelRefused: StateFlow<Boolean> get() = _VideoChannelRefused
+
+    fun update_VideoChannelRefused(value:Boolean){
+        _VideoChannelRefused.value = value
+    }
+
+    private val _VoiceChannelRefused = MutableStateFlow<Boolean>(false)
+    val VoiceChannelRefused: StateFlow<Boolean> get() = _VoiceChannelRefused
+
+    fun update_VoiceChannelRefused(value: Boolean){
+        _VoiceChannelRefused.value = value
+    }
+
 }

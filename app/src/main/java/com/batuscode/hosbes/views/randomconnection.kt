@@ -18,10 +18,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DrawerDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -153,10 +156,6 @@ fun RandomConnection(randomConnectionActivityViewModel: RandomConnectionActivity
         }
     }
 
-
-    val match by randomConnectionActivityViewModel.matched.collectAsState()
-
-
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
@@ -168,28 +167,59 @@ fun RandomConnection(randomConnectionActivityViewModel: RandomConnectionActivity
         Box (
             modifier = Modifier
                 .fillMaxSize()
-                .drawBehind {
-
-                    drawRect(color = animatedColor, style = Fill)
-                }
                 .padding(innerPadding)
 
         )
         {
-            Text(
-                text = "Senin için birileri var mı etrafa bakınıyorum." ,
-                style = TextStyle(
-                    fontFamily = FontFamily(Font(R.font.pacifico_regular)) ,
-                    textMotion = TextMotion.Animated
-                ),
+
+            ConstraintLayout(
                 modifier = Modifier
-                    .graphicsLayer {
-                        scaleX = scale
-                        scaleY = scale
-                        transformOrigin = TransformOrigin.Center
+                    .fillMaxSize()
+                    .drawBehind {
+
+                        drawRect(color = animatedColor, style = Fill)
                     }
-                    .align(Alignment.Center)
-            )
+            ) {
+
+                val (explainText , closeButton) = createRefs()
+
+
+                OutlinedIconButton(onClick = {
+                    randomConnectionActivityViewModel.update_closeActivity(true)
+                } ,
+                    border = null ,
+                    modifier = Modifier
+                        .wrapContentSize()
+                        .constrainAs(closeButton){
+                            top.linkTo(parent.top)
+                            end.linkTo(parent.end)
+
+                        }
+                ) {
+                    Icon(painter = painterResource(id = R.drawable.baseline_close_24), contentDescription = "")
+                }
+
+                Text(
+                    text = "Senin için birileri var mı etrafa bakınıyorum." ,
+                    style = TextStyle(
+                        fontFamily = FontFamily(Font(R.font.pacifico_regular)) ,
+                        textMotion = TextMotion.Animated
+                    ),
+                    modifier = Modifier
+                        .graphicsLayer {
+                            scaleX = scale
+                            scaleY = scale
+                            transformOrigin = TransformOrigin.Center
+                        }
+                        .constrainAs(explainText) {
+                            top.linkTo(closeButton.bottom)
+                            bottom.linkTo(parent.bottom)
+                            start.linkTo(parent.start)
+                            end.linkTo(parent.end)
+                        }
+                )
+            }
+
         }
 
 

@@ -121,7 +121,6 @@ class VideoChannel:JitsiMeetActivity() , JitsiMeetActivityInterface{
             }
         }
         
-        view!!.addView(corridorView)
 
         val serverURL: URL
         serverURL = URL("https://meet.recommyz.com")
@@ -224,6 +223,7 @@ class VideoChannel:JitsiMeetActivity() , JitsiMeetActivityInterface{
                 .setFeatureFlag("calender.enabled" , false)
 
                 .build()
+            view!!.addView(corridorView)
 
             join(options)
 
@@ -247,7 +247,11 @@ class VideoChannel:JitsiMeetActivity() , JitsiMeetActivityInterface{
         })
 
         videoChannelViewModel.videochannelhangup.observe(this , Observer {
-            HandleVideoChannelHangUpBroadCastAction()
+            if (it == true){
+                videoChannelViewModel.update_videochannelhangup(false)
+                mainActivityVM.update_VideoChannelRefused(true)
+                HandleVideoChannelHangUpBroadCastAction()
+            }
         })
 
     }

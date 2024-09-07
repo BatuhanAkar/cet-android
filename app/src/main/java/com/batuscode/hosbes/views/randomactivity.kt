@@ -341,6 +341,11 @@ class RandomActivity:JitsiMeetActivity() , JitsiMeetActivityInterface{
                 val uid = MainActivity.PreferenceManager?.getuidShared("uid")
                 var name = MainActivity.PreferenceManager?.getString("displayName")
                 var photo = MainActivity.PreferenceManager?.getString("photoUrl")
+
+                /**
+                 * Rastgele katılımıcını ekle ...
+                 * */
+
                 MainActivity.fm.addRandomParticipant(uid = uid!! , displayName = name!! , photoUrl = photo!!) // önce random a kaydet ...
             }
 
