@@ -75,11 +75,13 @@ fun WhisperChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel , 
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackBarHostState)},
         modifier = Modifier
+            .background(Color.White)
             .fillMaxSize()
             .padding(8.dp)
             .imePadding(),
         topBar = {
-            TopAppBar(
+            TopAppBar( modifier = Modifier
+                .background(Color.White),
                 title = {
 
                     Text(text = whisperItem?.wdisplayName!!) // degistir ...
@@ -150,6 +152,7 @@ fun WhisperChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel , 
 
 
         ConstraintLayout (modifier = Modifier
+            .background(Color.White)
             .fillMaxSize()
             .padding(innerPadding)
         ) {
@@ -162,6 +165,7 @@ fun WhisperChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel , 
             ChatFlow( mainActivityVM ,
                 chatViewModel = chatViewModel ,
                 modifier = Modifier
+                    .background(Color.White)
                     .fillMaxSize()
                     .imePadding()
                     .constrainAs(

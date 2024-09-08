@@ -73,6 +73,7 @@ class MainActivity : AppCompatActivity() {
         lateinit var permissionLauncher:ManagedActivityResultLauncher<String,Boolean>
         lateinit var mMainActivityVM: MainActivityVM
         lateinit var mChatViewModel: ChatViewModel
+        lateinit var restart:Unit
     }
 
 

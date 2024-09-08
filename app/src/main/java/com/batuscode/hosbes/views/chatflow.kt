@@ -582,6 +582,7 @@ fun MyMessage( mainActivityVM: MainActivityVM , type:String ,message: Message){
     val uploadingMediaProgress by mainActivityVM.mediaMessageProgress.collectAsState()
     val selfUid = MainActivity.PreferenceManager?.getuidShared("uid")
 
+
     Column (
         horizontalAlignment = if (message.senderId?.equals(selfUid) == true) Alignment.End else  Alignment.Start,
         modifier = Modifier
@@ -591,13 +592,16 @@ fun MyMessage( mainActivityVM: MainActivityVM , type:String ,message: Message){
             .padding(bottom = 20.dp, end = 8.5.dp)) {
         Surface (
             shape = RoundedCornerShape(10.dp) ,
-            color = colorResource(id = R.color.x),
+            color = if (message.senderId?.equals(selfUid) == true && type.equals("text")) colorResource(id = R.color.d)
+            else if (type.equals("gif")) colorResource(
+                id = R.color.white
+            ) else colorResource(id = R.color.de),
             tonalElevation = 1.dp
         ) {
 
 
-            when {
-                type.equals("text") -> {
+            when(type) {
+                "text" -> {
 
                     Text(
                         text = message.message!! ,
@@ -610,6 +614,12 @@ fun MyMessage( mainActivityVM: MainActivityVM , type:String ,message: Message){
 
 
                 }
+
+                "gif" -> {
+                    gifView(mediaId = message.message!!)
+                }
+
+
             }
 
         }

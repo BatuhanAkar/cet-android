@@ -109,6 +109,11 @@ private fun CustomTextField( chatViewModel: ChatViewModel , mainActivityVM: Main
 
     val fragmentManager by mainActivityVM.fragmentManager.collectAsState()
 
+    val WhisperChatActivityFragmentManager by mainActivityVM.WhisperChatActivityFragmentManager.collectAsState()
+
+    val inWhisper by mainActivityVM.inWhisper.collectAsState()
+
+
 
     var mediaSelected by remember {
         mutableStateOf(false)
@@ -169,58 +174,117 @@ private fun CustomTextField( chatViewModel: ChatViewModel , mainActivityVM: Main
             {
                 OutlinedIconButton(onClick = {
                     val giphyDialogFragment = GiphyDialogFragment.newInstance()
-                    if (fragmentManager != null){
-                        giphyDialogFragment.show(fragmentManager!! , "giphydialog")
 
-                        giphyDialogFragment.gifSelectionListener = object : GiphyDialogFragment.GifSelectionListener{
-                            override fun didSearchTerm(term: String) {
-                            }
+                    if (inWhisper == false){
 
-                            override fun onDismissed(selectedContentType: GPHContentType) {
-                            }
+                        if (fragmentManager != null){
+                            giphyDialogFragment.show(fragmentManager!! , "giphydialog")
 
-                            override fun onGifSelected(
-                                media: Media,
-                                searchTerm: String?,
-                                selectedContentType: GPHContentType
-                            ) {
-                                var mediaId = media.id
+                            giphyDialogFragment.gifSelectionListener = object : GiphyDialogFragment.GifSelectionListener{
+                                override fun didSearchTerm(term: String) {
+                                }
+
+                                override fun onDismissed(selectedContentType: GPHContentType) {
+                                }
+
+                                override fun onGifSelected(
+                                    media: Media,
+                                    searchTerm: String?,
+                                    selectedContentType: GPHContentType
+                                ) {
+                                    var mediaId = media.id
 
 
-                                if (channelId == "C1"){
-                                    mainActivityVM.updateMessageSended(true)
-                                    MainActivity.fm.writeMessage( "gif" , mediaId , FirebaseManager.C1)
+                                    if (channelId == "C1"){
+                                        mainActivityVM.updateMessageSended(true)
+                                        MainActivity.fm.writeMessage( "gif" , mediaId , FirebaseManager.C1)
 
-                                } else if (channelId == "C2") {
-                                    mainActivityVM.updateMessageSended(true)
-                                    MainActivity.fm.writeMessage( "gif" , mediaId , FirebaseManager.C2)
+                                    } else if (channelId == "C2") {
+                                        mainActivityVM.updateMessageSended(true)
+                                        MainActivity.fm.writeMessage( "gif" , mediaId , FirebaseManager.C2)
 
-                                } else if (channelId == "P1"){
-                                    mainActivityVM.updateMessageSended(true)
-                                    MainActivity.fm.writePRMessage( mainActivityVM , "gif" , mediaId , FirebaseManager.P1 , room = room!!)
-                                } else if (channelId == "W"){
-                                    mainActivityVM.updateMessageSended(true)
+                                    } else if (channelId == "P1"){
+                                        mainActivityVM.updateMessageSended(true)
+                                        MainActivity.fm.writePRMessage( mainActivityVM , "gif" , mediaId , FirebaseManager.P1 , room = room!!)
+                                    } else if (channelId == "W"){
+                                        mainActivityVM.updateMessageSended(true)
 
-                                    if (_whisper == true){
-                                        Log.d("whisperchat" , "message sended ...")
-                                        mainActivityVM.update_whisper(false)
-                                        // ilk defa mesaj yollandı bayrağını true ayarla .... mesajı yolla ...
-                                        MainActivity.fm.writeWhisperMessage(user = user!! , "gif" , mediaId , mainActivityVM)
-                                    } else {
-                                        MainActivity.fm.writeWMessage( whisperItem?.wuid!! , whisperItem?.wid!! , "gif" , mediaId)
+                                        if (_whisper == true){
+                                            Log.d("whisperchat" , "message sended ...")
+                                            mainActivityVM.update_whisper(false)
+                                            // ilk defa mesaj yollandı bayrağını true ayarla .... mesajı yolla ...
+                                            MainActivity.fm.writeWhisperMessage(user = user!! , "gif" , mediaId , mainActivityVM)
+                                        } else {
+                                            MainActivity.fm.writeWMessage( whisperItem?.wuid!! , whisperItem?.wid!! , "gif" , mediaId)
+                                        }
+
+
                                     }
+
+
 
 
                                 }
 
+                            }
+
+                        }
+                    } else if (inWhisper == true){
+
+                        if (WhisperChatActivityFragmentManager != null){
+                            giphyDialogFragment.show(WhisperChatActivityFragmentManager!! , "giphydialog")
+
+                            giphyDialogFragment.gifSelectionListener = object : GiphyDialogFragment.GifSelectionListener{
+                                override fun didSearchTerm(term: String) {
+                                }
+
+                                override fun onDismissed(selectedContentType: GPHContentType) {
+                                }
+
+                                override fun onGifSelected(
+                                    media: Media,
+                                    searchTerm: String?,
+                                    selectedContentType: GPHContentType
+                                ) {
+                                    var mediaId = media.id
 
 
+                                    if (channelId == "C1"){
+                                        mainActivityVM.updateMessageSended(true)
+                                        MainActivity.fm.writeMessage( "gif" , mediaId , FirebaseManager.C1)
+
+                                    } else if (channelId == "C2") {
+                                        mainActivityVM.updateMessageSended(true)
+                                        MainActivity.fm.writeMessage( "gif" , mediaId , FirebaseManager.C2)
+
+                                    } else if (channelId == "P1"){
+                                        mainActivityVM.updateMessageSended(true)
+                                        MainActivity.fm.writePRMessage( mainActivityVM , "gif" , mediaId , FirebaseManager.P1 , room = room!!)
+                                    } else if (channelId == "W"){
+                                        mainActivityVM.updateMessageSended(true)
+
+                                        if (_whisper == true){
+                                            Log.d("whisperchat" , "message sended ...")
+                                            mainActivityVM.update_whisper(false)
+                                            // ilk defa mesaj yollandı bayrağını true ayarla .... mesajı yolla ...
+                                            MainActivity.fm.writeWhisperMessage(user = user!! , "gif" , mediaId , mainActivityVM)
+                                        } else {
+                                            MainActivity.fm.writeWMessage( whisperItem?.wuid!! , whisperItem?.wid!! , "gif" , mediaId)
+                                        }
+
+
+                                    }
+
+
+
+
+                                }
 
                             }
 
                         }
-
                     }
+
                 } ,
                     border = null,
                     modifier = Modifier

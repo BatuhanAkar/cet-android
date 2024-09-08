@@ -482,6 +482,13 @@ class MainActivityVM:ViewModel() {
         _fragmentManager.value = manager
     }
 
+    private val _WhisperChatActivityFragmentManager = MutableStateFlow<FragmentManager?>(null)
+    val WhisperChatActivityFragmentManager : StateFlow<FragmentManager?> get() = _WhisperChatActivityFragmentManager
+
+    fun update_WhisperChatActivityFragmentManager(manager: FragmentManager){
+        _WhisperChatActivityFragmentManager.value = manager
+    }
+
     private val _inRandom = MutableStateFlow<Boolean>(false)
     val inRandom : MutableStateFlow<Boolean> get() = _inRandom
 

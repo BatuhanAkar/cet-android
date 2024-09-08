@@ -221,7 +221,26 @@ fun DeleteScreen(){
         ) {
             OutlinedButton(onClick = {
                 // TODO: delete account with all user data ...
-                MainActivity.fm.deleteAccounWithAllUserData()
+              //  MainActivity.fm.deleteAccounWithAllUserData()
+
+                val uid = MainActivity.PreferenceManager?.getuidShared("uid")
+
+                val data = hashMapOf(
+                    "uid" to uid
+                )
+                MainActivity.fm.functions
+                    .getHttpsCallable("deleteUserData")
+                    .call(data)
+                    .continueWith {
+
+                        if (it.isSuccessful){
+                            MainActivity.PreferenceManager?.clear()
+                        }
+
+                    }
+                    .addOnFailureListener {
+                        error -> Log.d("rmuserdata" , "kullanici silinirken hata ::: " + error.message)
+                    }
             }) {
                 Text(text = stringResource(id = R.string.deleteaccount))
             }

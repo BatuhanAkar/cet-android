@@ -2230,7 +2230,7 @@ class FirebaseManager {
             privateRoomsSizeLatch.await()
 
 
-            usersRef.document(selfUid).delete()
+                usersRef.document(selfUid).delete()
             auth.currentUser?.delete()?.addOnCompleteListener {
                 MainActivity.PreferenceManager?.clear()
             }

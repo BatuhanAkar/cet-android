@@ -48,6 +48,7 @@ class WhisperChatActivity:AppCompatActivity(){
                 val whisperChatActivityViewModel:WhisperChatActivityViewModel by viewModels()
                 mWhisperChatActivityViewModel = whisperChatActivityViewModel
 
+                MainActivity.mMainActivityVM.update_WhisperChatActivityFragmentManager(supportFragmentManager)
                 whisperChatActivityViewModel.finish.observe(this , Observer {
                     if (it == true){
                         finish()
