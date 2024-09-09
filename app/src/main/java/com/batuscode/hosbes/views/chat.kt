@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.os.Handler
 import android.util.Log
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
@@ -140,6 +141,8 @@ fun Chat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
     val VideoChannelRefused by mainActivityVM.VideoChannelRefused.collectAsState()
     val VoiceChannelRefused by mainActivityVM.VoiceChannelRefused.collectAsState()
     val streamChannelType by mainActivityVM.streamChannelType.collectAsState()
+
+    val handler = Handler()
 
 
     DisposableEffect(lifecycle) {
@@ -395,8 +398,11 @@ fun Chat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
 
                 if (VideoChannelRefused == false){
 
-                    val intent = Intent(context , VideoChannel::class.java)
-                    context.startActivity(intent)
+                    handler.postDelayed({
+
+                        val intent = Intent(context , VideoChannel::class.java)
+                        context.startActivity(intent)
+                    } , 200)
                 } else {
                     ConnectStremChannels(mainActivityVM = mainActivityVM)
                 }
