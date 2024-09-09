@@ -48,6 +48,7 @@ import com.batuscode.hosbes.utility.mainactivitylife
 import com.batuscode.hosbes.views.Authentication
 import com.batuscode.hosbes.views.Chat
 import com.batuscode.hosbes.views.DeleteAccount
+import com.batuscode.hosbes.views.EntryScreen
 import com.batuscode.hosbes.views.OutCallActivity
 import com.batuscode.hosbes.views.PrivateRoomChat
 import com.batuscode.hosbes.views.PrivateRooms
@@ -161,8 +162,10 @@ class MainActivity : AppCompatActivity() , mainactivitylife {
                     mutableStateOf(true)
                 }
 
+
                 if (session == true){
-                    mainActivityVM.connectChannel("C1")
+
+
 
 
                     authStateListener = FirebaseAuth.AuthStateListener { firebaseAuth ->
@@ -222,7 +225,7 @@ class MainActivity : AppCompatActivity() , mainactivitylife {
                 if (!splash){
 
 
-                    NavHost(navController = navController, startDestination = if (currentUser != null) "chat" else "selectUsername") {
+                    NavHost(navController = navController, startDestination = if (currentUser != null) "entryscreen" else "selectUsername") {
 
                         composable("selectUsername"){
                             SelectUsername(navController = navController , mainActivityVM = mainActivityVM)
@@ -232,6 +235,9 @@ class MainActivity : AppCompatActivity() , mainactivitylife {
                             Authentication(navController , mainActivityVM = mainActivityVM)
                         }
 
+                        composable("entryscreen"){
+                            EntryScreen(mainActivityVM = mainActivityVM)
+                        }
 
                         composable("chat"){
                             Chat(mainActivityVM , chatViewModel)

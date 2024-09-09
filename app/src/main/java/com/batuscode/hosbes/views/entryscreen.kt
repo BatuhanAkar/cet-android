@@ -41,12 +41,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import com.batuscode.hosbes.MainActivity
 import com.batuscode.hosbes.R
 import com.batuscode.hosbes.ui.theme.HoşbeşTheme
+import com.batuscode.hosbes.utility.MainActivityVM
 import com.google.android.material.button.MaterialButtonToggleGroup
 
 @Composable
-fun EntryScreen(){
+fun EntryScreen(mainActivityVM: MainActivityVM){
     val channels = listOf("Mavi Boncuk" , "Hoşbeş" , "Goygoy" , "Dırdır")
     var SelectedChannel by remember {
         mutableStateOf("Goygoy")
@@ -101,13 +103,13 @@ fun EntryScreen(){
 
                 Column(
                     modifier = Modifier
+                    
                 ) {
                     channels.forEachIndexed { index, channel ->
 
                         Row (
                             horizontalArrangement = Arrangement.SpaceBetween,
                             modifier = Modifier
-                                .padding(8.dp)
                                 .weight(1f, false)
                                 .fillMaxWidth()
                                 .background(
@@ -135,7 +137,7 @@ fun EntryScreen(){
 
                                 ) ,
                                 modifier = Modifier
-                                    .padding(4.dp)
+                                    .padding(8.dp)
 
 
                             )
@@ -147,7 +149,7 @@ fun EntryScreen(){
                                     contentDescription = "" ,
                                     tint = if (channel == SelectedChannel) Color.Black else Color.LightGray,
                                     modifier = Modifier
-                                        .padding(4.dp)
+                                        .padding(8.dp)
                                         .size(24.dp)
                                 )
                             } else if (channel == "Dırdır"){
@@ -156,7 +158,7 @@ fun EntryScreen(){
                                     contentDescription = "" ,
                                     tint = if (channel == SelectedChannel) Color.Black else Color.LightGray,
                                     modifier = Modifier
-                                        .padding(4.dp)
+                                        .padding(8.dp)
                                         .size(24.dp)
                                 )
 
@@ -166,7 +168,7 @@ fun EntryScreen(){
                                     contentDescription = "" ,
                                     tint = if (channel == SelectedChannel) Color.Black else Color.LightGray,
                                     modifier = Modifier
-                                        .padding(4.dp)
+                                        .padding(8.dp)
                                         .size(24.dp)
                                 )
                             } else if (channel == "Hoşbeş"){
@@ -175,7 +177,7 @@ fun EntryScreen(){
                                     contentDescription = "" ,
                                     tint = if (channel == SelectedChannel) Color.Black else Color.LightGray,
                                     modifier = Modifier
-                                        .padding(4.dp)
+                                        .padding(8.dp)
                                         .size(24.dp)
                                 )
                             }
@@ -193,7 +195,35 @@ fun EntryScreen(){
 
             }
 
-            FilledTonalButton(onClick = { /*TODO*/ } ,
+            FilledTonalButton(onClick = {
+
+                when(SelectedChannel){
+                    "Mavi Boncuk" -> {
+                        mainActivityVM.connectChannel("C2")
+                        MainActivity.navigate?.navigate("chat")
+
+                    }
+                    "Hoşbeş" -> {
+                        mainActivityVM.connectChannel("C1")
+                        MainActivity.navigate?.navigate("chat")
+
+                    }
+                    "Goygoy" -> {
+
+                        mainActivityVM.update_VoiceChannelRefused(false)
+                        mainActivityVM.updateInStreamChannel(true)
+                        mainActivityVM.updateSelectedChannel("Goygoy")
+                        mainActivityVM.updateStreamChannelType("video")
+                        MainActivity.navigate?.navigate("chat")
+                    }
+                    "Dırdır" -> {
+                        mainActivityVM.connectChannel("Dırdır")
+                        MainActivity.navigate?.navigate("chat")
+                    }
+                }
+
+
+            } ,
                 border = null , 
                 shape = RoundedCornerShape(16.dp) , 
                 colors = ButtonDefaults.filledTonalButtonColors(
@@ -213,6 +243,10 @@ fun EntryScreen(){
             
             Text(
                 text = explainChannel(choice = SelectedChannel) ,
+                style = TextStyle(
+                    fontFamily = FontFamily(Font(R.font.pacifico_regular)) ,
+                    fontSize = 18.sp
+                ),
                 modifier = Modifier
                     .constrainAs(channelExplainText){
                         top.linkTo(goButton.bottom)
@@ -251,6 +285,6 @@ fun explainChannel(choice:String):String{
 @Composable
 fun EntryScreenPreview(){
     HoşbeşTheme {
-        EntryScreen()
+        EntryScreen(MainActivityVM())
     }
 }
