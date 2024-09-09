@@ -202,6 +202,7 @@ fun ChatFlow( mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel , mo
     LazyColumn(
         state = state,
         modifier = modifier
+            .background(Color.White)
             .imePadding()
             .fillMaxSize()
             .nestedScroll(rememberNestedScrollInteropConnection()),
@@ -283,6 +284,7 @@ fun MessageItemView(message:Message , type:String , mainActivityVM: MainActivity
 
     ConstraintLayout(
         modifier = Modifier
+            .background(Color.White)
             .fillMaxWidth()
             .wrapContentHeight()
             .imePadding()
@@ -342,9 +344,8 @@ fun MessageItemView(message:Message , type:String , mainActivityVM: MainActivity
         Surface (
             shape = RoundedCornerShape(16.dp),
             color = if (message.senderId?.equals(uid) == true && type.equals("text")) colorResource(id = R.color.d)
-            else if (type.equals("gif")) colorResource(
-                id = R.color.white
-            ) else colorResource(id = R.color.de),
+            else if (type.equals("gif")) Color.Transparent
+            else colorResource(id = R.color.de),
             modifier = Modifier
                 .padding( start = 8.dp , end = 8.dp)
                 .constrainAs(messagebody) {

@@ -61,4 +61,9 @@
     <string name="editprofilecard">Düzenle</string>
     <string name="create">Oluştur</string>
     <string name="connectagain">Tekrar bağlan</string>
+    <string name="selectlivechannelexplaintext">Sohbete başlamak için canlı kanal seç.</string>
+    <string name="textchannel">Yazı sohbet kanalı</string>
+    <string name="videostremchannel">Görüntülü sohbet kanalı</string>
+    <string name="voicestremchannel">Sesli sohbet kanalı</string>
+    <string name="selectchannel">Canlı sohbet kanllarından birini seç</string>
 </resources>

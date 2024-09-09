@@ -44,6 +44,7 @@ import com.batuscode.hosbes.utility.ParticipantsViewModel
 import com.batuscode.hosbes.utility.PreferenceManager
 import com.batuscode.hosbes.utility.SessionService
 import com.batuscode.hosbes.utility.WhisperViewModel
+import com.batuscode.hosbes.utility.mainactivitylife
 import com.batuscode.hosbes.views.Authentication
 import com.batuscode.hosbes.views.Chat
 import com.batuscode.hosbes.views.DeleteAccount
@@ -60,7 +61,7 @@ import com.bumptech.glide.request.transition.Transition
 import com.giphy.sdk.ui.Giphy
 import com.google.firebase.auth.FirebaseAuth
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity() , mainactivitylife {
 
 
     @SuppressLint("StaticFieldLeak")
@@ -73,7 +74,7 @@ class MainActivity : AppCompatActivity() {
         lateinit var permissionLauncher:ManagedActivityResultLauncher<String,Boolean>
         lateinit var mMainActivityVM: MainActivityVM
         lateinit var mChatViewModel: ChatViewModel
-        lateinit var restart:Unit
+        lateinit var mainactivitylife: mainactivitylife
     }
 
 
@@ -102,27 +103,22 @@ class MainActivity : AppCompatActivity() {
         fm.detachListenerICC()
     }
 
-    fun restartActivity(){
-        restartActivity()
-    }
-
-
-
-
 
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            HoşbeşTheme(false , false ) {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+
+            HoşbeşTheme{
 
                 val authViewModel: AuthViewModel = viewModel()
                 val mainActivityVM: MainActivityVM by viewModels()
                 val chatViewModel:ChatViewModel by viewModels()
                 val whisperViewModel:WhisperViewModel by viewModels()
                 mainActivityVM.updateSelectedChannel("Hoşbeş")
+
+                mainactivitylife = this
 
                 fm.loadMoreChat = false
                 mChatViewModel = chatViewModel
@@ -202,7 +198,6 @@ class MainActivity : AppCompatActivity() {
                                         }
 
                                         override fun onLoadCleared(placeholder: Drawable?) {
-                                            TODO("Not yet implemented")
                                         }
 
                                     })
@@ -262,7 +257,7 @@ class MainActivity : AppCompatActivity() {
                         }
 
                         composable("deleteaccount"){
-                            DeleteAccount(mainActivityVM)
+                            DeleteAccount(mainActivityVM , mainactivitylife = mainactivitylife)
                         }
 
                     }
@@ -307,6 +302,12 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+    }
+
+    override fun restart() {
+        val intent = Intent(this , MainActivity::class.java)
+        finish()
+        startActivity(intent)
     }
 
 }

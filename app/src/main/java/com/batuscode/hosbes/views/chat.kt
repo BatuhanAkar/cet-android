@@ -345,6 +345,7 @@ fun Chat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
 
     Scaffold(
         modifier = Modifier
+            .background(Color.White)
             .fillMaxSize()
             .padding(8.dp)
             .imePadding(),
@@ -453,6 +454,8 @@ fun ChatUI(chatViewModel: ChatViewModel , mainActivityVM: MainActivityVM , inner
     val messageSended by mainActivityVM.messageSended.collectAsState()
     ConstraintLayout (modifier = Modifier
         .fillMaxSize()
+        .background(Color.White)
+        .imePadding()
         .padding(innerPadding)
     ) {
 

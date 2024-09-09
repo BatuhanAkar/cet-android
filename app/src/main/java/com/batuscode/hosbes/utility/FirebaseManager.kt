@@ -2322,14 +2322,14 @@ class FirebaseManager {
             usersRef.document(selfUid!!).delete()
             auth.currentUser?.delete()?.addOnCompleteListener {
                 MainActivity.PreferenceManager?.clear()
-                MainActivity().restartActivity()
+             //   MainActivity().restartActivity()
             }
 
         } else {
             usersRef.document(selfUid!!).delete()
             auth.currentUser?.delete()?.addOnCompleteListener {
                 MainActivity.PreferenceManager?.clear()
-                MainActivity().restartActivity()
+              //  MainActivity().restartActivity()
             }
         }
 
