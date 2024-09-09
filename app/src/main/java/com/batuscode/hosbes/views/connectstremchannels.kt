@@ -11,6 +11,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -29,6 +30,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
@@ -61,35 +63,11 @@ fun ConnectStremChannels(mainActivityVM: MainActivityVM){
 
     val lifecycle = LocalLifecycleOwner.current
 
-    DisposableEffect(lifecycle) {
-        val observer = LifecycleEventObserver{
-            _, event ->
-            when(event){
-                Lifecycle.Event.ON_CREATE -> {
-
-                }
-                Lifecycle.Event.ON_START -> {}
-                Lifecycle.Event.ON_RESUME -> {}
-                Lifecycle.Event.ON_PAUSE -> {}
-                Lifecycle.Event.ON_STOP -> {}
-                Lifecycle.Event.ON_DESTROY -> {}
-                Lifecycle.Event.ON_ANY -> {}
-            }
-        }
-
-        lifecycle.lifecycle.addObserver(observer)
-
-        onDispose {
-            lifecycle.lifecycle.removeObserver(observer)
-        }
-
-    }
-
-
 
     Column( verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxSize()
+            .background(Color.White)
     ) {
         
         if (showMore == true){

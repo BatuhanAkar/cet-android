@@ -397,12 +397,8 @@ fun Chat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
             if (streamChannelType == "video"){
 
                 if (VideoChannelRefused == false){
-
-                    handler.postDelayed({
-
-                        val intent = Intent(context , VideoChannel::class.java)
-                        context.startActivity(intent)
-                    } , 200)
+                    val intent = Intent(context , VideoChannel::class.java)
+                    context.startActivity(intent)
                 } else {
                     ConnectStremChannels(mainActivityVM = mainActivityVM)
                 }

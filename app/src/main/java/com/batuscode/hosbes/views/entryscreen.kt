@@ -63,6 +63,7 @@ fun EntryScreen(mainActivityVM: MainActivityVM){
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
+                .background(Color.White)
         )
         {
 
@@ -214,11 +215,20 @@ fun EntryScreen(mainActivityVM: MainActivityVM){
                         mainActivityVM.updateInStreamChannel(true)
                         mainActivityVM.updateSelectedChannel("Goygoy")
                         mainActivityVM.updateStreamChannelType("video")
+                        MainActivity.navigate?.clearBackStack("entryscreen")
                         MainActivity.navigate?.navigate("chat")
+
                     }
                     "Dırdır" -> {
-                        mainActivityVM.connectChannel("Dırdır")
+
+                        mainActivityVM.update_VideoChannelRefused(false)
+                        mainActivityVM.updateInStreamChannel(true)
+                        mainActivityVM.updateSelectedChannel("Dırdır")
+                        mainActivityVM.updateStreamChannelType("voice")
+                        mainActivityVM.updateChannelName("Dırdır")
+                        MainActivity.navigate?.clearBackStack("entryscreen")
                         MainActivity.navigate?.navigate("chat")
+
                     }
                 }
 
