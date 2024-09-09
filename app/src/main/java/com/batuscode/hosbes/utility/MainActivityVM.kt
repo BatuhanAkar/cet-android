@@ -24,10 +24,10 @@ import java.util.Date
 import java.util.Locale
 
 class MainActivityVM:ViewModel() {
-
-
-    companion object {
-        val self = MainActivityVM()
+    private val _AppUpdated = MutableStateFlow<Boolean?>(false)
+    val AppUpdated : StateFlow<Boolean?> get() = _AppUpdated
+    fun update_AppUpdated(value: Boolean){
+        _AppUpdated.value = value
     }
 
     private val _loadingChat = MutableStateFlow<Boolean>(false)

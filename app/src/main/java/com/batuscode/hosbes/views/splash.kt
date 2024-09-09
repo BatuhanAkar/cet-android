@@ -45,7 +45,9 @@ fun SplashScreen(){
         isVisible = true
     }
     Scaffold (
-        modifier = Modifier.fillMaxSize().background(Color.White)
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
     ) {
             innerPadding ->
 

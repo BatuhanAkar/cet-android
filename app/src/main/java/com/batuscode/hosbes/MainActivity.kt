@@ -11,7 +11,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
@@ -20,7 +19,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -55,10 +53,10 @@ import com.batuscode.hosbes.views.PrivateRooms
 import com.batuscode.hosbes.views.SelectUsername
 import com.batuscode.hosbes.views.SplashScreen
 import com.batuscode.hosbes.views.Whisper
-import com.batuscode.hosbes.views.WhisperChat
 import com.batuscode.hosbes.views._WhisperChat
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
+import com.giphy.sdk.core.BuildConfig
 import com.giphy.sdk.ui.Giphy
 import com.google.firebase.auth.FirebaseAuth
 
@@ -119,6 +117,8 @@ class MainActivity : AppCompatActivity() , mainactivitylife {
                 val whisperViewModel:WhisperViewModel by viewModels()
                 mainActivityVM.updateSelectedChannel("Hoşbeş")
 
+                val appUpdated by mainActivityVM.AppUpdated.collectAsState()
+
                 mainactivitylife = this
 
                 fm.loadMoreChat = false
@@ -175,7 +175,6 @@ class MainActivity : AppCompatActivity() , mainactivitylife {
 
                                 authViewModel.updateUser(it)
 
-
                                 FirebaseManager.currentUser = firebaseAuth.currentUser
 
                                 var displayName = FirebaseManager.currentUser?.displayName
@@ -217,10 +216,7 @@ class MainActivity : AppCompatActivity() , mainactivitylife {
 
                     FirebaseManager.auth.addAuthStateListener(authStateListener)
                 }
-
-                handler.postDelayed({
-                    splash = false
-                                    },5000)
+                handler.postDelayed({splash = false},5000)
 
                 if (!splash){
 
