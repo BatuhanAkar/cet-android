@@ -39,16 +39,19 @@
 
         <activity
             android:name=".views.RandomActivity"
+            android:launchMode="singleTask"
             android:theme="@style/JitsiMeetActivityStyle"
             android:exported="false" />
 
         <activity
             android:name=".views.InCallActivity"
+            android:launchMode="singleTask"
             android:theme="@style/JitsiMeetActivityStyle"
             android:exported="false" />
 
         <activity
             android:name=".views.OutCallActivity"
+            android:launchMode="singleTask"
             android:theme="@style/JitsiMeetActivityStyle"
             android:exported="false" />
 

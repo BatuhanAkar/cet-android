@@ -23,6 +23,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -77,6 +78,7 @@ fun PrivateRoomsFlow( mainActivityVM: MainActivityVM , privateRoomsViewModel: Pr
     LazyColumn ( verticalArrangement = Arrangement.spacedBy(8.dp),
         modifier = Modifier
             .fillMaxSize()
+            .background(Color.White)
             .padding(paddingValues)
     ){
 
@@ -88,6 +90,7 @@ fun PrivateRoomsFlow( mainActivityVM: MainActivityVM , privateRoomsViewModel: Pr
 
                 Row ( horizontalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier
+                        .background(Color.White)
                         .fillMaxWidth()
                 ){
 
@@ -133,8 +136,12 @@ fun Room(room: PrivateRoom , mainActivityVM: MainActivityVM){
             }
 
         } ,
+        colors = CardDefaults.elevatedCardColors(
+            containerColor = Color.White
+        ),
         modifier = Modifier
             .wrapContentWidth()
+
             .padding(8.5.dp)
 
     ) {
@@ -142,6 +149,7 @@ fun Room(room: PrivateRoom , mainActivityVM: MainActivityVM){
         ConstraintLayout (
             modifier = Modifier
                 .wrapContentWidth()
+                .background(Color.White)
 
         ) {
 
@@ -196,7 +204,7 @@ fun Room(room: PrivateRoom , mainActivityVM: MainActivityVM){
                 Image(
                     painter = painterResource(id = R.drawable.image_gallery),
                     contentDescription = "" ,
-                    contentScale = ContentScale.Fit,
+                    contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .constrainAs(roomImage) {
                             top.linkTo(parent.top)

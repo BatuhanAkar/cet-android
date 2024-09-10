@@ -45,6 +45,7 @@ import com.batuscode.hosbes.MainActivity
 import com.batuscode.hosbes.R
 import com.batuscode.hosbes.ui.theme.HoşbeşTheme
 import com.batuscode.hosbes.utility.MainActivityVM
+import com.giphy.sdk.core.BuildConfig
 import com.google.android.material.button.MaterialButtonToggleGroup
 
 @Composable
@@ -53,135 +54,140 @@ fun EntryScreen(mainActivityVM: MainActivityVM){
     var SelectedChannel by remember {
         mutableStateOf("Goygoy")
     }
+    var appVerification by remember {
+        mutableStateOf<Boolean>(true)
+    }
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
     ) {
         innerPadding ->
 
-        ConstraintLayout(
-            modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxSize()
-                .background(Color.White)
-        )
-        {
+        if (appVerification){
 
-            val (channelList , explainPage , goButton , channelExplainText) = createRefs()
-
-
-            Text(
-                text = stringResource(id = R.string.selectlivechannelexplaintext) ,
-                style = TextStyle(
-                    fontFamily = FontFamily(Font(R.font.pacifico_regular)) ,
-                    fontSize = 18.sp
-                ),
+            ConstraintLayout(
                 modifier = Modifier
-                    .padding(bottom = 8.dp)
-                    .constrainAs(explainPage) {
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                        bottom.linkTo(channelList.top)
-                    }
-            )
-
-
-            Surface(
-                shape = RoundedCornerShape(16.dp),
-                shadowElevation = 8.dp ,
-                color = Color.White,
-                modifier = Modifier
-                    .wrapContentHeight()
-                    .width(200.dp)
-                    .constrainAs(channelList) {
-                        top.linkTo(parent.top)
-                        bottom.linkTo(parent.bottom)
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                    }
+                    .padding(innerPadding)
+                    .fillMaxSize()
+                    .background(Color.White)
             )
             {
 
-                Column(
+                val (channelList , explainPage , goButton , channelExplainText) = createRefs()
+
+
+                Text(
+                    text = stringResource(id = R.string.selectlivechannelexplaintext) ,
+                    style = TextStyle(
+                        fontFamily = FontFamily(Font(R.font.pacifico_regular)) ,
+                        fontSize = 18.sp
+                    ),
                     modifier = Modifier
-                    
-                ) {
-                    channels.forEachIndexed { index, channel ->
-
-                        Row (
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            modifier = Modifier
-                                .weight(1f, false)
-                                .fillMaxWidth()
-                                .background(
-                                    color = if (channel == SelectedChannel) Color.LightGray.copy(
-                                        0.2f
-                                    ) else Color.Transparent
-                                )
-                                .clickable {
-                                    Log.d("textClicked", "ok:::")
-                                    SelectedChannel = channel
-                                    //  selected = true
-                                    //  isExpanded = false
-                                },
-                            verticalAlignment = Alignment.CenterVertically ,
-                        ) {
+                        .padding(bottom = 8.dp)
+                        .constrainAs(explainPage) {
+                            start.linkTo(parent.start)
+                            end.linkTo(parent.end)
+                            bottom.linkTo(channelList.top)
+                        }
+                )
 
 
+                Surface(
+                    shape = RoundedCornerShape(16.dp),
+                    shadowElevation = 8.dp ,
+                    color = Color.White,
+                    modifier = Modifier
+                        .wrapContentHeight()
+                        .width(200.dp)
+                        .constrainAs(channelList) {
+                            top.linkTo(parent.top)
+                            bottom.linkTo(parent.bottom)
+                            start.linkTo(parent.start)
+                            end.linkTo(parent.end)
+                        }
+                )
+                {
 
-                            Text(
-                                text = channel ,
-                                  color = if (channel == SelectedChannel) Color.Black else Color.LightGray ,
-                                style = TextStyle(
-                                    fontFamily = FontFamily(Font(R.font.pacifico_regular)) ,
-                                    fontSize = 23.sp
+                    Column(
+                        modifier = Modifier
 
-                                ) ,
+                    ) {
+                        channels.forEachIndexed { index, channel ->
+
+                            Row (
+                                horizontalArrangement = Arrangement.SpaceBetween,
                                 modifier = Modifier
-                                    .padding(8.dp)
+                                    .weight(1f, false)
+                                    .fillMaxWidth()
+                                    .background(
+                                        color = if (channel == SelectedChannel) Color.LightGray.copy(
+                                            0.2f
+                                        ) else Color.Transparent
+                                    )
+                                    .clickable {
+                                        Log.d("textClicked", "ok:::")
+                                        SelectedChannel = channel
+                                        //  selected = true
+                                        //  isExpanded = false
+                                    },
+                                verticalAlignment = Alignment.CenterVertically ,
+                            ) {
 
 
-                            )
 
+                                Text(
+                                    text = channel ,
+                                    color = if (channel == SelectedChannel) Color.Black else Color.LightGray ,
+                                    style = TextStyle(
+                                        fontFamily = FontFamily(Font(R.font.pacifico_regular)) ,
+                                        fontSize = 23.sp
 
-                            if (channel == "Goygoy"){
-                                Icon(
-                                    painter = painterResource(id = R.drawable.video_chat_24px) ,
-                                    contentDescription = "" ,
-                                    tint = if (channel == SelectedChannel) Color.Black else Color.LightGray,
+                                    ) ,
                                     modifier = Modifier
                                         .padding(8.dp)
-                                        .size(24.dp)
-                                )
-                            } else if (channel == "Dırdır"){
-                                Icon(
-                                    painter = painterResource(id = R.drawable.voice_chat_24px) ,
-                                    contentDescription = "" ,
-                                    tint = if (channel == SelectedChannel) Color.Black else Color.LightGray,
-                                    modifier = Modifier
-                                        .padding(8.dp)
-                                        .size(24.dp)
+
+
                                 )
 
-                            } else if (channel == "Mavi Boncuk"){
-                                Icon(
-                                    painter = painterResource(id = R.drawable.chat_24px) ,
-                                    contentDescription = "" ,
-                                    tint = if (channel == SelectedChannel) Color.Black else Color.LightGray,
-                                    modifier = Modifier
-                                        .padding(8.dp)
-                                        .size(24.dp)
-                                )
-                            } else if (channel == "Hoşbeş"){
-                                Icon(
-                                    painter = painterResource(id = R.drawable.chat_24px) ,
-                                    contentDescription = "" ,
-                                    tint = if (channel == SelectedChannel) Color.Black else Color.LightGray,
-                                    modifier = Modifier
-                                        .padding(8.dp)
-                                        .size(24.dp)
-                                )
-                            }
+
+                                if (channel == "Goygoy"){
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.video_chat_24px) ,
+                                        contentDescription = "" ,
+                                        tint = if (channel == SelectedChannel) Color.Black else Color.LightGray,
+                                        modifier = Modifier
+                                            .padding(8.dp)
+                                            .size(24.dp)
+                                    )
+                                } else if (channel == "Dırdır"){
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.voice_chat_24px) ,
+                                        contentDescription = "" ,
+                                        tint = if (channel == SelectedChannel) Color.Black else Color.LightGray,
+                                        modifier = Modifier
+                                            .padding(8.dp)
+                                            .size(24.dp)
+                                    )
+
+                                } else if (channel == "Mavi Boncuk"){
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.chat_24px) ,
+                                        contentDescription = "" ,
+                                        tint = if (channel == SelectedChannel) Color.Black else Color.LightGray,
+                                        modifier = Modifier
+                                            .padding(8.dp)
+                                            .size(24.dp)
+                                    )
+                                } else if (channel == "Hoşbeş"){
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.chat_24px) ,
+                                        contentDescription = "" ,
+                                        tint = if (channel == SelectedChannel) Color.Black else Color.LightGray,
+                                        modifier = Modifier
+                                            .padding(8.dp)
+                                            .size(24.dp)
+                                    )
+                                }
 //
 //                                Spacer(modifier = Modifier.padding(10.dp))
 //
@@ -189,84 +195,155 @@ fun EntryScreen(mainActivityVM: MainActivityVM){
 
 
 
+                            }
+                        }
+
+                    }
+
+                }
+
+                FilledTonalButton(onClick = {
+
+                    when(SelectedChannel){
+                        "Mavi Boncuk" -> {
+                            val data = hashMapOf(
+                                "version" to BuildConfig.VERSION_CODE
+                            )
+
+                            MainActivity.fm
+                                .functions.getHttpsCallable("checkAppVersion")
+                                .call(data)
+                                .continueWith {
+                                    val verification = it.result?.data as Boolean
+
+                                    if (verification){
+
+                                        mainActivityVM.connectChannel("C2")
+                                        MainActivity.navigate?.navigate("chat")
+                                    } else {
+                                        appVerification = verification
+                                    }
+                                    Log.d("checkAppversion" , "app verification :: " + verification)
+                                }
+
+                        }
+                        "Hoşbeş" -> {
+
+                            val data = hashMapOf(
+                                "version" to BuildConfig.VERSION_CODE
+                            )
+
+                            MainActivity.fm
+                                .functions.getHttpsCallable("checkAppVersion")
+                                .call(data)
+                                .continueWith {
+                                    val verification = it.result?.data as Boolean
+
+                                    if (verification){
+
+                                        mainActivityVM.connectChannel("C1")
+                                        MainActivity.navigate?.navigate("chat")
+                                    } else {
+                                        appVerification = verification
+                                    }
+                                    Log.d("checkAppversion" , "app verification :: " + verification)
+                                }
+
+                        }
+                        "Goygoy" -> {
+
+                            val data = hashMapOf(
+                                "version" to BuildConfig.VERSION_CODE
+                            )
+
+                            MainActivity.fm
+                                .functions.getHttpsCallable("checkAppVersion")
+                                .call(data)
+                                .continueWith {
+                                    val verification = it.result?.data as Boolean
+
+                                    if (verification){
+                                        mainActivityVM.update_VoiceChannelRefused(false)
+                                        mainActivityVM.updateInStreamChannel(true)
+                                        mainActivityVM.updateSelectedChannel("Goygoy")
+                                        mainActivityVM.updateStreamChannelType("video")
+                                        MainActivity.navigate?.clearBackStack("entryscreen")
+                                        MainActivity.navigate?.navigate("chat")
+                                    } else {
+                                        appVerification = verification
+                                    }
+                                    Log.d("checkAppversion" , "app verification :: " + verification)
+                                }
+
+                        }
+                        "Dırdır" -> {
+
+                            val data = hashMapOf(
+                                "version" to BuildConfig.VERSION_CODE
+                            )
+
+                            MainActivity.fm
+                                .functions.getHttpsCallable("checkAppVersion")
+                                .call(data)
+                                .continueWith {
+                                    val verification = it.result?.data as Boolean
+
+                                    if (verification){
+                                        mainActivityVM.update_VideoChannelRefused(false)
+                                        mainActivityVM.updateInStreamChannel(true)
+                                        mainActivityVM.updateSelectedChannel("Dırdır")
+                                        mainActivityVM.updateStreamChannelType("voice")
+                                        mainActivityVM.updateChannelName("Dırdır")
+                                        MainActivity.navigate?.clearBackStack("entryscreen")
+                                        MainActivity.navigate?.navigate("chat")
+                                    } else {
+                                        appVerification = verification
+                                    }
+                                    Log.d("checkAppversion" , "app verification :: " + verification)
+                                }
+
                         }
                     }
 
+
+                } ,
+                    border = null ,
+                    shape = RoundedCornerShape(16.dp) ,
+                    colors = ButtonDefaults.filledTonalButtonColors(
+                        containerColor = colorResource(id = R.color.blue)
+                    ) ,
+                    modifier = Modifier
+                        .padding(top = 8.dp)
+                        .width(200.dp)
+                        .constrainAs(goButton) {
+                            top.linkTo(channelList.bottom)
+                            start.linkTo(parent.start)
+                            end.linkTo(parent.end)
+                        }
+                ) {
+                    Icon(imageVector = Icons.Filled.ArrowForward, contentDescription = "")
                 }
 
-            }
-
-            FilledTonalButton(onClick = {
-
-                when(SelectedChannel){
-                    "Mavi Boncuk" -> {
-                        mainActivityVM.connectChannel("C2")
-                        MainActivity.navigate?.navigate("chat")
-
-                    }
-                    "Hoşbeş" -> {
-                        mainActivityVM.connectChannel("C1")
-                        MainActivity.navigate?.navigate("chat")
-
-                    }
-                    "Goygoy" -> {
-
-                        mainActivityVM.update_VoiceChannelRefused(false)
-                        mainActivityVM.updateInStreamChannel(true)
-                        mainActivityVM.updateSelectedChannel("Goygoy")
-                        mainActivityVM.updateStreamChannelType("video")
-                        MainActivity.navigate?.clearBackStack("entryscreen")
-                        MainActivity.navigate?.navigate("chat")
-
-                    }
-                    "Dırdır" -> {
-
-                        mainActivityVM.update_VideoChannelRefused(false)
-                        mainActivityVM.updateInStreamChannel(true)
-                        mainActivityVM.updateSelectedChannel("Dırdır")
-                        mainActivityVM.updateStreamChannelType("voice")
-                        mainActivityVM.updateChannelName("Dırdır")
-                        MainActivity.navigate?.clearBackStack("entryscreen")
-                        MainActivity.navigate?.navigate("chat")
-
-                    }
-                }
-
-
-            } ,
-                border = null , 
-                shape = RoundedCornerShape(16.dp) , 
-                colors = ButtonDefaults.filledTonalButtonColors(
-                    containerColor = colorResource(id = R.color.blue)
-                ) ,
-                modifier = Modifier
-                    .padding(top = 8.dp)
-                    .width(200.dp)
-                    .constrainAs(goButton) {
-                        top.linkTo(channelList.bottom)
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                    }
-            ) {
-                Icon(imageVector = Icons.Filled.ArrowForward, contentDescription = "")
-            }
-            
-            Text(
-                text = explainChannel(choice = SelectedChannel) ,
-                style = TextStyle(
-                    fontFamily = FontFamily(Font(R.font.pacifico_regular)) ,
-                    fontSize = 18.sp
-                ),
-                modifier = Modifier
-                    .constrainAs(channelExplainText){
-                        top.linkTo(goButton.bottom)
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                    }
+                Text(
+                    text = explainChannel(choice = SelectedChannel) ,
+                    style = TextStyle(
+                        fontFamily = FontFamily(Font(R.font.pacifico_regular)) ,
+                        fontSize = 18.sp
+                    ),
+                    modifier = Modifier
+                        .constrainAs(channelExplainText){
+                            top.linkTo(goButton.bottom)
+                            start.linkTo(parent.start)
+                            end.linkTo(parent.end)
+                        }
                 )
 
 
+            }
+        } else {
+            Buy()
         }
+
     }
 }
 
@@ -289,6 +366,13 @@ fun explainChannel(choice:String):String{
         else -> return stringResource(id = R.string.selectchannel)
     }
     
+}
+
+@Composable
+fun Buy(){
+    Column {
+        Text(text = "buy")
+    }
 }
 
 @Preview(showBackground = true , showSystemUi = true)

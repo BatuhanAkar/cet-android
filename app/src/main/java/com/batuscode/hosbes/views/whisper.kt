@@ -14,6 +14,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
@@ -98,6 +99,9 @@ fun Whisper(mainActivityVM: MainActivityVM , whisperViewModel: WhisperViewModel)
             .imePadding(),
         topBar = {
             TopAppBar(
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.White
+                ),
                 title = {
 
                     Text(text = stringResource(id = R.string.hosbeslerim))
@@ -121,6 +125,7 @@ fun Whisper(mainActivityVM: MainActivityVM , whisperViewModel: WhisperViewModel)
 
         Column(
             modifier = Modifier
+                .background(Color.White)
                 .padding(innerPadding)
         ) {
             
@@ -131,6 +136,7 @@ fun Whisper(mainActivityVM: MainActivityVM , whisperViewModel: WhisperViewModel)
                 whisperViewModel = whisperViewModel ,
                 mainActivityVM = mainActivityVM ,
                 modifier = Modifier
+                    .background(Color.White)
                     .fillMaxSize()
                     .imePadding()
             )

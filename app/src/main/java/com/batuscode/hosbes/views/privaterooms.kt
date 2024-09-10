@@ -2,6 +2,7 @@ package com.batuscode.hosbes.views
 
 import android.util.Log
 import androidx.activity.viewModels
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
@@ -15,11 +16,13 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -81,6 +84,9 @@ fun PrivateRooms(mainActivityVM: MainActivityVM){
     Scaffold (
         topBar = {
                  TopAppBar(
+                     colors = TopAppBarDefaults.topAppBarColors(
+                         containerColor = Color.White
+                     ),
                      title = {
 
                              Text(text = stringResource(id = R.string.privaterooms))
@@ -113,6 +119,7 @@ fun PrivateRooms(mainActivityVM: MainActivityVM){
         },
         modifier = Modifier
             .fillMaxSize()
+            .background(Color.White)
     ){
 
 

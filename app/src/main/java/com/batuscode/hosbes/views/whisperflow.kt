@@ -7,6 +7,7 @@ import android.graphics.drawable.Drawable
 import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -98,6 +99,7 @@ fun WhisperView(whisper: Whisper , mainActivityVM: MainActivityVM){
     ConstraintLayout(
         modifier = Modifier
             .fillMaxWidth()
+            .background(Color.White)
             .padding(8.dp)
             .combinedClickable(
                 onClick = {
@@ -173,6 +175,7 @@ fun WhisperView(whisper: Whisper , mainActivityVM: MainActivityVM){
             verticalArrangement = Arrangement.Center,
             modifier = Modifier
                 .fillMaxWidth()
+                .background(Color.White)
                 .padding(start = 9.dp)
                 .constrainAs(explainlayout) {
                     start.linkTo(profileImage.end)
@@ -196,6 +199,7 @@ fun WhisperView(whisper: Whisper , mainActivityVM: MainActivityVM){
 
             ConstraintLayout(
                 modifier = Modifier
+                    .background(Color.White)
                     .fillMaxWidth()
             )
             {

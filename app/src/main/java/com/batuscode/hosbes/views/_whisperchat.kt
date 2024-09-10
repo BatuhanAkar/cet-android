@@ -14,6 +14,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
@@ -116,10 +117,14 @@ fun _WhisperChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
 
         modifier = Modifier
             .fillMaxSize()
+            .background(Color.White)
             .padding(8.dp)
             .imePadding(),
         topBar = {
             TopAppBar(
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.White
+                ),
                 title = {
                     Text(
                         text = stringResource(id = R.string.whisper) + " " + user?.displayName
@@ -143,6 +148,7 @@ fun _WhisperChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
     { innerPadding ->
         ConstraintLayout (modifier = Modifier
             .fillMaxSize()
+            .background(Color.White)
             .padding(innerPadding)
         ) {
             val (messageRecyclerView , messageTextField) = createRefs()
@@ -153,6 +159,7 @@ fun _WhisperChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
                 chatViewModel = chatViewModel ,
                 modifier = Modifier
                     .fillMaxSize()
+                    .background(Color.White)
                     .imePadding()
                     .constrainAs(
                         messageRecyclerView

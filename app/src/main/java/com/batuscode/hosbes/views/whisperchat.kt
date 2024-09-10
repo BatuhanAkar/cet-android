@@ -21,6 +21,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -80,8 +81,10 @@ fun WhisperChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel , 
             .padding(8.dp)
             .imePadding(),
         topBar = {
-            TopAppBar( modifier = Modifier
-                .background(Color.White),
+            TopAppBar(
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.White
+                ),
                 title = {
 
                     Text(text = whisperItem?.wdisplayName!!) // degistir ...
