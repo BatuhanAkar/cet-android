@@ -152,37 +152,7 @@ fun Authentication(navController: NavController , mainActivityVM: MainActivityVM
     val signUpComplated by mainActivityVM.signUpC.collectAsState()
 
     val photoUrl by mainActivityVM.photoUrl.collectAsState()
-
-    val verifyCallback =  object : PhoneAuthProvider.OnVerificationStateChangedCallbacks(){
-
-        override fun onCodeSent(verificationId: String, forceResendingToken: PhoneAuthProvider.ForceResendingToken) {
-            super.onCodeSent(verificationId, forceResendingToken)
-            Log.d("verifyphonenumber" , "onCodeSent :: " + "verfyId :: " + verificationId
-                    + " fores :: " + forceResendingToken)
-
-
-            codeFieldEnabled = true
-            codeSended = true
-            vId = verificationId
-
-
-
-        }
-
-        override fun onVerificationCompleted(p0: PhoneAuthCredential) {
-
-            Log.d("verifyphonenumber" , "verifcation is complated...")
-        }
-
-        override fun onVerificationFailed(p0: FirebaseException) {
-
-        }
-
-    }
-
-
     // profil resmi yüklendiyse kullanıcı verilerini yaz ...
-
 
     if (uploadComplated == true){
         mainActivityVM.uploadComlated(false)
@@ -259,30 +229,6 @@ fun Authentication(navController: NavController , mainActivityVM: MainActivityVM
                     modifier = Modifier.padding(top = 30.dp)
                 )
 
-               /* // verification code textfield
-                OutlinedTextField(value = verificationCode, onValueChange = {newText ->
-
-                    // verification code length equal 6 enable button
-                    if (newText.text.length <= 6){
-                        verificationCode = newText
-                        if (verificationCode.text.length == 6){
-                            createButtonEnable = true
-                        }
-                    }
-
-                } ,
-                    keyboardOptions = KeyboardOptions.Default.copy(
-                        keyboardType = KeyboardType.Phone
-                    ),
-                    enabled = codeFieldEnabled,
-                    isError = isErrorPhoneNumber,
-                    placeholder = { Text(text = stringResource(id = R.string.verificationCode)) },
-                    singleLine = true ,
-                    shape = RoundedCornerShape(12.5.dp),
-                    modifier = Modifier.padding(top = 8.5.dp)
-                )
-
-*/
                 Box {
                     OutlinedButton(onClick = { /*TODO: go button authentication*/
 
@@ -336,11 +282,10 @@ fun Authentication(navController: NavController , mainActivityVM: MainActivityVM
 
                                                     mainActivityVM.updatePhoto(imageBitmap)
 
-                                                    navController.navigate("chat")
+                                                    navController.navigate("entryscreen")
                                                 }
 
                                                 override fun onLoadCleared(placeholder: Drawable?) {
-                                                    TODO("Not yet implemented")
                                                 }
 
                                             })
@@ -362,105 +307,10 @@ fun Authentication(navController: NavController , mainActivityVM: MainActivityVM
                         ) {
                         Text(text = stringResource(id = R.string.signin))
                     }
-
-/*
-
-                    if (!codeSended){
-
-                        // send verification code button
-
-                        OutlinedButton(onClick = { *//*TODO: send verification code button*//*
-
-                            Log.d("authtrying" , phoneNumber.text)
-
-                            Log.d("authtrying" , verificationCode.text)
-
-                            // run function for verification code sending
-
-                            val complatedPhoneNumber = "+9${phoneNumber.text}"
-                            Log.d("complatedPhoneNumber" , complatedPhoneNumber)
-
-                            var options = MainActivity.activity?.let {activity ->
-                                PhoneAuthOptions.newBuilder(FirebaseManager.auth)
-                                    .setPhoneNumber(complatedPhoneNumber)
-                                    .setTimeout(60L , TimeUnit.SECONDS)
-                                    .setActivity(activity)
-                                    .setCallbacks(verifyCallback)
-                                    .build()
-                            }
-
-                            if (options != null) {
-                                PhoneAuthProvider.verifyPhoneNumber(options)
-                            }
-                        } ,
-                            modifier = Modifier
-                                .padding(top = 15.dp)
-                                .width(200.dp) ,
-                            enabled = sendCodeButtonEnabled
-                        ) {
-                            Text(text = stringResource(id = R.string.sendverificationcode))
-                        }
-
-                    } else {
-
-                        // kullanici telefonu girdi doğrulama kodunu girdi ... buton aktifleşti önce profil resmini yükle ... sonra tam bilgileri yaz ...
-                        // go button
-                        OutlinedButton(onClick = { *//*TODO: go button authentication*//*
-
-                            val credential = PhoneAuthProvider.getCredential(vId , verificationCode.text)
-
-                            FirebaseManager.auth.signInWithCredential(credential)
-                                .addOnCompleteListener { task ->
-                                    if (task.isSuccessful){
-                                        Log.d("verifyphonenumber" , "verifcation Successful...")
-
-                                        FirebaseManager.currentUser = task.result.user
-
-                                        val uid = FirebaseManager.currentUser?.uid.toString()
-
-                                        MainActivity.PreferenceManager?.saveuid(key = "uid" , value = uid)
-
-                                        MainActivity.PreferenceManager?.saveSession(key = "session" , true)
-
-                                        // profil resmini yükle ...
-
-                                        MainActivity.fm.uploadImage(
-
-                                            MainActivity.fm.getDefaultProfileImage(
-                                                context , "352002_account_circle_icon.png") ,
-                                            mainActivityVM
-
-                                        )
-
-
-
-
-                                    } else {
-                                        Log.d("verifyphonenumber" , "verifcation not Successful...")
-                                    }
-                                }
-                        } ,
-                            modifier = Modifier
-                                .padding(top = 15.dp)
-                                .width(200.dp),
-                            enabled = createButtonEnable ,
-
-
-                            ) {
-                            Text(text = stringResource(id = R.string.signin))
-                        }
-                    }*/
-
-
-
                 }
-
             }
-
         }
     }
-
-
 
 }
 

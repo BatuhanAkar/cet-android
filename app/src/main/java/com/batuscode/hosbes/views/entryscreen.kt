@@ -274,6 +274,9 @@ fun EntryScreen(mainActivityVM: MainActivityVM){
                                     }
                                     Log.d("checkAppversion" , "app verification :: " + verification)
                                 }
+                                .addOnFailureListener {
+                                    error -> Log.d("checkAppversion" , "error :: " + error)
+                                }
 
                         }
                         "Dırdır" -> {

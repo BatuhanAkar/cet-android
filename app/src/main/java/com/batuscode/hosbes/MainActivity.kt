@@ -19,6 +19,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -105,6 +106,7 @@ class MainActivity : AppCompatActivity() , mainactivitylife {
 
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
@@ -129,7 +131,6 @@ class MainActivity : AppCompatActivity() , mainactivitylife {
 
 
                 mainActivityVM.setFragmentManager(supportFragmentManager)
-                permissionLauncher= rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission()) {}
 
                 PreferenceManager = PreferenceManager(context)
 
@@ -216,88 +217,79 @@ class MainActivity : AppCompatActivity() , mainactivitylife {
 
                     FirebaseManager.auth.addAuthStateListener(authStateListener)
                 }
-                handler.postDelayed({splash = false},5000)
-
-                if (!splash){
 
 
-                    NavHost(navController = navController, startDestination = if (currentUser != null) "entryscreen" else "selectUsername") {
+                NavHost(navController = navController, startDestination = if (currentUser != null) "entryscreen" else "selectUsername") {
 
-                        composable("selectUsername"){
-                            SelectUsername(navController = navController , mainActivityVM = mainActivityVM)
-                        }
+                    composable("selectUsername"){
+                        SelectUsername(navController = navController , mainActivityVM = mainActivityVM)
+                    }
 
-                        composable("auth"){
-                            Authentication(navController , mainActivityVM = mainActivityVM)
-                        }
+                    composable("auth"){
+                        Authentication(navController , mainActivityVM = mainActivityVM)
+                    }
 
-                        composable("entryscreen"){
-                            EntryScreen(mainActivityVM = mainActivityVM)
-                        }
+                    composable("entryscreen"){
+                        EntryScreen(mainActivityVM = mainActivityVM)
+                    }
 
-                        composable("chat"){
-                            Chat(mainActivityVM , chatViewModel)
-                        }
-
-
-                        composable("privaterooms"){
-                            Log.d("firedb" , "navigated...")
-
-                            PrivateRooms(mainActivityVM = mainActivityVM)
-                        }
-                        
-                        composable("privateroomchat"){
-                            PrivateRoomChat(mainActivityVM = mainActivityVM , chatViewModel , participantsViewModel)
-                        }
-                        
-                        composable("whisper"){
-                            Whisper(mainActivityVM = mainActivityVM, whisperViewModel = whisperViewModel)
-                        }
-
-                        composable("_whisperchat"){
-                            _WhisperChat(mainActivityVM = mainActivityVM, chatViewModel = chatViewModel)
-                        }
-
-                        composable("deleteaccount"){
-                            DeleteAccount(mainActivityVM , mainactivitylife = mainactivitylife)
-                        }
-
+                    composable("chat"){
+                        Chat(mainActivityVM , chatViewModel)
                     }
 
 
+                    composable("privaterooms"){
+                        Log.d("firedb" , "navigated...")
 
-
-
-                    if (incall == true){
-
-                        /**
-                         * arama geldiği zaman arama geçmişinin en son öğesini getir ...
-                         * */
-
-                        fm.getLastCallHistory(uid!! , mainActivityVM)
-
-                       // navigate?.navigate("ICC")
-
-                        val historycalls by mainActivityVM.Historycalls.collectAsState()
-
-                        if (historycalls != null && historycalls?.type?.equals("out") == true){
-
-                            val intent = Intent(this , OutCallActivity::class.java)
-                            intent.putExtra("type" , "ICC")
-                            intent.putExtra("wuid" , historyCallItem?.uid)
-                            intent.putExtra("wphotoUrl" , historyCallItem?.photoUrl)
-                            intent.putExtra("wdisplayName" , historyCallItem?.displayName)
-                            startActivity(intent)
-                        }
-
-
+                        PrivateRooms(mainActivityVM = mainActivityVM)
                     }
 
-                } else {
+                    composable("privateroomchat"){
+                        PrivateRoomChat(mainActivityVM = mainActivityVM , chatViewModel , participantsViewModel)
+                    }
 
-                    SplashScreen()
+                    composable("whisper"){
+                        Whisper(mainActivityVM = mainActivityVM, whisperViewModel = whisperViewModel)
+                    }
+
+                    composable("_whisperchat"){
+                        _WhisperChat(mainActivityVM = mainActivityVM, chatViewModel = chatViewModel)
+                    }
+
+                    composable("deleteaccount"){
+                        DeleteAccount(mainActivityVM , mainactivitylife = mainactivitylife)
+                    }
+
                 }
 
+
+
+
+
+                if (incall == true){
+
+                    /**
+                     * arama geldiği zaman arama geçmişinin en son öğesini getir ...
+                     * */
+
+                    fm.getLastCallHistory(uid!! , mainActivityVM)
+
+                    // navigate?.navigate("ICC")
+
+                    val historycalls by mainActivityVM.Historycalls.collectAsState()
+
+                    if (historycalls != null && historycalls?.type?.equals("out") == true){
+
+                        val intent = Intent(this , OutCallActivity::class.java)
+                        intent.putExtra("type" , "ICC")
+                        intent.putExtra("wuid" , historyCallItem?.uid)
+                        intent.putExtra("wphotoUrl" , historyCallItem?.photoUrl)
+                        intent.putExtra("wdisplayName" , historyCallItem?.displayName)
+                        startActivity(intent)
+                    }
+
+
+                }
 
 
 
