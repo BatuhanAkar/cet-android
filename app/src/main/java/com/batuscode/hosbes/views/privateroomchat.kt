@@ -34,6 +34,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarColors
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
@@ -227,24 +229,29 @@ fun PrivateRoomChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewMode
 
 
     Scaffold(
+        containerColor = Color.White,
         modifier = Modifier
             .fillMaxSize()
             .padding(8.dp)
             .imePadding(),
         topBar = {
 
-            TopAppBar(title = {
+            TopAppBar(
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.White
+                ),
+                title = {
                               Text(
                                   text = room?.roomName.toString() ,
                                   maxLines = 2 ,
 
                               )
             } , actions = {
-                IconButton(onClick = {
+                /*IconButton(onClick = {
                     mainActivityVM.updateShowRoomInfo(true)
                 }) {
                     Icon(painter = painterResource(id = R.drawable.info_24px), contentDescription = "")
-                }
+                }*/
             },
 
 

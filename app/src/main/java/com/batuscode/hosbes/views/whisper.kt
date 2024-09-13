@@ -91,9 +91,8 @@ fun Whisper(mainActivityVM: MainActivityVM , whisperViewModel: WhisperViewModel)
     }
 
     Scaffold(
-
+        containerColor = Color.White,
         modifier = Modifier
-            .background(Color.White)
             .fillMaxSize()
             .padding(8.dp)
             .imePadding(),

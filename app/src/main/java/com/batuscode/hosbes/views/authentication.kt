@@ -41,6 +41,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
@@ -178,6 +179,7 @@ fun Authentication(navController: NavController , mainActivityVM: MainActivityVM
 
 
     Scaffold (
+        containerColor = Color.White,
         modifier = Modifier
             .fillMaxSize()
             .padding(8.dp)

@@ -326,36 +326,6 @@ fun WhisperView(whisper: Whisper , mainActivityVM: MainActivityVM){
 
     }
     HorizontalDivider()
-
-
-  /*  ElevatedCard(
-        onClick = {
-            mainActivityVM.updateWhisperItem(whisper)
-            MainActivity.navigate?.navigate("whisperchat")
-
-            Log.d( "firstcall", "aramayı başlatacak kişi karşı tarafı seçti ... ")
-        } ,
-        shape = RectangleShape ,
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 5.dp
-        ),
-        colors = CardDefaults.cardColors(
-            containerColor = colorResource(id = R.color.white)
-        ),
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(80.dp)
-    ) {
-
-
-        if (showMessageOption == true){
-          //  MessageOption(mainActivityVM = mainActivityVM, chatViewModel = )
-        }
-
-        // karşı kullanıcının resmi ...
-
-
-    }*/
 }
 
 

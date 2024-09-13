@@ -225,10 +225,6 @@ fun Content(mainActivityVM: MainActivityVM){
                 val inputStream = context.contentResolver.openInputStream(it)
 
                 inputStream?.let {
-                    val options = BitmapFactory.Options().apply {
-                        inSampleSize = 4 // Görüntü boyutunu 1/4 oranında küçült
-                    }
-                  //  bitmap = BitmapFactory.decodeStream(it, null, options)
 
                     bitmap = MediaStore.Images.Media.getBitmap(context.contentResolver , uri!!)
 
@@ -245,7 +241,6 @@ fun Content(mainActivityVM: MainActivityVM){
                     val matrix = Matrix().apply { postRotate(rotation) }
 
                     if (bitmap != null) {
-                      //  newPP = bitmap?.asImageBitmap()
                        newPP =  Bitmap.createBitmap(scaledBitmap!!, 0, 0, scaledBitmap!!.width, scaledBitmap!!.height, matrix, true).asImageBitmap()
                     }
 
@@ -258,42 +253,11 @@ fun Content(mainActivityVM: MainActivityVM){
                 }
                 Log.d("pickerResult" , "path :: " + it)
 
-
-
-
-             /*   Glide.with(context)
-                    .asBitmap()
-                    .load(it)
-                    .into(object:CustomTarget<Bitmap>(){
-                        override fun onResourceReady(
-                            resource: Bitmap,
-                            transition: Transition<in Bitmap>?
-                        ) {
-                            var bitmap = resource.asImageBitmap()
-
-                            mainActivityVM.updatenewPhoto(resource)
-                            newPP = bitmap
-                            changeImage = true
-
-                        }
-
-                        override fun onLoadCleared(placeholder: Drawable?) {
-                        }
-
-
-                    })*/
-
             }
-
         }
-
-
-
     }
 
     val requestPermissions = rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
-        // Handle permission requests results
-        // See the permission example in the Android platform samples: https://github.com/android/platform-samples
         permissions.forEach { (permission, isGranted) ->
             if (isGranted) {
 
@@ -303,58 +267,12 @@ fun Content(mainActivityVM: MainActivityVM){
             }
         }
     }
-    if (showPermissionDialog == true){
-
-        AlertDialog(
-            onDismissRequest = {
-                mainActivityVM.updateShowPermissionDialog(false)
-            } ,
-            title = {
-                    DialogContent()
-            } ,
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        val intent = Intent(
-                            android.provider.Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION,
-                            MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-                        )
-                        val uri:Uri = Uri.fromParts("package" , context.packageName , null)
-                        intent.setData(uri)
-                        val pickRequest = PickVisualMediaRequest(mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly)
-                        launcher.launch(pickRequest)
-
-                              } ,
-                )
-                {
-                    Text(text = stringResource(id = R.string.allow))
-                }
-
-
-            } ,
-            dismissButton = {
-                TextButton(
-                    onClick = {
-                              mainActivityVM.updateShowPermissionDialog(false)
-                    } ,
-                )
-                {
-                    Text(text = stringResource(id = R.string.deny))
-                }
-            } ,
-            properties = DialogProperties(
-                decorFitsSystemWindows = true ,
-                usePlatformDefaultWidth = true ,
-                dismissOnClickOutside = true
-            )
-        )
-
-    }
 
     ConstraintLayout (
         modifier = Modifier
             .padding(8.5.dp)
-    ) {
+    )
+    {
 
         val (updateButton , profileCard , progress) = createRefs()
 
@@ -373,7 +291,8 @@ fun Content(mainActivityVM: MainActivityVM){
                     end.linkTo(parent.end)
                     height = Dimension.fillToConstraints
                 }
-        ) {
+        )
+        {
             val (imageBox , selectButton , usernameTextfield) = createRefs()
 
             Box (

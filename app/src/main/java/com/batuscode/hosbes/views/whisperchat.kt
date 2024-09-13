@@ -74,9 +74,9 @@ fun WhisperChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel , 
         SnackbarHostState()
     }
     Scaffold(
+        containerColor = Color.White,
         snackbarHost = { SnackbarHost(hostState = snackBarHostState)},
         modifier = Modifier
-            .background(Color.White)
             .fillMaxSize()
             .padding(8.dp)
             .imePadding(),

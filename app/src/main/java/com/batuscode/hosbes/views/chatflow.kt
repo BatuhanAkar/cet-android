@@ -461,29 +461,6 @@ fun MessageItemView(message:Message , type:String , mainActivityVM: MainActivity
 
                     }
 
-/*
-                    if (inWhisper == false) {
-                        OutlinedIconButton(
-                            onClick = {
-                                mainActivityVM.updateWhisperUserUid(message.senderId!!)
-                                mainActivityVM.updateMessageItem(message)
-                                mainActivityVM.updateShowMessageOption(true)
-                            } ,
-                            border = null ,
-                            modifier = Modifier
-                                .size(24.dp)
-                        ) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.more_horiz_24px) ,
-                                contentDescription = "" ,
-                                modifier = Modifier
-                                    .align(Alignment.Top)
-                            )
-                        }
-
-
-                    }
-*/
 
 
                 }

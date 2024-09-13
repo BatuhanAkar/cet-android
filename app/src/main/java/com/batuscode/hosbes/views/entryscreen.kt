@@ -58,6 +58,7 @@ fun EntryScreen(mainActivityVM: MainActivityVM){
         mutableStateOf<Boolean>(true)
     }
     Scaffold(
+        containerColor = Color.White,
         modifier = Modifier
             .fillMaxSize()
     ) {

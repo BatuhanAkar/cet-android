@@ -82,6 +82,7 @@ fun PrivateRooms(mainActivityVM: MainActivityVM){
     }
 
     Scaffold (
+        containerColor = Color.White,
         topBar = {
                  TopAppBar(
                      colors = TopAppBarDefaults.topAppBarColors(

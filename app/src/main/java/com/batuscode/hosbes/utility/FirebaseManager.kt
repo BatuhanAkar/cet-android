@@ -1547,7 +1547,9 @@ class FirebaseManager {
             .get()
             .addOnCompleteListener { document ->
                 val user = document.result.toObject(User::class.java)
-                mainActivityVM.updateUser(user = user!!) // kullanıcıyı güncelle ...
+                if (user != null){
+                    mainActivityVM.updateUser(user = user!!) // kullanıcıyı güncelle ...
+                }
             }
     }
 

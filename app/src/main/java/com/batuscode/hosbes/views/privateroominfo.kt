@@ -54,6 +54,7 @@ fun PrivateRoomInfo(room: PrivateRoom , mainActivityVM: MainActivityVM , partici
     val scope = rememberCoroutineScope()
 
     ModalBottomSheet(
+        containerColor = Color.White,
         onDismissRequest = { /*TODO*/ mainActivityVM.updateShowRoomInfo(false) } ,
         sheetState = sheetState ,
         modifier = Modifier.fillMaxSize() ,

@@ -12,6 +12,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -29,6 +30,7 @@ fun ConnectionCorridor(mainActivityVM: MainActivityVM){
     val selectedChannel by mainActivityVM.selectedChannel.collectAsState()
 
     Scaffold(
+        containerColor = Color.White,
         modifier = Modifier
             .fillMaxSize()
     ) { innerPadding ->

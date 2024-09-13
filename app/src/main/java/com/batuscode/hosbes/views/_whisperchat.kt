@@ -114,10 +114,9 @@ fun _WhisperChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
     }
 
     Scaffold(
-
+        containerColor = Color.White,
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
             .padding(8.dp)
             .imePadding(),
         topBar = {

@@ -347,8 +347,8 @@ fun Chat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
     }
 
     Scaffold(
+        containerColor = Color.White,
         modifier = Modifier
-            .background(Color.White)
             .fillMaxSize()
             .padding(8.dp)
             .imePadding(),
