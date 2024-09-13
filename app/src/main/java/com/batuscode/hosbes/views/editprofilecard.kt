@@ -75,6 +75,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.core.content.ContextCompat
 import androidx.core.content.PermissionChecker.PERMISSION_GRANTED
+import androidx.exifinterface.media.ExifInterface
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.batuscode.hosbes.MainActivity
 import com.batuscode.hosbes.R
@@ -218,8 +219,8 @@ fun Content(mainActivityVM: MainActivityVM){
         MainActivity.fm.updateOnDbUserPhotoUrl(photoUrl = photoUrl , mainActivityVM)
 
     }
-    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) {
-        it.let {
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+        uri.let {
             if (it != null) {
                 val inputStream = context.contentResolver.openInputStream(it)
 
@@ -227,11 +228,25 @@ fun Content(mainActivityVM: MainActivityVM){
                     val options = BitmapFactory.Options().apply {
                         inSampleSize = 4 // Görüntü boyutunu 1/4 oranında küçült
                     }
-                    bitmap = BitmapFactory.decodeStream(it, null, options)
-                    val matrix = Matrix().apply { postRotate(90f) }
+                  //  bitmap = BitmapFactory.decodeStream(it, null, options)
+
+                    bitmap = MediaStore.Images.Media.getBitmap(context.contentResolver , uri!!)
+
+                   val scaledBitmap = Bitmap.createScaledBitmap(bitmap!! , bitmap?.width!! / 4 , bitmap?.height!! / 4 ,true)
+
+                    val exif = ExifInterface(it)
+                    val orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED)
+                    val rotation = when (orientation) {
+                        ExifInterface.ORIENTATION_ROTATE_90 -> 90f
+                        ExifInterface.ORIENTATION_ROTATE_180 -> 180f
+                        ExifInterface.ORIENTATION_ROTATE_270 -> 270f
+                        else -> 0f
+                    }
+                    val matrix = Matrix().apply { postRotate(rotation) }
 
                     if (bitmap != null) {
-                       newPP =  Bitmap.createBitmap(bitmap!!, 0, 0, bitmap!!.width, bitmap!!.height, matrix, true).asImageBitmap()
+                      //  newPP = bitmap?.asImageBitmap()
+                       newPP =  Bitmap.createBitmap(scaledBitmap!!, 0, 0, scaledBitmap!!.width, scaledBitmap!!.height, matrix, true).asImageBitmap()
                     }
 
                     if (newPP != null) {

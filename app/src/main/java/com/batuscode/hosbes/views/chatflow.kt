@@ -543,7 +543,6 @@ fun gifView(mediaId:String){
             }
         } , modifier = Modifier
             .wrapContentSize()
-            .size(120.dp)
             .clip(RoundedCornerShape(16.dp))
         )
     }
