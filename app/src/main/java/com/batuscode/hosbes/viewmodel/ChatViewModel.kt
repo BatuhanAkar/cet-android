@@ -3,7 +3,7 @@ package com.batuscode.hosbes.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.batuscode.hosbes.MainActivity
-import com.batuscode.hosbes.models.Message
+import com.batuscode.hosbes.model.Message
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -17,7 +17,7 @@ class ChatViewModel: ViewModel() {
         return chats.distinctBy { it.messageId }
     }
 
-    fun pushChat(message: Message , loadMoreChat:Boolean){
+    fun pushChat(message: Message, loadMoreChat:Boolean){
 
         if (loadMoreChat){
             Log.d("whisperChatItems" , "fazlasını çekme...")

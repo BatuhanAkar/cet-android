@@ -22,13 +22,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.asImageBitmap
 import com.batuscode.hosbes.MainActivity
-import com.batuscode.hosbes.models.Calls
-import com.batuscode.hosbes.models.Message
-import com.batuscode.hosbes.models.Participnat
-import com.batuscode.hosbes.models.PrivateRoom
-import com.batuscode.hosbes.models.RandomParticipant
-import com.batuscode.hosbes.models.User
-import com.batuscode.hosbes.models.Whisper
+import com.batuscode.hosbes.model.Calls
+import com.batuscode.hosbes.model.Message
+import com.batuscode.hosbes.model.Participnat
+import com.batuscode.hosbes.model.PrivateRoom
+import com.batuscode.hosbes.model.RandomParticipant
+import com.batuscode.hosbes.model.User
+import com.batuscode.hosbes.model.Whisper
 import com.batuscode.hosbes.utility.FirebaseManager.Companion.P1
 import com.batuscode.hosbes.utility.FirebaseManager.Companion.firestore
 import com.batuscode.hosbes.viewmodel.ChatViewModel
@@ -153,7 +153,7 @@ class FirebaseManager {
 
 
             if (loadMoreChat){
-                val message:Message = snapshot.getValue<Message>()!!
+                val message: Message = snapshot.getValue<Message>()!!
 
                 var lastChatId = MainActivity.PreferenceManager?.getuidShared("lastChatId")
 
@@ -173,7 +173,7 @@ class FirebaseManager {
 
             } else {
 
-                val message:Message = snapshot.getValue<Message>()!!
+                val message: Message = snapshot.getValue<Message>()!!
 
                 Log.d("message" , "chat :: " + message.message)
 //
@@ -191,7 +191,7 @@ class FirebaseManager {
 
         override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
 
-            val message:Message = snapshot.getValue<Message>()!!
+            val message: Message = snapshot.getValue<Message>()!!
             Log.d("channelDocumentChangeType" , "modified chat :: " + message.message)
 
             chatViewModel.messageChanged(message)
@@ -199,7 +199,7 @@ class FirebaseManager {
 
         override fun onChildRemoved(snapshot: DataSnapshot) {
 
-            val message:Message = snapshot.getValue<Message>()!!
+            val message: Message = snapshot.getValue<Message>()!!
             Log.d("channelDocumentChangeType" , "removed chat :: " + message.message)
 
             chatViewModel.messageRemmoved(message)
@@ -271,7 +271,7 @@ class FirebaseManager {
 
     }
 
-    fun pullPrivateRoomParticipants(privateRoom: PrivateRoom , participantsViewModel: ParticipantsViewModel){
+    fun pullPrivateRoomParticipants(privateRoom: PrivateRoom, participantsViewModel: ParticipantsViewModel){
         P1.child("participants")
             .child(privateRoom.roomId!!)
             .get()
@@ -426,7 +426,7 @@ class FirebaseManager {
     }
 
 
-    fun pullPRChat(channel: DatabaseReference , room:PrivateRoom , loadMoreChat: Boolean , updateListener: Boolean){
+    fun pullPRChat(channel: DatabaseReference, room: PrivateRoom, loadMoreChat: Boolean, updateListener: Boolean){
 
         Log.d("pullPRChat" , "roomID :: " + room.roomId!!)
 
@@ -461,7 +461,7 @@ class FirebaseManager {
         }
 
     }
-    fun removePrChatListener(channel: DatabaseReference , room:PrivateRoom){
+    fun removePrChatListener(channel: DatabaseReference , room: PrivateRoom){
         if (::PRChatQuery.isInitialized){
 
             PRChatQuery
@@ -777,14 +777,14 @@ class FirebaseManager {
 
     }
 
-    fun deletePrMessage(message: Message , room: PrivateRoom , channel: DatabaseReference){
+    fun deletePrMessage(message: Message, room: PrivateRoom, channel: DatabaseReference){
         channel
             .child(room.roomId!!)
             .child(message.messageId!!)
             .setValue(null)
     }
 
-    fun editPrMessage( type: String? , message: Message , value: String? , p: DatabaseReference , room: PrivateRoom){
+    fun editPrMessage(type: String?, message: Message, value: String?, p: DatabaseReference, room: PrivateRoom){
 
 
         val tStamp = System.currentTimeMillis()
@@ -882,7 +882,7 @@ class FirebaseManager {
     }
 
     /*TODO: write whisper message*/
-    fun writeWhisperMessage(user: User , type: String , value: String , mainActivityVM: MainActivityVM){
+    fun writeWhisperMessage(user: User, type: String, value: String, mainActivityVM: MainActivityVM){
         // hem kendine hem karşıdakine fısıltı ayarla ...
         val time = System.currentTimeMillis()
 
@@ -965,7 +965,7 @@ class FirebaseManager {
 
     }
 
-    fun editWMessage(whisperItem: Whisper , value: String , channel: DatabaseReference , messageItem:Message , type: String){
+    fun editWMessage(whisperItem: Whisper, value: String, channel: DatabaseReference, messageItem: Message, type: String){
 
         val tStamp = System.currentTimeMillis() // düzenlenen zaman ...
         val value: String? = value // mesaj ...
@@ -1057,7 +1057,7 @@ class FirebaseManager {
 
     /*TODO: sohbeti benden sil ... fm */
 
-    fun deleteChatFromMe(whisperItem: Whisper , Wref: DatabaseReference , mainActivityVM: MainActivityVM){
+    fun deleteChatFromMe(whisperItem: Whisper, Wref: DatabaseReference, mainActivityVM: MainActivityVM){
 
         val uid = currentUser?.uid // kendi id si ...
         val wuid = whisperItem.wuid // fısıltılaşılan kişinin id si ... // W referansı için ...
@@ -1078,7 +1078,7 @@ class FirebaseManager {
 
     /*TODO: sohbeti herkesten sil ... fm */
 
-    fun deleteChatEveryone(whisperItem: Whisper , Wref: DatabaseReference , W_Cref: DatabaseReference , mainActivityVM: MainActivityVM){
+    fun deleteChatEveryone(whisperItem: Whisper, Wref: DatabaseReference, W_Cref: DatabaseReference, mainActivityVM: MainActivityVM){
 
         val uid = currentUser?.uid // kendi id si ...
         val wuid = whisperItem.wuid // fısıltılaşılan kişinin id si ... // W referansı için ...
@@ -1109,7 +1109,7 @@ class FirebaseManager {
 
     }
 
-    fun writePRMessage(mainActivityVM: MainActivityVM, type:String?, messageValue: String?, p:DatabaseReference, room:PrivateRoom ){
+    fun writePRMessage(mainActivityVM: MainActivityVM, type:String?, messageValue: String?, p:DatabaseReference, room: PrivateRoom){
         var messageId = p.push().key.toString()
 
         val tStamp = System.currentTimeMillis()
@@ -1133,7 +1133,7 @@ class FirebaseManager {
             .setValue(message)
     }
 
-    fun writePRMediaMessage(mainActivityVM: MainActivityVM, type:String?, messageValue: String?, p:DatabaseReference, room:PrivateRoom ){
+    fun writePRMediaMessage(mainActivityVM: MainActivityVM, type:String?, messageValue: String?, p:DatabaseReference, room: PrivateRoom){
         var messageId = p.push().key.toString()
 
         val tStamp = System.currentTimeMillis()
@@ -1165,7 +1165,7 @@ class FirebaseManager {
             }
     }
 
-    fun deleteMessage(message: Message , channel: DatabaseReference){
+    fun deleteMessage(message: Message, channel: DatabaseReference){
 
 
         channel
@@ -1175,7 +1175,7 @@ class FirebaseManager {
 
     }
 
-    fun editMessage(type: String , value:String , message: Message , channel: DatabaseReference){
+    fun editMessage(type: String, value:String, message: Message, channel: DatabaseReference){
 
         val tStamp = System.currentTimeMillis()
         val value: String? = value
@@ -1940,7 +1940,7 @@ class FirebaseManager {
      * kendi yakalayamadan başkası yakaladıysa kendi oda adını güncelle ...
      * */
 
-    fun updateSelfRoomName(randomParticipant: RandomParticipant , randomActivityViewModel: RandomActivityViewModel){
+    fun updateSelfRoomName(randomParticipant: RandomParticipant, randomActivityViewModel: RandomActivityViewModel){
         val selfUid = MainActivity.PreferenceManager?.getuidShared("uid")
         var selfName = currentUser?.displayName
         var parname = randomParticipant?.displayName

@@ -38,30 +38,30 @@
 
 
         <activity
-            android:name=".views.RandomActivity"
+            android:name=".RandomActivity"
             android:launchMode="singleTask"
             android:theme="@style/JitsiMeetActivityStyle"
             android:exported="false" />
 
         <activity
-            android:name=".views.InCallActivity"
+            android:name=".view.InCallActivity"
             android:launchMode="singleTask"
             android:theme="@style/JitsiMeetActivityStyle"
             android:exported="false" />
 
         <activity
-            android:name=".views.OutCallActivity"
+            android:name=".OutCallActivity"
             android:launchMode="singleTask"
             android:theme="@style/JitsiMeetActivityStyle"
             android:exported="false" />
 
         <activity
-            android:name=".views.GiphyActivity"
+            android:name=".GiphyActivity"
             android:theme="@style/JitsiMeetActivityStyle"
             android:exported="false" />
 
         <activity
-            android:name=".views.VideoChannel"
+            android:name=".view.VideoChannel"
             android:launchMode="singleTask"
             android:theme="@style/JitsiMeetActivityStyle"
             android:exported="false" />
@@ -70,15 +70,15 @@
 
 
         <activity
-            android:name=".views.VoiceChannel"
+            android:name=".view.VoiceChannel"
             android:launchMode="singleTask"
             android:theme="@style/JitsiMeetActivityStyle"
             android:exported="false" />
 
-        <activity android:name=".views.WhisperChatActivity"
+        <activity android:name=".WhisperChatActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"
             android:exported="false"/>
-        <activity android:name=".views.RandomConnectionActivity"
+        <activity android:name=".RandomConnectionActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"
             android:exported="false"/>
 

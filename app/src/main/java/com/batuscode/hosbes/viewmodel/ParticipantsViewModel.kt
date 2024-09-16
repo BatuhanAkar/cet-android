@@ -1,7 +1,7 @@
 package com.batuscode.hosbes.viewmodel
 
 import androidx.lifecycle.ViewModel
-import com.batuscode.hosbes.models.Participnat
+import com.batuscode.hosbes.model.Participnat
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 

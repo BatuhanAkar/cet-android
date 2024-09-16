@@ -2,7 +2,7 @@ package com.batuscode.hosbes.viewmodel
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
-import com.batuscode.hosbes.models.PrivateRoom
+import com.batuscode.hosbes.model.PrivateRoom
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -22,7 +22,7 @@ class PrivateRoomsViewModel: ViewModel() {
 
     }
 
-    fun modifiedRoom(room:PrivateRoom){
+    fun modifiedRoom(room: PrivateRoom){
 
         val oldRooms = _rooms.value.toMutableList()
 

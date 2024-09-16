@@ -4,14 +4,19 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import com.batuscode.hosbes.ui.theme.HoşbeşTheme
-import com.batuscode.hosbes.view.SellerActivityView
+import com.giphy.sdk.ui.Giphy
+import com.giphy.sdk.ui.views.GiphyDialogFragment
 
-class SellerActivity:AppCompatActivity(){
+class GiphyActivity:AppCompatActivity(){
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        Giphy.configure(this , "5eryANGrljO1uXPSf7GLEhUAU3q8zF1k")
+
         setContent {
             HoşbeşTheme {
-                SellerActivityView()
+                GiphyDialogFragment.newInstance().show(supportFragmentManager, "giphyfragment")
+
             }
         }
     }

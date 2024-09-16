@@ -10,12 +10,12 @@ import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.batuscode.hosbes.models.Calls
-import com.batuscode.hosbes.models.Message
-import com.batuscode.hosbes.models.PrivateRoom
-import com.batuscode.hosbes.models.RandomParticipant
-import com.batuscode.hosbes.models.User
-import com.batuscode.hosbes.models.Whisper
+import com.batuscode.hosbes.model.Calls
+import com.batuscode.hosbes.model.Message
+import com.batuscode.hosbes.model.PrivateRoom
+import com.batuscode.hosbes.model.RandomParticipant
+import com.batuscode.hosbes.model.User
+import com.batuscode.hosbes.model.Whisper
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
