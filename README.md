@@ -14,7 +14,8 @@ Firebase bağlamları
 -
 
 Görüntülü & Sesli görüşmeler Jitsi Meet API kullanılarak self-hosting olarak sağlanmakta.
--![Google Pixel 7 Pro, 6 Pro – 5](https://github.com/user-attachments/assets/935dcbfd-ac33-42a9-a415-7e88cda8a79f)
+-
+![Google Pixel 7 Pro, 6 Pro – 5](https://github.com/user-attachments/assets/935dcbfd-ac33-42a9-a415-7e88cda8a79f)
 ![Google Pixel 7 Pro, 6 Pro – 6](https://github.com/user-attachments/assets/91b9116e-0c3b-4179-b175-a9a76a1517b9)
 
 ![Google Pixel 7 Pro, 6 Pro – 4](https://github.com/user-attachments/assets/0568d4cb-5113-4e9f-ad1a-8f4525672588)
