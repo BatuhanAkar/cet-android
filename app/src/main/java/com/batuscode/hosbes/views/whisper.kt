@@ -25,21 +25,17 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.constraintlayout.compose.Dimension
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import com.batuscode.hosbes.MainActivity
 import com.batuscode.hosbes.R
 import com.batuscode.hosbes.ui.theme.HoşbeşTheme
-import com.batuscode.hosbes.utility.ChatViewModel
-import com.batuscode.hosbes.utility.MainActivityVM
-import com.batuscode.hosbes.utility.WhisperViewModel
-import com.batuscode.hosbes.views.ui.MessageTextField
+import com.batuscode.hosbes.viewmodel.MainActivityVM
+import com.batuscode.hosbes.viewmodel.WhisperViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Whisper(mainActivityVM: MainActivityVM , whisperViewModel: WhisperViewModel){
+fun Whisper(mainActivityVM: MainActivityVM, whisperViewModel: WhisperViewModel){
     val lifecycleOwner = LocalLifecycleOwner.current
 
     val showMenu by mainActivityVM.showMenu.collectAsState()

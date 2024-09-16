@@ -1,7 +1,6 @@
 package com.batuscode.hosbes.views
 
 import android.util.Log
-import androidx.activity.viewModels
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxSize
@@ -33,8 +32,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.batuscode.hosbes.MainActivity
 import com.batuscode.hosbes.R
 import com.batuscode.hosbes.ui.theme.HoşbeşTheme
-import com.batuscode.hosbes.utility.MainActivityVM
-import com.batuscode.hosbes.utility.PrivateRoomsViewModel
+import com.batuscode.hosbes.viewmodel.MainActivityVM
+import com.batuscode.hosbes.viewmodel.PrivateRoomsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -47,7 +46,7 @@ fun PrivateRooms(mainActivityVM: MainActivityVM){
 
 
 
-    val privateRoomsViewModel:PrivateRoomsViewModel = viewModel()
+    val privateRoomsViewModel: PrivateRoomsViewModel = viewModel()
     val showCreatePrivateRoom by mainActivityVM.showCreatePrivateRoom.collectAsState()
     val roomExist by mainActivityVM.roomExist.collectAsState()
 
@@ -198,7 +197,7 @@ fun PrivateRooms(mainActivityVM: MainActivityVM){
 @Preview(showBackground = true , showSystemUi = true)
 @Composable
 fun PrivateRoomsPreview(){
-    val mainActivityVM:MainActivityVM = viewModel()
+    val mainActivityVM: MainActivityVM = viewModel()
     HoşbeşTheme {
         PrivateRooms(mainActivityVM)
     }

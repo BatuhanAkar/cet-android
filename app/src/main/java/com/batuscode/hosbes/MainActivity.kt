@@ -12,10 +12,8 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import androidx.activity.compose.ManagedActivityResultLauncher
-import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -34,15 +32,15 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.batuscode.hosbes.ui.theme.HoşbeşTheme
-import com.batuscode.hosbes.utility.AuthViewModel
-import com.batuscode.hosbes.utility.ChatViewModel
+import com.batuscode.hosbes.viewmodel.AuthViewModel
+import com.batuscode.hosbes.viewmodel.ChatViewModel
 import com.batuscode.hosbes.utility.FirebaseManager
 import com.batuscode.hosbes.utility.GlideApp
-import com.batuscode.hosbes.utility.MainActivityVM
-import com.batuscode.hosbes.utility.ParticipantsViewModel
+import com.batuscode.hosbes.viewmodel.MainActivityVM
+import com.batuscode.hosbes.viewmodel.ParticipantsViewModel
 import com.batuscode.hosbes.utility.PreferenceManager
 import com.batuscode.hosbes.utility.SessionService
-import com.batuscode.hosbes.utility.WhisperViewModel
+import com.batuscode.hosbes.viewmodel.WhisperViewModel
 import com.batuscode.hosbes.utility.mainactivitylife
 import com.batuscode.hosbes.views.Authentication
 import com.batuscode.hosbes.views.Chat
@@ -52,12 +50,10 @@ import com.batuscode.hosbes.views.OutCallActivity
 import com.batuscode.hosbes.views.PrivateRoomChat
 import com.batuscode.hosbes.views.PrivateRooms
 import com.batuscode.hosbes.views.SelectUsername
-import com.batuscode.hosbes.views.SplashScreen
 import com.batuscode.hosbes.views.Whisper
 import com.batuscode.hosbes.views._WhisperChat
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
-import com.giphy.sdk.core.BuildConfig
 import com.giphy.sdk.ui.Giphy
 import com.google.firebase.auth.FirebaseAuth
 
@@ -115,8 +111,8 @@ class MainActivity : AppCompatActivity() , mainactivitylife {
 
                 val authViewModel: AuthViewModel = viewModel()
                 val mainActivityVM: MainActivityVM by viewModels()
-                val chatViewModel:ChatViewModel by viewModels()
-                val whisperViewModel:WhisperViewModel by viewModels()
+                val chatViewModel: ChatViewModel by viewModels()
+                val whisperViewModel: WhisperViewModel by viewModels()
                 mainActivityVM.updateSelectedChannel("Hoşbeş")
 
                 val appUpdated by mainActivityVM.AppUpdated.collectAsState()
@@ -150,7 +146,7 @@ class MainActivity : AppCompatActivity() , mainactivitylife {
 
                 val incall by mainActivityVM.incall.collectAsState()
 
-                val participantsViewModel:ParticipantsViewModel by viewModels()
+                val participantsViewModel: ParticipantsViewModel by viewModels()
                 fm.whisperViewModel = whisperViewModel
 
                 val currentUser by authViewModel.currentUser.collectAsState()

@@ -1,19 +1,13 @@
 package com.batuscode.hosbes.views
 
-import android.content.Context
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBars
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.SheetState
@@ -27,22 +21,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.batuscode.hosbes.MainActivity
 import com.batuscode.hosbes.R
-import com.batuscode.hosbes.ui.theme.HoşbeşTheme
-import com.batuscode.hosbes.utility.ChatViewModel
+import com.batuscode.hosbes.viewmodel.ChatViewModel
 import com.batuscode.hosbes.utility.FirebaseManager
-import com.batuscode.hosbes.utility.MainActivityVM
+import com.batuscode.hosbes.viewmodel.MainActivityVM
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MessageOption(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
+fun MessageOption(mainActivityVM: MainActivityVM, chatViewModel: ChatViewModel){
     val context = LocalContext.current
 
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
@@ -72,7 +63,7 @@ fun MessageOption(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun OptionContent( sheetState: SheetState , scope: CoroutineScope , mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
+fun OptionContent(sheetState: SheetState, scope: CoroutineScope, mainActivityVM: MainActivityVM, chatViewModel: ChatViewModel){
 
     val messageItem by mainActivityVM.messageItem.collectAsState()
     val channelId by mainActivityVM.channelId.collectAsState()

@@ -1,9 +1,6 @@
 package com.batuscode.hosbes.views
 
 import android.content.Context
-import android.content.Intent
-import android.net.Uri
-import android.provider.MediaStore
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
@@ -14,7 +11,6 @@ import androidx.compose.foundation.layout.statusBars
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -39,14 +35,13 @@ import com.batuscode.hosbes.MainActivity
 import com.batuscode.hosbes.R
 import com.batuscode.hosbes.models.PrivateRoom
 import com.batuscode.hosbes.ui.theme.HoşbeşTheme
-import com.batuscode.hosbes.utility.MainActivityVM
-import com.batuscode.hosbes.utility.ParticipantsViewModel
+import com.batuscode.hosbes.viewmodel.MainActivityVM
+import com.batuscode.hosbes.viewmodel.ParticipantsViewModel
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.MutableStateFlow
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PrivateRoomInfo(room: PrivateRoom , mainActivityVM: MainActivityVM , participantsViewModel: ParticipantsViewModel){
+fun PrivateRoomInfo(room: PrivateRoom, mainActivityVM: MainActivityVM, participantsViewModel: ParticipantsViewModel){
 
 
     val context = LocalContext.current
@@ -75,7 +70,7 @@ fun PrivateRoomInfo(room: PrivateRoom , mainActivityVM: MainActivityVM , partici
 }
 
 @Composable
-fun InfoContent(room:PrivateRoom , scope: CoroutineScope , mainActivityVM: MainActivityVM , context:Context , participantsViewModel: ParticipantsViewModel){
+fun InfoContent(room:PrivateRoom, scope: CoroutineScope, mainActivityVM: MainActivityVM, context:Context, participantsViewModel: ParticipantsViewModel){
 
     var isDeleteRoom by remember {
         mutableStateOf(false)

@@ -11,9 +11,8 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.lifecycle.Observer
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.batuscode.hosbes.MainActivity
-import com.batuscode.hosbes.models.Calls
 import com.batuscode.hosbes.models.Participnat
-import com.batuscode.hosbes.utility.OutCallActivityViewModel
+import com.batuscode.hosbes.viewmodel.OutCallActivityViewModel
 import com.facebook.react.modules.core.PermissionListener
 import org.jitsi.meet.sdk.BroadcastEvent
 import org.jitsi.meet.sdk.BroadcastIntentHelper
@@ -37,7 +36,7 @@ class OutCallActivity:JitsiMeetActivity(){
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val outCallActivityViewModel:OutCallActivityViewModel by viewModels()
+        val outCallActivityViewModel: OutCallActivityViewModel by viewModels()
         mOutCallActivityViewModel = outCallActivityViewModel
         registerForBroadcastMessages()
         val view = jitsiView

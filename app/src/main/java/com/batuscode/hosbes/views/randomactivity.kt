@@ -6,28 +6,18 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
-import android.os.Handler
 import android.util.Log
-import android.view.GestureDetector
-import android.view.MotionEvent
 import androidx.activity.viewModels
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.ComposeView
 import androidx.lifecycle.Observer
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.batuscode.hosbes.MainActivity
-import com.batuscode.hosbes.models.Participnat
-import com.batuscode.hosbes.models.RandomParticipant
 import com.batuscode.hosbes.ui.theme.HoşbeşTheme
-import com.batuscode.hosbes.utility.RandomActivityViewModel
-import com.facebook.react.ReactInstanceManager
+import com.batuscode.hosbes.viewmodel.RandomActivityViewModel
 import com.facebook.react.modules.core.PermissionListener
-import com.th3rdwave.safeareacontext.getReactContext
-import kotlinx.coroutines.delay
-import org.jitsi.meet.sdk.BroadcastAction
 import org.jitsi.meet.sdk.BroadcastEvent
 import org.jitsi.meet.sdk.BroadcastIntentHelper
 import org.jitsi.meet.sdk.JitsiMeet
@@ -70,7 +60,7 @@ class RandomActivity:JitsiMeetActivity() , JitsiMeetActivityInterface{
 
         Log.d("randomActivity" , "aktivite oluşturuldu ... ")
 
-        val randomActivityViewModel:RandomActivityViewModel by viewModels()
+        val randomActivityViewModel: RandomActivityViewModel by viewModels()
 
         /**
          * Rastgele aktivitesinin her start aldığı noktadan geçirilen oturum parametresini al ...

@@ -7,15 +7,13 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
 import androidx.activity.viewModels
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.Observer
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.batuscode.hosbes.MainActivity
 import com.batuscode.hosbes.ui.theme.HoşbeşTheme
-import com.batuscode.hosbes.utility.MainActivityVM
-import com.batuscode.hosbes.utility.VoiceChannelViewModel
+import com.batuscode.hosbes.viewmodel.MainActivityVM
+import com.batuscode.hosbes.viewmodel.VoiceChannelViewModel
 import com.facebook.react.modules.core.PermissionListener
 import org.jitsi.meet.sdk.BroadcastEvent
 import org.jitsi.meet.sdk.BroadcastIntentHelper
@@ -99,7 +97,7 @@ class VoiceChannel:JitsiMeetActivity() , JitsiMeetActivityInterface{
         super.onCreate(savedInstanceState)
 
 
-        val voiceChannelViewModel:VoiceChannelViewModel by viewModels()
+        val voiceChannelViewModel: VoiceChannelViewModel by viewModels()
 
 
 

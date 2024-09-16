@@ -1,18 +1,11 @@
-package com.batuscode.hosbes.utility
+package com.batuscode.hosbes.viewmodel
 
 import android.util.Log
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.toMutableStateList
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.batuscode.hosbes.MainActivity
 import com.batuscode.hosbes.models.Message
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
 
 class ChatViewModel: ViewModel() {
 

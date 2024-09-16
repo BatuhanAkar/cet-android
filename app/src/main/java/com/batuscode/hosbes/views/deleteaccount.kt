@@ -5,7 +5,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
@@ -39,17 +38,12 @@ import com.batuscode.hosbes.MainActivity
 import com.batuscode.hosbes.R
 import com.batuscode.hosbes.ui.theme.HoşbeşTheme
 import com.batuscode.hosbes.utility.FirebaseManager
-import com.batuscode.hosbes.utility.MainActivityVM
+import com.batuscode.hosbes.viewmodel.MainActivityVM
 import com.batuscode.hosbes.utility.mainactivitylife
-import com.google.firebase.FirebaseException
-import com.google.firebase.auth.PhoneAuthCredential
-import com.google.firebase.auth.PhoneAuthOptions
-import com.google.firebase.auth.PhoneAuthProvider
-import java.util.concurrent.TimeUnit
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DeleteAccount(mainActivityVM: MainActivityVM , mainactivitylife: mainactivitylife){
+fun DeleteAccount(mainActivityVM: MainActivityVM, mainactivitylife: mainactivitylife){
 
     val userVerified by mainActivityVM.userVerified.collectAsState()
 

@@ -1,7 +1,6 @@
 package com.batuscode.hosbes.views
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.Intent
 import android.util.Log
 import androidx.compose.foundation.background
@@ -16,51 +15,37 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
 import com.batuscode.hosbes.MainActivity
 import com.batuscode.hosbes.R
-import com.batuscode.hosbes.models.Whisper
-import com.batuscode.hosbes.ui.theme.HoşbeşTheme
-import com.batuscode.hosbes.utility.ChatViewModel
-import com.batuscode.hosbes.utility.MainActivityVM
-import com.batuscode.hosbes.utility.WhisperChatActivityViewModel
+import com.batuscode.hosbes.viewmodel.ChatViewModel
+import com.batuscode.hosbes.viewmodel.MainActivityVM
+import com.batuscode.hosbes.viewmodel.WhisperChatActivityViewModel
 import com.batuscode.hosbes.views.ui.MessageTextField
-import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 
 @SuppressLint("CoroutineCreationDuringComposition")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun WhisperChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel , whisperChatActivityViewModel: WhisperChatActivityViewModel){
+fun WhisperChat(mainActivityVM: MainActivityVM, chatViewModel: ChatViewModel, whisperChatActivityViewModel: WhisperChatActivityViewModel){
     val lifecycleOwner = LocalLifecycleOwner.current
     val whisperItem by mainActivityVM.whisperItem.collectAsState()
     val showMessageOption by mainActivityVM.showMessageOption.collectAsState()

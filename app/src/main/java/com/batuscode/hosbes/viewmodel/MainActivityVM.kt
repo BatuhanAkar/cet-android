@@ -1,10 +1,9 @@
-package com.batuscode.hosbes.utility
+package com.batuscode.hosbes.viewmodel
 
 import android.content.Context
 import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.net.Uri
-import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.fragment.app.FragmentManager
@@ -19,9 +18,6 @@ import com.batuscode.hosbes.models.User
 import com.batuscode.hosbes.models.Whisper
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 class MainActivityVM:ViewModel() {
     private val _AppUpdated = MutableStateFlow<Boolean?>(false)

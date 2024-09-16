@@ -8,13 +8,12 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.Observer
 import com.batuscode.hosbes.MainActivity
 import com.batuscode.hosbes.models.Whisper
 import com.batuscode.hosbes.ui.theme.HoşbeşTheme
-import com.batuscode.hosbes.utility.WhisperChatActivityViewModel
+import com.batuscode.hosbes.viewmodel.WhisperChatActivityViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
@@ -45,7 +44,7 @@ class WhisperChatActivity:AppCompatActivity(){
         setContent {
             HoşbeşTheme {
 
-                val whisperChatActivityViewModel:WhisperChatActivityViewModel by viewModels()
+                val whisperChatActivityViewModel: WhisperChatActivityViewModel by viewModels()
                 mWhisperChatActivityViewModel = whisperChatActivityViewModel
 
                 MainActivity.mMainActivityVM.update_WhisperChatActivityFragmentManager(supportFragmentManager)

@@ -10,10 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import com.batuscode.hosbes.MainActivity
 import com.batuscode.hosbes.ui.theme.HoşbeşTheme
-import com.batuscode.hosbes.utility.RandomConnectionActivityViewModel
-import org.jitsi.meet.sdk.JitsiMeetConferenceOptions
-import org.jitsi.meet.sdk.JitsiMeetUserInfo
-import java.net.URL
+import com.batuscode.hosbes.viewmodel.RandomConnectionActivityViewModel
 
 class RandomConnectionActivity:AppCompatActivity(){
 
@@ -23,7 +20,7 @@ class RandomConnectionActivity:AppCompatActivity(){
         super.onCreate(savedInstanceState)
 
         mContext = this
-        val randomConnectionActivityViewModel:RandomConnectionActivityViewModel by viewModels()
+        val randomConnectionActivityViewModel: RandomConnectionActivityViewModel by viewModels()
         setContent {
             HoşbeşTheme {
                 RandomConnection(randomConnectionActivityViewModel =

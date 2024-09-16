@@ -38,10 +38,10 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import com.batuscode.hosbes.R
 import com.batuscode.hosbes.models.Participnat
 import com.batuscode.hosbes.ui.theme.HoşbeşTheme
-import com.batuscode.hosbes.utility.OutCallActivityViewModel
+import com.batuscode.hosbes.viewmodel.OutCallActivityViewModel
 
 @Composable
-fun OutCallMeetScreen(outCallActivityViewModel: OutCallActivityViewModel , historyCalls:Participnat){
+fun OutCallMeetScreen(outCallActivityViewModel: OutCallActivityViewModel, historyCalls:Participnat){
 
     val WillJoin by outCallActivityViewModel.WillJoin.collectAsState()
 

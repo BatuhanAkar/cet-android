@@ -22,7 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import com.batuscode.hosbes.R
 import com.batuscode.hosbes.ui.theme.HoşbeşTheme
-import com.batuscode.hosbes.utility.MainActivityVM
+import com.batuscode.hosbes.viewmodel.MainActivityVM
 
 @Composable
 fun ConnectionCorridor(mainActivityVM: MainActivityVM){

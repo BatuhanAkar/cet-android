@@ -1,6 +1,5 @@
 package com.batuscode.hosbes.views.ui
 
-import android.annotation.SuppressLint
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
@@ -13,7 +12,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -22,10 +20,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -42,32 +38,26 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.batuscode.hosbes.MainActivity
 import com.batuscode.hosbes.R
 import com.batuscode.hosbes.ui.theme.HoşbeşTheme
-import com.batuscode.hosbes.utility.ChatViewModel
+import com.batuscode.hosbes.viewmodel.ChatViewModel
 import com.batuscode.hosbes.utility.FirebaseManager
-import com.batuscode.hosbes.utility.MainActivityVM
-import com.google.firebase.database.FirebaseDatabase
-import kotlinx.coroutines.launch
+import com.batuscode.hosbes.viewmodel.MainActivityVM
 
 @Composable
-fun ChannelMenu( mainActivityVM: MainActivityVM ,chatViewModel: ChatViewModel ,
-    modifier: Modifier = Modifier ,
-    selectedChannel:String?
+fun ChannelMenu(mainActivityVM: MainActivityVM, chatViewModel: ChatViewModel,
+                modifier: Modifier = Modifier,
+                selectedChannel:String?
     ){
     
     val scope = rememberCoroutineScope()
@@ -275,7 +265,7 @@ fun ChannelMenu( mainActivityVM: MainActivityVM ,chatViewModel: ChatViewModel ,
 
 
 @Composable
-fun changeChannel(selectedChannelId:String , chatViewModel: ChatViewModel , mainActivityVM: MainActivityVM){
+fun changeChannel(selectedChannelId:String, chatViewModel: ChatViewModel, mainActivityVM: MainActivityVM){
     val loadMoreChat by mainActivityVM.loadMoreChat.collectAsState()
 
     var handler = Handler(Looper.getMainLooper())

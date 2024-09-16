@@ -15,8 +15,8 @@ import androidx.lifecycle.Observer
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.batuscode.hosbes.MainActivity
 import com.batuscode.hosbes.ui.theme.HoşbeşTheme
-import com.batuscode.hosbes.utility.MainActivityVM
-import com.batuscode.hosbes.utility.VideoChannelViewModel
+import com.batuscode.hosbes.viewmodel.MainActivityVM
+import com.batuscode.hosbes.viewmodel.VideoChannelViewModel
 import com.facebook.react.modules.core.PermissionListener
 import org.jitsi.meet.sdk.BroadcastEvent
 import org.jitsi.meet.sdk.BroadcastIntentHelper
@@ -101,7 +101,7 @@ class VideoChannel:JitsiMeetActivity() , JitsiMeetActivityInterface{
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val videoChannelViewModel:VideoChannelViewModel by viewModels()
+        val videoChannelViewModel: VideoChannelViewModel by viewModels()
 
         mainActivityVM = MainActivity.mMainActivityVM
         view = jitsiView

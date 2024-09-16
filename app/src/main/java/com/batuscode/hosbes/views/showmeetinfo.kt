@@ -39,14 +39,14 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import com.batuscode.hosbes.R
 import com.batuscode.hosbes.ui.theme.HoşbeşTheme
 import com.batuscode.hosbes.utility.GlideApp
-import com.batuscode.hosbes.utility.MainActivityVM
-import com.batuscode.hosbes.utility.RandomActivityViewModel
+import com.batuscode.hosbes.viewmodel.MainActivityVM
+import com.batuscode.hosbes.viewmodel.RandomActivityViewModel
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import kotlinx.coroutines.delay
 
 @Composable
-fun ShowMeetInfo(mainActivityVM: MainActivityVM , randomActivityViewModel: RandomActivityViewModel){
+fun ShowMeetInfo(mainActivityVM: MainActivityVM, randomActivityViewModel: RandomActivityViewModel){
     val context = LocalContext.current
 
     val randomParticipant by mainActivityVM.randomParticipant.collectAsState()

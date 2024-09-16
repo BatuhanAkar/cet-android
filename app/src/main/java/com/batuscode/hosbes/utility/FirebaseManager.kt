@@ -10,7 +10,6 @@ import android.graphics.BitmapFactory
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
-import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import android.provider.OpenableColumns
@@ -32,6 +31,14 @@ import com.batuscode.hosbes.models.User
 import com.batuscode.hosbes.models.Whisper
 import com.batuscode.hosbes.utility.FirebaseManager.Companion.P1
 import com.batuscode.hosbes.utility.FirebaseManager.Companion.firestore
+import com.batuscode.hosbes.viewmodel.ChatViewModel
+import com.batuscode.hosbes.viewmodel.InCallActivityViewModel
+import com.batuscode.hosbes.viewmodel.MainActivityVM
+import com.batuscode.hosbes.viewmodel.ParticipantsViewModel
+import com.batuscode.hosbes.viewmodel.PrivateRoomsViewModel
+import com.batuscode.hosbes.viewmodel.RandomActivityViewModel
+import com.batuscode.hosbes.viewmodel.RandomConnectionActivityViewModel
+import com.batuscode.hosbes.viewmodel.WhisperViewModel
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
@@ -44,7 +51,6 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.Query
-import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.getValue
 import com.google.firebase.database.ktx.database
 import com.google.firebase.firestore.CollectionReference
@@ -60,7 +66,6 @@ import com.google.firebase.storage.storageMetadata
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
 import java.util.concurrent.CountDownLatch
-import kotlin.random.Random
 
 
 class FirebaseManager {
@@ -209,7 +214,7 @@ class FirebaseManager {
 
     }
 
-    fun handleJoinRoom( mainActivityVM: MainActivityVM , type:String , room: PrivateRoom){
+    fun handleJoinRoom(mainActivityVM: MainActivityVM, type:String, room: PrivateRoom){
         val uid = currentUser?.uid
         val displayName = currentUser?.displayName
         val photoUrl = currentUser?.photoUrl.toString()
@@ -280,7 +285,7 @@ class FirebaseManager {
             }
     }
 
-    fun pullPrivateRooms(privateRoomsViewModel: PrivateRoomsViewModel , mainActivityVM: MainActivityVM){
+    fun pullPrivateRooms(privateRoomsViewModel: PrivateRoomsViewModel, mainActivityVM: MainActivityVM){
 
       listenPrivateRooms = prvRoomRef.addSnapshotListener { snapshots , e ->
 
@@ -464,7 +469,7 @@ class FirebaseManager {
         }
     }
 
-    fun pullChat(mainActivityVM: MainActivityVM , channel: DatabaseReference , updateListener:Boolean){
+    fun pullChat(mainActivityVM: MainActivityVM, channel: DatabaseReference, updateListener:Boolean){
 
         if (updateListener){
 
@@ -568,7 +573,7 @@ class FirebaseManager {
 
     }
 
-    fun uploadPRMediaImage( messageId: String , mainActivityVM: MainActivityVM , mimeType:String , uri: Uri? , bitmap: Bitmap? , room: PrivateRoom , fileName: String){
+    fun uploadPRMediaImage(messageId: String, mainActivityVM: MainActivityVM, mimeType:String, uri: Uri?, bitmap: Bitmap?, room: PrivateRoom, fileName: String){
 
 
 
@@ -665,7 +670,7 @@ class FirebaseManager {
 
     }
 
-    fun updatePRMessage( mainActivityVM: MainActivityVM , room: PrivateRoom , url:String , messageId: String){
+    fun updatePRMessage(mainActivityVM: MainActivityVM, room: PrivateRoom, url:String, messageId: String){
 
         P1.child(room.roomId!!)
             .child(messageId)
@@ -681,7 +686,7 @@ class FirebaseManager {
             }
 
     }
-    fun writePRMedia( mainActivityVM: MainActivityVM , room: PrivateRoom , context:Context , mimeType:String , uri:Uri? , messageId:String){
+    fun writePRMedia(mainActivityVM: MainActivityVM, room: PrivateRoom, context:Context, mimeType:String, uri:Uri?, messageId:String){
 
         when {
 
@@ -1104,7 +1109,7 @@ class FirebaseManager {
 
     }
 
-    fun writePRMessage(mainActivityVM: MainActivityVM , type:String? , messageValue: String? , p:DatabaseReference , room:PrivateRoom ){
+    fun writePRMessage(mainActivityVM: MainActivityVM, type:String?, messageValue: String?, p:DatabaseReference, room:PrivateRoom ){
         var messageId = p.push().key.toString()
 
         val tStamp = System.currentTimeMillis()
@@ -1128,7 +1133,7 @@ class FirebaseManager {
             .setValue(message)
     }
 
-    fun writePRMediaMessage(mainActivityVM: MainActivityVM , type:String? , messageValue: String? , p:DatabaseReference , room:PrivateRoom ){
+    fun writePRMediaMessage(mainActivityVM: MainActivityVM, type:String?, messageValue: String?, p:DatabaseReference, room:PrivateRoom ){
         var messageId = p.push().key.toString()
 
         val tStamp = System.currentTimeMillis()
@@ -1259,7 +1264,8 @@ class FirebaseManager {
 
     @Composable
     fun writePrivateRoom(roomName:String? , roomId:String? , ownerId:String? ,
-                         photoUrl: String? , parCount:Long , mainActivityVM: MainActivityVM){
+                         photoUrl: String? , parCount:Long , mainActivityVM: MainActivityVM
+    ){
         val privateRoom = PrivateRoom(
             roomName = roomName!! ,
             roomId = roomId!! ,
@@ -1288,7 +1294,7 @@ class FirebaseManager {
 
 
     @Composable
-    fun uploadPrivateRoomPhoto(bitmap: Bitmap? , mainActivityVM: MainActivityVM , uid:String){
+    fun uploadPrivateRoomPhoto(bitmap: Bitmap?, mainActivityVM: MainActivityVM, uid:String){
 
         val profileImageRef = storageRef.child("pvRooms/" + uid + "/" + "roomImage/rm.webp")
 
@@ -1954,7 +1960,7 @@ class FirebaseManager {
 
 
 
-    fun listenRandomHistory(randomConnectionActivityViewModel: RandomConnectionActivityViewModel , outId: String){
+    fun listenRandomHistory(randomConnectionActivityViewModel: RandomConnectionActivityViewModel, outId: String){
         val selfUid = MainActivity.PreferenceManager?.getuidShared("uid")
 
         Random_History

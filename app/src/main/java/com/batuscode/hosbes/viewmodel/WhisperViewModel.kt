@@ -1,9 +1,7 @@
-package com.batuscode.hosbes.utility
+package com.batuscode.hosbes.viewmodel
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
-import com.batuscode.hosbes.models.Message
-import com.batuscode.hosbes.models.PrivateRoom
 import com.batuscode.hosbes.models.Whisper
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

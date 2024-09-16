@@ -23,7 +23,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
@@ -31,15 +30,13 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import com.batuscode.hosbes.MainActivity
 import com.batuscode.hosbes.R
-import com.batuscode.hosbes.ui.theme.HoşbeşTheme
-import com.batuscode.hosbes.utility.ChatViewModel
-import com.batuscode.hosbes.utility.MainActivityVM
-import com.batuscode.hosbes.utility.WhisperViewModel
+import com.batuscode.hosbes.viewmodel.ChatViewModel
+import com.batuscode.hosbes.viewmodel.MainActivityVM
 import com.batuscode.hosbes.views.ui.MessageTextField
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun _WhisperChat(mainActivityVM: MainActivityVM , chatViewModel: ChatViewModel){
+fun _WhisperChat(mainActivityVM: MainActivityVM, chatViewModel: ChatViewModel){
 
     val lifecycleOwner = LocalLifecycleOwner.current // yaşam döngüsü kontrolcüsü ...
     val whisperfirst by mainActivityVM.whisperfirst.collectAsState()

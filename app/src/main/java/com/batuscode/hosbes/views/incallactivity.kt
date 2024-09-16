@@ -13,7 +13,7 @@ import androidx.lifecycle.Observer
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.batuscode.hosbes.MainActivity
 import com.batuscode.hosbes.models.Participnat
-import com.batuscode.hosbes.utility.InCallActivityViewModel
+import com.batuscode.hosbes.viewmodel.InCallActivityViewModel
 import com.facebook.react.modules.core.PermissionListener
 import org.jitsi.meet.sdk.BroadcastEvent
 import org.jitsi.meet.sdk.BroadcastIntentHelper
@@ -44,7 +44,7 @@ class InCallActivity:JitsiMeetActivity(){
         wphotoUrl = intent.getStringExtra("wphotoUrl").toString()
         wdisplayName = intent.getStringExtra("wdisplayName").toString()
 
-        val inCallActivityViewModel:InCallActivityViewModel by viewModels()
+        val inCallActivityViewModel: InCallActivityViewModel by viewModels()
         minCallActivityViewModel = inCallActivityViewModel
 
         callHistoryItem = Participnat(

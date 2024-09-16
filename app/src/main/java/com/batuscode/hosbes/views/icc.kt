@@ -1,7 +1,5 @@
 package com.batuscode.hosbes.views
 
-import android.content.Context
-import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import androidx.annotation.OptIn
@@ -35,18 +33,13 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
 import com.batuscode.hosbes.MainActivity
 import com.batuscode.hosbes.R
-import com.batuscode.hosbes.models.Calls
 import com.batuscode.hosbes.models.Participnat
-import com.batuscode.hosbes.ui.theme.HoşbeşTheme
 import com.batuscode.hosbes.utility.GlideApp
-import com.batuscode.hosbes.utility.MainActivityVM
-import com.batuscode.hosbes.utility.OutCallActivityViewModel
+import com.batuscode.hosbes.viewmodel.OutCallActivityViewModel
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 
@@ -54,7 +47,7 @@ import com.bumptech.glide.request.transition.Transition
 
 @OptIn(UnstableApi::class)
 @Composable
-fun ICC(outCallActivityViewModel: OutCallActivityViewModel , Historycalls:Participnat){
+fun ICC(outCallActivityViewModel: OutCallActivityViewModel, Historycalls:Participnat){
     val context = LocalContext.current
 
     val uid = MainActivity?.PreferenceManager?.getuidShared("uid")

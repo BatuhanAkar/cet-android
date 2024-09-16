@@ -3,7 +3,6 @@ package com.batuscode.hosbes.views
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -13,7 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -43,12 +41,12 @@ import com.batuscode.hosbes.models.Participnat
 import com.batuscode.hosbes.models.PrivateRoom
 import com.batuscode.hosbes.ui.theme.HoşbeşTheme
 import com.batuscode.hosbes.utility.GlideApp
-import com.batuscode.hosbes.utility.ParticipantsViewModel
+import com.batuscode.hosbes.viewmodel.ParticipantsViewModel
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 
 @Composable
-fun ParticipantsFlow(participantsViewModel: ParticipantsViewModel , privateRoom: PrivateRoom){
+fun ParticipantsFlow(participantsViewModel: ParticipantsViewModel, privateRoom: PrivateRoom){
     val context = LocalContext.current
     val participants = participantsViewModel.participnats.collectAsState()
     val chunkedParticipnat = participants.value.chunked(5)

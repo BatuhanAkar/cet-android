@@ -1,4 +1,4 @@
-package com.batuscode.hosbes.utility
+package com.batuscode.hosbes.viewmodel
 
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseUser

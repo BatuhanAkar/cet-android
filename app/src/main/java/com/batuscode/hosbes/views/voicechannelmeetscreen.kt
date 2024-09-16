@@ -1,8 +1,6 @@
 package com.batuscode.hosbes.views
 
-import androidx.compose.foundation.Indication
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -40,8 +38,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import com.batuscode.hosbes.MainActivity
 import com.batuscode.hosbes.R
 import com.batuscode.hosbes.ui.theme.HoşbeşTheme
-import com.batuscode.hosbes.utility.MainActivityVM
-import com.batuscode.hosbes.utility.VoiceChannelViewModel
+import com.batuscode.hosbes.viewmodel.VoiceChannelViewModel
 import kotlinx.coroutines.delay
 
 @Composable

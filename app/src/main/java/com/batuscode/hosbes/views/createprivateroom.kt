@@ -27,7 +27,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
@@ -57,7 +56,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -76,7 +74,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.batuscode.hosbes.MainActivity
 import com.batuscode.hosbes.R
 import com.batuscode.hosbes.ui.theme.HoşbeşTheme
-import com.batuscode.hosbes.utility.MainActivityVM
+import com.batuscode.hosbes.viewmodel.MainActivityVM
 import com.batuscode.hosbes.views.ui.Progress
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
@@ -552,7 +550,7 @@ fun CreatePrivateRoomContent(mainActivityVM: MainActivityVM){
 @Composable
 fun CreatePrivateRoomContentPreview(){
 
-    val mainActivityVM:MainActivityVM = viewModel()
+    val mainActivityVM: MainActivityVM = viewModel()
     HoşbeşTheme {
         CreatePrivateRoomContent(mainActivityVM)
     }

@@ -6,10 +6,8 @@ import android.graphics.drawable.Drawable
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,24 +17,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBox
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.RectangleShape
@@ -48,7 +40,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -59,13 +50,13 @@ import com.batuscode.hosbes.R
 import com.batuscode.hosbes.models.PrivateRoom
 import com.batuscode.hosbes.ui.theme.HoşbeşTheme
 import com.batuscode.hosbes.utility.GlideApp
-import com.batuscode.hosbes.utility.MainActivityVM
-import com.batuscode.hosbes.utility.PrivateRoomsViewModel
+import com.batuscode.hosbes.viewmodel.MainActivityVM
+import com.batuscode.hosbes.viewmodel.PrivateRoomsViewModel
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 
 @Composable
-fun PrivateRoomsFlow( mainActivityVM: MainActivityVM , privateRoomsViewModel: PrivateRoomsViewModel , paddingValues: PaddingValues){
+fun PrivateRoomsFlow(mainActivityVM: MainActivityVM, privateRoomsViewModel: PrivateRoomsViewModel, paddingValues: PaddingValues){
 
     Log.d("firedb" , "flow...")
 
@@ -287,8 +278,8 @@ fun RoomPreview(){
 @Preview(showBackground = true , showSystemUi = true)
 @Composable
 fun PrivateRoomsFlowPreview(){
-    val privateRoomsViewModel:PrivateRoomsViewModel = viewModel()
-    val mainActivityVM:MainActivityVM = viewModel()
+    val privateRoomsViewModel: PrivateRoomsViewModel = viewModel()
+    val mainActivityVM: MainActivityVM = viewModel()
     HoşbeşTheme {
         PrivateRoomsFlow(paddingValues = PaddingValues(1.dp) , privateRoomsViewModel = privateRoomsViewModel , mainActivityVM = mainActivityVM)
     }

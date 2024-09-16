@@ -2,7 +2,6 @@ package com.batuscode.hosbes.views.ui
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.Intent
 import android.os.Build
 import android.os.Environment
 import android.util.Log
@@ -33,25 +32,22 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.batuscode.hosbes.MainActivity
 import com.batuscode.hosbes.R
 import com.batuscode.hosbes.ui.theme.HoşbeşTheme
-import com.batuscode.hosbes.utility.ChatViewModel
+import com.batuscode.hosbes.viewmodel.ChatViewModel
 import com.batuscode.hosbes.utility.FirebaseManager
-import com.batuscode.hosbes.utility.MainActivityVM
-import com.batuscode.hosbes.views.GiphyActivity
+import com.batuscode.hosbes.viewmodel.MainActivityVM
 import com.giphy.sdk.core.models.Media
 import com.giphy.sdk.ui.GPHContentType
-import com.giphy.sdk.ui.Giphy
 import com.giphy.sdk.ui.views.GiphyDialogFragment
 
 @SuppressLint("UnrememberedMutableState")
 @Composable
-internal fun MessageTextField( chatViewModel: ChatViewModel , mainActivityVM: MainActivityVM , modifier: Modifier = Modifier , newText: (String) -> Unit ){
+internal fun MessageTextField(chatViewModel: ChatViewModel, mainActivityVM: MainActivityVM, modifier: Modifier = Modifier, newText: (String) -> Unit ){
 
     val message by mainActivityVM.message.collectAsState()
 
@@ -84,7 +80,7 @@ internal fun MessageTextField( chatViewModel: ChatViewModel , mainActivityVM: Ma
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-private fun CustomTextField( chatViewModel: ChatViewModel , mainActivityVM: MainActivityVM , modifier: Modifier = Modifier , message: TextFieldValue , isEmpty: Boolean , onValueChange: (TextFieldValue) -> Unit){
+private fun CustomTextField(chatViewModel: ChatViewModel, mainActivityVM: MainActivityVM, modifier: Modifier = Modifier, message: TextFieldValue, isEmpty: Boolean, onValueChange: (TextFieldValue) -> Unit){
     val context = LocalContext.current
 
     val channelId by mainActivityVM.channelId.collectAsState()
@@ -569,8 +565,8 @@ private fun showEmoji(context:Context){
 @Composable
 fun MessageTextFieldPreview(){
     HoşbeşTheme {
-        val mainActivityVM:MainActivityVM = viewModel()
-        val chatViewModel:ChatViewModel = viewModel()
+        val mainActivityVM: MainActivityVM = viewModel()
+        val chatViewModel: ChatViewModel = viewModel()
         MessageTextField( chatViewModel , mainActivityVM) {
 
         }
