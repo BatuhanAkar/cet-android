@@ -1,5 +1,6 @@
 /*
 !.gitignore
+!app/
 !app/src/main/
 !app/src/main/java/
 !app/src/main/java/**

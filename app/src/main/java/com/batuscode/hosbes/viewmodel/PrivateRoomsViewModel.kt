@@ -1,0 +1,59 @@
+package com.batuscode.hosbes.viewmodel
+
+import android.util.Log
+import androidx.lifecycle.ViewModel
+import com.batuscode.hosbes.model.PrivateRoom
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+
+class PrivateRoomsViewModel: ViewModel() {
+
+    private val _rooms = MutableStateFlow<List<PrivateRoom>>(emptyList())
+    val rooms: StateFlow<List<PrivateRoom>> get()  = _rooms
+
+
+    fun pushRoom(room: PrivateRoom){
+
+        Log.d("privateroomsflow" , "room added :: " + room.roomName)
+
+        val roomIter = _rooms.value.toMutableList()
+        roomIter.add(room)
+        _rooms.value = roomIter
+
+    }
+
+    fun modifiedRoom(room: PrivateRoom){
+
+        val oldRooms = _rooms.value.toMutableList()
+
+        val position = oldRooms.indexOf(room)
+
+        if (position in oldRooms.indices){
+
+            oldRooms[position].activePar = room.activePar
+
+            _rooms.value.get(position).activePar = oldRooms.get(position).activePar
+
+        }
+
+    }
+
+    fun roomRemoved(room: PrivateRoom){
+        val oldChats = _rooms.value.toMutableList()
+
+        val position = oldChats.indexOf(room)
+
+        if (position in oldChats.indices){
+
+
+            oldChats.remove(room)
+
+            _rooms.value = oldChats
+
+        }
+    }
+
+    fun refreshRooms(){
+        _rooms.value = emptyList()
+    }
+}
