@@ -1,0 +1,6 @@
+/*
+!.gitignore
+!app/src/main/
+!app/src/main/java/
+!app/src/main/java/**
+!README.md
